@@ -33,6 +33,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 var html = "text/html";
 var encoding = "UTF-8";
+
+importPackage(com.google.refine.quality.commands);
 var ClientSideResourceManager = Packages.com.google.refine.ClientSideResourceManager;
 
 /*
@@ -41,7 +43,12 @@ var ClientSideResourceManager = Packages.com.google.refine.ClientSideResourceMan
 function init() {
   // Packages.java.lang.System.err.println("Initializing sample extension");
   // Packages.java.lang.System.err.println(module.getMountPoint());
-
+  
+  /*
+   * Commands
+   */
+  RefineServlet.registerCommand(module, "retrieveRows", new RetrieveRows());
+  	
   // Script files to inject into /project page
   ClientSideResourceManager.addPaths(
     "project/scripts",

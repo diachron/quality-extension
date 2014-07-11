@@ -35,6 +35,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 var SampleExtension = {};
 
+function testfun() {
+	alert("Test2");
+}
+
 ExtensionBar.addExtensionMenu({
 	"id": "diachron",
 	"label": "Quality",
@@ -42,7 +46,7 @@ ExtensionBar.addExtensionMenu({
 		 {
 			 "id":"diachron/quality",
 			        	 label: "Asses Quality",
-			        	 click: function(){alert('Test');}
+			        	 click: function(){testfun();}
 		}
 	  ,{},
 	  	 {
