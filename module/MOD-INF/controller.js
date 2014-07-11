@@ -35,8 +35,6 @@ var html = "text/html";
 var encoding = "UTF-8";
 
 importPackage(com.google.refine.quality.commands);
-var ClientSideResourceManager = Packages.com.google.refine.ClientSideResourceManager;
-
 /*
  * Function invoked to initialize the extension.
  */
@@ -44,11 +42,14 @@ function init() {
   // Packages.java.lang.System.err.println("Initializing sample extension");
   // Packages.java.lang.System.err.println(module.getMountPoint());
   
+  var RefineServlet = Packages.com.google.refine.RefineServlet;
+  
   /*
    * Commands
    */
   RefineServlet.registerCommand(module, "retrieveRows", new RetrieveRows());
-  	
+  
+  var ClientSideResourceManager = Packages.com.google.refine.ClientSideResourceManager;	
   // Script files to inject into /project page
   ClientSideResourceManager.addPaths(
     "project/scripts",

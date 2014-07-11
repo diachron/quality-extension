@@ -36,7 +36,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 var SampleExtension = {};
 
 function testfun() {
-	alert("Test2");
+	$.post("command/quality-extension/retrieveRows/",
+			{
+			"engine" : JSON.stringify(ui.browsingEngine.getJSON()),
+			"project": theProject.id,
+			"format" : "rdf" 
+			},
+			function (data)
+			{
+			console.log("success");	
+			});
 }
 
 ExtensionBar.addExtensionMenu({
