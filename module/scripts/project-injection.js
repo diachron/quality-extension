@@ -35,12 +35,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 var SampleExtension = {};
 
-function testfun() {
-	$.post("command/quality-extension/retrieveRows/",
+function assessQuality() {
+	$.post("command/quality-extension/assessQuality/",
 			{
 			"engine" : JSON.stringify(ui.browsingEngine.getJSON()),
-			"project": theProject.id,
-			"format" : "rdf" 
+			"project": theProject.id
 			},
 			function (data)
 			{
@@ -54,8 +53,8 @@ ExtensionBar.addExtensionMenu({
 	"submenu": [
 		 {
 			 "id":"diachron/quality",
-			        	 label: "Asses Quality",
-			        	 click: function(){testfun();}
+			        	 label: "Assess Quality",
+			        	 click: function(){assessQuality();}
 		}
 	  ,{},
 	  	 {

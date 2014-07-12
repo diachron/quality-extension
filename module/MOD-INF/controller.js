@@ -47,7 +47,7 @@ function init() {
   /*
    * Commands
    */
-  RefineServlet.registerCommand(module, "retrieveRows", new RetrieveRows());
+  RefineServlet.registerCommand(module, "assessQuality", new AssessQuality());
   
   var ClientSideResourceManager = Packages.com.google.refine.ClientSideResourceManager;	
   // Script files to inject into /project page
