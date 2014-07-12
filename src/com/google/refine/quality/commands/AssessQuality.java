@@ -13,6 +13,7 @@ import com.google.refine.browsing.Engine;
 import com.google.refine.commands.Command;
 import com.google.refine.model.Project;
 import com.google.refine.quality.utilities.LoadJenaModel;
+import com.google.refine.quality.utilities.Utilities;
 import com.google.refine.quality.metrics.MalformedDatatypeLiterals;
 import com.hp.hpl.jena.sparql.core.Quad;
 
@@ -58,9 +59,7 @@ public class AssessQuality extends Command{
         malformedDatatypeLiterals.compute(LoadJenaModel.getQuads(is));
         
         for (Quad quad : malformedDatatypeLiterals.getQualityProblems()){
-            System.out.print("Subject : " + quad.getSubject());
-            System.out.print("-- Predicate : " + quad.getPredicate());
-            System.out.println("--> Object : " + quad.getObject());
+            Utilities.printQuad(quad, System.out);
         }
     }
     
