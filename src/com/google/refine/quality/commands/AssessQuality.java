@@ -14,6 +14,7 @@ import com.google.refine.commands.Command;
 import com.google.refine.model.Project;
 import com.google.refine.quality.utilities.LoadJenaModel;
 import com.google.refine.quality.utilities.Utilities;
+import com.google.refine.quality.metrics.EmptyAnnotationValue;
 import com.google.refine.quality.metrics.MalformedDatatypeLiterals;
 import com.hp.hpl.jena.sparql.core.Quad;
 
@@ -36,7 +37,12 @@ public class AssessQuality extends Command{
             String tmpStr = "";
             
             for (int i=start; i < limit; i++){
-                tmpStr += project.rows.get(i).getCell(0).toString() + "\n";
+                if (null == project.rows.get(i).getCell(0)) {
+                    tmpStr += "\n";
+                }
+                else {
+                    tmpStr += project.rows.get(i).getCell(0).toString() + "\n";
+                }
             }
             
             inputStream = IOUtils.toInputStream(tmpStr, "UTF-8");
@@ -48,18 +54,49 @@ public class AssessQuality extends Command{
         return inputStream;
     }
     
+    
     /**
-     * Process records for MalformedDatatypeLiterals
+     * process quads for EmptyAnnotationValue
+     * 
+     * @param inputStream
+     */
+    protected void processForEmptyAnnotationValue(InputStream inputStream){
+        
+        EmptyAnnotationValue.loadAnnotationPropertiesSet(null);
+        
+        EmptyAnnotationValue emptyAnnotationValue = new EmptyAnnotationValue();
+        emptyAnnotationValue.compute(LoadJenaModel.getQuads(inputStream));
+        
+        if (emptyAnnotationValue.getQualityProblems().isEmpty())
+        {
+            System.out.println("No problem found for EmptyAnnotationValue");
+        }
+        else {
+            for (Quad quad : emptyAnnotationValue.getQualityProblems()){
+                Utilities.printQuad(quad, System.out);
+            }
+        }
+        
+        EmptyAnnotationValue.clearAnnotationPropertiesSet();
+    }
+    
+    /**
+     * Process quads for MalformedDatatypeLiterals
      * 
      * @param is
      */
-    protected void processForMalformedDatatypeLiterals(InputStream is) {
+    protected void processForMalformedDatatypeLiterals(InputStream inputStream) {
         
         MalformedDatatypeLiterals malformedDatatypeLiterals = new MalformedDatatypeLiterals();
-        malformedDatatypeLiterals.compute(LoadJenaModel.getQuads(is));
+        malformedDatatypeLiterals.compute(LoadJenaModel.getQuads(inputStream));
         
-        for (Quad quad : malformedDatatypeLiterals.getQualityProblems()){
-            Utilities.printQuad(quad, System.out);
+        if (malformedDatatypeLiterals.getQualityProblems().isEmpty()) {
+            System.out.println("No problem found for MalformedDatatypeLiterals");
+        }
+        else {
+            for (Quad quad : malformedDatatypeLiterals.getQualityProblems()){
+                Utilities.printQuad(quad, System.out);
+            }
         }
     }
     
@@ -68,10 +105,23 @@ public class AssessQuality extends Command{
         System.out.println("Retrieve Rows");
         try {
             
+            // Retrieve project object
             Project project = getProject(request);
             
+            // Retrieve rdf data from project
             InputStream inputStream = retrieveRDFData(project);
+            
+            // List all Statemtents loaded in model
+            Utilities.printStatements(LoadJenaModel.getModel(inputStream).listStatements(), System.out);
+            
+            /** Compute Metrics **/
+            
+            // for Empty Annotation value 
+            processForEmptyAnnotationValue(inputStream);
+            
+            // for Malformed Datatype Literals
             processForMalformedDatatypeLiterals(inputStream);
+            
             
             
         } catch (Exception e) {
