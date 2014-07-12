@@ -35,14 +35,26 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 var SampleExtension = {};
 
+function assessQuality() {
+	$.post("command/quality-extension/assessQuality/",
+			{
+			"engine" : JSON.stringify(ui.browsingEngine.getJSON()),
+			"project": theProject.id
+			},
+			function (data)
+			{
+			console.log("success");	
+			});
+}
+
 ExtensionBar.addExtensionMenu({
 	"id": "diachron",
 	"label": "Quality",
 	"submenu": [
 		 {
 			 "id":"diachron/quality",
-			        	 label: "Asses Quality",
-			        	 click: function(){alert('Test');}
+			        	 label: "Assess Quality",
+			        	 click: function(){assessQuality();}
 		}
 	  ,{},
 	  	 {
