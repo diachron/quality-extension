@@ -36,6 +36,30 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 var SampleExtension = {};
 
 function assessQuality() {
+	
+	var self = this;
+	self._dismissBusy = DialogSystem.showBusy('Assessing quality of rdf data set ...');
+	//Add new columns with blank values
+	
+	Refine.postCoreProcess(
+        "add-column", 
+        {
+          baseColumnName: "Column 1", 
+          expression: "value.replace(/(?s).*/, \"\")", 
+          newColumnName: "Column 2", 
+          columnInsertIndex: 1,
+          onError: "set-to-blank"
+        },
+        null,
+        { modelsChanged: true },
+        {
+          onDone: function(o) {
+            dismiss();
+          }
+        }
+      );
+
+	// Access the quality of data based on Column 1
 	$.post("command/quality-extension/assessQuality/",
 			{
 			"engine" : JSON.stringify(ui.browsingEngine.getJSON()),
@@ -45,6 +69,35 @@ function assessQuality() {
 			{
 			console.log("success");	
 			});
+			
+	self._dismissBusy();
+}
+
+function identifyQualityProblems() {
+
+	var self = this;
+	self._dismissBusy = DialogSystem.showBusy('Identifying quality problems of rdf data set ...');
+		
+	Refine.postCoreProcess(
+	        "add-column", 
+	        {
+	          baseColumnName: "Column 1", 
+	          expression: "value.replace(/(?s).*/, \"\")", 
+	          newColumnName: "Column 2", 
+	          columnInsertIndex: 1,
+	          onError: "set-to-blank"
+	        },
+	        null,
+	        { modelsChanged: true },
+	        {
+	          onDone: function(o) {
+	            dismiss();
+	          }
+	        }
+	      );
+      
+	self._dismissBusy();
+
 }
 
 ExtensionBar.addExtensionMenu({
@@ -60,7 +113,7 @@ ExtensionBar.addExtensionMenu({
 	  	 {
 			 "id":"diachron/improve",
 			        	 label: "Identify Quality Problems",
-			        	 click: function(){alert('Test2');}
+			        	 click: function(){identifyQualityProblems();}
 		}
 		]
 	 });
