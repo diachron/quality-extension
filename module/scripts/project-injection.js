@@ -35,12 +35,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 var SampleExtension = {};
 
-function assessQuality() {
-	
-	var self = this;
-	self._dismissBusy = DialogSystem.showBusy('Assessing quality of rdf data set ...');
+function addNewColumnCommand() {
 	//Add new columns with blank values
-	
 	Refine.postCoreProcess(
         "add-column", 
         {
@@ -54,10 +50,13 @@ function assessQuality() {
         { modelsChanged: true },
         {
           onDone: function(o) {
-            dismiss();
+            transformDataCommand();
           }
         }
       );
+}
+
+function assessQualityCommand() {
 
 	// Access the quality of data based on Column 1
 	$.post("command/quality-extension/assessQuality/",
@@ -69,8 +68,27 @@ function assessQuality() {
 			{
 			console.log("success");	
 			});
-			
-	self._dismissBusy();
+}
+
+function transformDataCommand() {
+	
+	var self = this;
+	self._dismissBusy = DialogSystem.showBusy('Transforming data ...');
+	
+	$.post("command/quality-extension/transformData/",
+			{
+			"engine" : JSON.stringify(ui.browsingEngine.getJSON()),
+			"project": theProject.id
+			},
+			function (data)
+			{
+			console.log("success");
+			self._dismissBusy();	
+			});
+}
+
+function assessQuality() {
+	addNewColumnCommand();
 }
 
 function identifyQualityProblems() {
