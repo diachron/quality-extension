@@ -122,6 +122,7 @@ public class AssessQuality extends Command{
             // for Malformed Datatype Literals
             processMetric(new MalformedDatatypeLiterals(), listQuad);
             
+            
             // for MisplacedClassesOrProperties
             processMetric(new MisplacedClassesOrProperties(), listQuad);
             
@@ -137,7 +138,7 @@ public class AssessQuality extends Command{
             WhitespaceInAnnotation.loadAnnotationPropertiesSet(null); //Pre-Process
             processMetric(new WhitespaceInAnnotation(), listQuad);
             WhitespaceInAnnotation.clearAnnotationPropertiesSet(); //Post-Process
-            
+
         } catch (Exception e) {
             e.printStackTrace();
         }
