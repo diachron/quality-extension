@@ -2,6 +2,7 @@ package com.google.refine.quality.commands;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -60,12 +61,12 @@ public class AssessQuality extends Command{
      * 
      * @param inputStream
      */
-    protected void processForEmptyAnnotationValue(InputStream inputStream){
+    protected void processForEmptyAnnotationValue(List<Quad> listQuad){
         
         EmptyAnnotationValue.loadAnnotationPropertiesSet(null);
         
         EmptyAnnotationValue emptyAnnotationValue = new EmptyAnnotationValue();
-        emptyAnnotationValue.compute(LoadJenaModel.getQuads(inputStream));
+        emptyAnnotationValue.compute(listQuad);
         
         if (emptyAnnotationValue.getQualityProblems().isEmpty())
         {
@@ -85,10 +86,10 @@ public class AssessQuality extends Command{
      * 
      * @param is
      */
-    protected void processForMalformedDatatypeLiterals(InputStream inputStream) {
+    protected void processForMalformedDatatypeLiterals(List<Quad> listQuad) {
         
         MalformedDatatypeLiterals malformedDatatypeLiterals = new MalformedDatatypeLiterals();
-        malformedDatatypeLiterals.compute(LoadJenaModel.getQuads(inputStream));
+        malformedDatatypeLiterals.compute(listQuad);
         
         if (malformedDatatypeLiterals.getQualityProblems().isEmpty()) {
             System.out.println("No problem found for MalformedDatatypeLiterals");
@@ -102,27 +103,37 @@ public class AssessQuality extends Command{
     
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        
         System.out.println("Retrieve Rows");
+        
         try {
+            
+            /** Get Projet Details **/
             
             // Retrieve project object
             Project project = getProject(request);
+
+            /** For Debug Only **/
+            
+            //List all Statemtents loaded in model 
+            Utilities.printStatements(LoadJenaModel.getModel(retrieveRDFData(project)).listStatements(), System.out);
+            
+            /** Get Project Data **/
             
             // Retrieve rdf data from project
             InputStream inputStream = retrieveRDFData(project);
-            
-            // List all Statemtents loaded in model
-            Utilities.printStatements(LoadJenaModel.getModel(inputStream).listStatements(), System.out);
+            // Retrieve all quad in model
+            List<Quad> listQuad = LoadJenaModel.getQuads(inputStream);
+            // Close input stream
+            inputStream.close();
             
             /** Compute Metrics **/
             
             // for Empty Annotation value 
-            processForEmptyAnnotationValue(inputStream);
+            processForEmptyAnnotationValue(listQuad);
             
             // for Malformed Datatype Literals
-            processForMalformedDatatypeLiterals(inputStream);
-            
-            
+            processForMalformedDatatypeLiterals(listQuad);
             
         } catch (Exception e) {
             e.printStackTrace();
