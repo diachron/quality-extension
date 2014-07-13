@@ -20,6 +20,9 @@ import com.google.refine.quality.metrics.EmptyAnnotationValue;
 import com.google.refine.quality.metrics.IncompatibleDatatypeRange;
 import com.google.refine.quality.metrics.MalformedDatatypeLiterals;
 import com.google.refine.quality.metrics.MisplacedClassesOrProperties;
+import com.google.refine.quality.metrics.MisusedOwlDatatypeOrObjectProperties;
+import com.google.refine.quality.metrics.OntologyHijacking;
+import com.google.refine.quality.metrics.WhitespaceInAnnotation;
 import com.hp.hpl.jena.sparql.core.Quad;
 
 public class AssessQuality extends Command{
@@ -65,21 +68,24 @@ public class AssessQuality extends Command{
      * @param listQuad
      */
     protected void processMetric(AbstractQualityMetrics abstractQualityMetrics, List<Quad> listQuad){
+        
+        System.out.println("Processing for " +  abstractQualityMetrics.getClass());
+        
         abstractQualityMetrics.compute(listQuad);
-        for (Quad quad : abstractQualityMetrics.getQualityProblems()){
-            Utilities.printQuad(quad, System.out);
+        if (abstractQualityMetrics.getQualityProblems().isEmpty()){
+            System.out.println("No problem found for " + abstractQualityMetrics.getClass());
+        }
+        else {
+            for (Quad quad : abstractQualityMetrics.getQualityProblems()){
+                Utilities.printQuad(quad, System.out);
+            }
         }
     }
     
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         
-        System.out.println("Retrieve Rows");
-        
         try {
-            
-            /** Pre-load Process **/
-            EmptyAnnotationValue.loadAnnotationPropertiesSet(null);
              
             /** Get Projet Details **/
             
@@ -103,20 +109,34 @@ public class AssessQuality extends Command{
             /** Compute Metrics **/
             
             // for Empty Annotation value
+            EmptyAnnotationValue.loadAnnotationPropertiesSet(null); // Pre-Process
             processMetric(new EmptyAnnotationValue(), listQuad);
+            EmptyAnnotationValue.clearAnnotationPropertiesSet(); //Post-Process
             
             //TODO homogeneousDatatypes
             
             // for IncompatiableDatatypeRange
             processMetric(new IncompatibleDatatypeRange(), listQuad);
+            IncompatibleDatatypeRange.clearCache(); //Post-Process
             
             // for Malformed Datatype Literals
             processMetric(new MalformedDatatypeLiterals(), listQuad);
             
+            // for MisplacedClassesOrProperties
+            processMetric(new MisplacedClassesOrProperties(), listQuad);
             
+            // for MisusedOwlDatatypeOrObjectProperties
+            MisusedOwlDatatypeOrObjectProperties.filterAllOwlProperties(listQuad); //Pre-Process
+            processMetric(new MisusedOwlDatatypeOrObjectProperties(), listQuad);
+            MisusedOwlDatatypeOrObjectProperties.clearAllOwlPropertiesList(); //Post-Process
             
-            /** Post Process **/
-            EmptyAnnotationValue.clearAnnotationPropertiesSet();
+            // for OntologyHijacking
+            processMetric(new OntologyHijacking(), listQuad);
+            
+            // for WhitespaceInAnnotation
+            WhitespaceInAnnotation.loadAnnotationPropertiesSet(null); //Pre-Process
+            processMetric(new WhitespaceInAnnotation(), listQuad);
+            WhitespaceInAnnotation.clearAnnotationPropertiesSet(); //Post-Process
             
         } catch (Exception e) {
             e.printStackTrace();

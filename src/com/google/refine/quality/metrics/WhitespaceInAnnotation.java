@@ -33,7 +33,7 @@ public class WhitespaceInAnnotation extends AbstractQualityMetrics{
          * Default file path and name for the file that contains
          * list of annotation properties
          */
-        protected static String defaultFilePathName = "../extensions/rdf-extension/resources/files/AnnotationPropertiesList";
+        protected static String defaultFilePathName = "extensions/quality-extension/resources/AnnotationPropertiesList";
         /**
          * Number of literals count
          */
