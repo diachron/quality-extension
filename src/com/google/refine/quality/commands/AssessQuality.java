@@ -16,6 +16,7 @@ import com.google.refine.model.Project;
 import com.google.refine.quality.utilities.LoadJenaModel;
 import com.google.refine.quality.utilities.Utilities;
 import com.google.refine.quality.metrics.EmptyAnnotationValue;
+import com.google.refine.quality.metrics.IncompatibleDatatypeRange;
 import com.google.refine.quality.metrics.MalformedDatatypeLiterals;
 import com.hp.hpl.jena.sparql.core.Quad;
 
@@ -82,6 +83,27 @@ public class AssessQuality extends Command{
     }
     
     /**
+     * process quads for Incompatiable Datatype Range
+     * 
+     * @param listQuad
+     */
+    protected void processForIncompatiableDatatypeRange(List<Quad> listQuad){
+        
+        IncompatibleDatatypeRange incompatibleDatatypeRange = new IncompatibleDatatypeRange();
+        incompatibleDatatypeRange.compute(listQuad);
+        
+        if (incompatibleDatatypeRange.getQualityProblems().isEmpty()){
+            System.out.println("No problem found for incompatibleDatatypeRange");
+        }
+        else {
+            for (Quad quad : incompatibleDatatypeRange.getQualityProblems()){
+                Utilities.printQuad(quad, System.out);
+            }
+        }
+        
+    }
+    
+    /**
      * Process quads for MalformedDatatypeLiterals
      * 
      * @param is
@@ -132,8 +154,15 @@ public class AssessQuality extends Command{
             // for Empty Annotation value 
             processForEmptyAnnotationValue(listQuad);
             
+            //TODO homogeneousDatatypes
+            
+            // for IncompatiableDatatypeRange
+            processForIncompatiableDatatypeRange(listQuad);
+            
             // for Malformed Datatype Literals
             processForMalformedDatatypeLiterals(listQuad);
+            
+            
             
         } catch (Exception e) {
             e.printStackTrace();
