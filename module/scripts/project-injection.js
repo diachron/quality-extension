@@ -47,6 +47,27 @@ function assessQuality() {
 			});
 }
 
+function identifyQualityProblems() {
+
+Refine.postCoreProcess(
+        "add-column", 
+        {
+          baseColumnName: "Column 1", 
+          expression: "value.replace(/(?s).*/, \"\")", 
+          newColumnName: "Column 2", 
+          columnInsertIndex: 1,
+          onError: "set-to-blank"
+        },
+        null,
+        { modelsChanged: true },
+        {
+          onDone: function(o) {
+            dismiss();
+          }
+        }
+      );
+}
+
 ExtensionBar.addExtensionMenu({
 	"id": "diachron",
 	"label": "Quality",
@@ -60,7 +81,7 @@ ExtensionBar.addExtensionMenu({
 	  	 {
 			 "id":"diachron/improve",
 			        	 label: "Identify Quality Problems",
-			        	 click: function(){alert('Test2');}
+			        	 click: function(){identifyQualityProblems();}
 		}
 		]
 	 });
