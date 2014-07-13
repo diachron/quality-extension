@@ -15,9 +15,11 @@ import com.google.refine.commands.Command;
 import com.google.refine.model.Project;
 import com.google.refine.quality.utilities.LoadJenaModel;
 import com.google.refine.quality.utilities.Utilities;
+import com.google.refine.quality.metrics.AbstractQualityMetrics;
 import com.google.refine.quality.metrics.EmptyAnnotationValue;
 import com.google.refine.quality.metrics.IncompatibleDatatypeRange;
 import com.google.refine.quality.metrics.MalformedDatatypeLiterals;
+import com.google.refine.quality.metrics.MisplacedClassesOrProperties;
 import com.hp.hpl.jena.sparql.core.Quad;
 
 public class AssessQuality extends Command{
@@ -56,70 +58,16 @@ public class AssessQuality extends Command{
         return inputStream;
     }
     
-    
     /**
-     * process quads for EmptyAnnotationValue
+     * Process quads for given quality metric
      * 
-     * @param inputStream
-     */
-    protected void processForEmptyAnnotationValue(List<Quad> listQuad){
-        
-        EmptyAnnotationValue.loadAnnotationPropertiesSet(null);
-        
-        EmptyAnnotationValue emptyAnnotationValue = new EmptyAnnotationValue();
-        emptyAnnotationValue.compute(listQuad);
-        
-        if (emptyAnnotationValue.getQualityProblems().isEmpty())
-        {
-            System.out.println("No problem found for EmptyAnnotationValue");
-        }
-        else {
-            for (Quad quad : emptyAnnotationValue.getQualityProblems()){
-                Utilities.printQuad(quad, System.out);
-            }
-        }
-        
-        EmptyAnnotationValue.clearAnnotationPropertiesSet();
-    }
-    
-    /**
-     * process quads for Incompatiable Datatype Range
-     * 
+     * @param abstractQualityMetrics
      * @param listQuad
      */
-    protected void processForIncompatiableDatatypeRange(List<Quad> listQuad){
-        
-        IncompatibleDatatypeRange incompatibleDatatypeRange = new IncompatibleDatatypeRange();
-        incompatibleDatatypeRange.compute(listQuad);
-        
-        if (incompatibleDatatypeRange.getQualityProblems().isEmpty()){
-            System.out.println("No problem found for incompatibleDatatypeRange");
-        }
-        else {
-            for (Quad quad : incompatibleDatatypeRange.getQualityProblems()){
-                Utilities.printQuad(quad, System.out);
-            }
-        }
-        
-    }
-    
-    /**
-     * Process quads for MalformedDatatypeLiterals
-     * 
-     * @param is
-     */
-    protected void processForMalformedDatatypeLiterals(List<Quad> listQuad) {
-        
-        MalformedDatatypeLiterals malformedDatatypeLiterals = new MalformedDatatypeLiterals();
-        malformedDatatypeLiterals.compute(listQuad);
-        
-        if (malformedDatatypeLiterals.getQualityProblems().isEmpty()) {
-            System.out.println("No problem found for MalformedDatatypeLiterals");
-        }
-        else {
-            for (Quad quad : malformedDatatypeLiterals.getQualityProblems()){
-                Utilities.printQuad(quad, System.out);
-            }
+    protected void processMetric(AbstractQualityMetrics abstractQualityMetrics, List<Quad> listQuad){
+        abstractQualityMetrics.compute(listQuad);
+        for (Quad quad : abstractQualityMetrics.getQualityProblems()){
+            Utilities.printQuad(quad, System.out);
         }
     }
     
@@ -130,6 +78,9 @@ public class AssessQuality extends Command{
         
         try {
             
+            /** Pre-load Process **/
+            EmptyAnnotationValue.loadAnnotationPropertiesSet(null);
+             
             /** Get Projet Details **/
             
             // Retrieve project object
@@ -151,18 +102,21 @@ public class AssessQuality extends Command{
             
             /** Compute Metrics **/
             
-            // for Empty Annotation value 
-            processForEmptyAnnotationValue(listQuad);
+            // for Empty Annotation value
+            processMetric(new EmptyAnnotationValue(), listQuad);
             
             //TODO homogeneousDatatypes
             
             // for IncompatiableDatatypeRange
-            processForIncompatiableDatatypeRange(listQuad);
+            processMetric(new IncompatibleDatatypeRange(), listQuad);
             
             // for Malformed Datatype Literals
-            processForMalformedDatatypeLiterals(listQuad);
+            processMetric(new MalformedDatatypeLiterals(), listQuad);
             
             
+            
+            /** Post Process **/
+            EmptyAnnotationValue.clearAnnotationPropertiesSet();
             
         } catch (Exception e) {
             e.printStackTrace();
