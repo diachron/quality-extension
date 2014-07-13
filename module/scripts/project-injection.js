@@ -49,6 +49,78 @@ function assessQualityCommand() {
 			});
 }
 
+function renameThirdColumn() {
+	Refine.postCoreProcess(
+	        "rename-column", 
+	        {
+	          oldColumnName: "Column 2 3",
+	          newColumnName: "Object"
+	        },
+	        null,
+	        { modelsChanged: true },
+	        {
+	          onDone: function(o) {
+	          	console.log("success");
+	          	self._dismissBusy();
+	          }
+            }
+	        
+	      );
+}
+
+function renameSecondColumn() {
+	Refine.postCoreProcess(
+	        "rename-column", 
+	        {
+	          oldColumnName: "Column 2 2",
+	          newColumnName: "Predicate"
+	        },
+	        null,
+	        { modelsChanged: true },
+	        {
+	          onDone: function(o) {
+	          	renameThirdColumn();
+	          }
+            }
+	        
+	      );
+}
+
+
+function renameFirstColumn() {
+	Refine.postCoreProcess(
+	        "rename-column", 
+	        {
+	          oldColumnName: "Column 2 1",
+	          newColumnName: "Subject"
+	        },
+	        null,
+	        { modelsChanged: true },
+	        {
+	          onDone: function(o) {
+	          	renameSecondColumn();
+	          }
+            }
+	        
+	      );
+}
+
+function removeColumn() {
+	Refine.postCoreProcess(
+	      "remove-column", 
+	      {
+	        columnName: "Column 1"
+	      },
+	      null,
+	      { modelsChanged: true },
+	      {
+	          onDone: function(o) {
+	          	renameFirstColumn();
+	          }
+          }
+	    );
+}
+
 function splitColumn() {
 
 	var mode = "separator";
@@ -69,8 +141,7 @@ function splitColumn() {
         { modelsChanged: true },
         {
 	          onDone: function(o) {
-	          console.log("success");
-	          self._dismissBusy();  
+	          removeColumn();  
 	          }
         }
       );
