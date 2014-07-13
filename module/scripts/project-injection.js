@@ -35,6 +35,64 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 var SampleExtension = {};
 
+function assessQualityCommand() {
+
+	// Access the quality of data based on Column 1
+	$.post("command/quality-extension/assessQuality/",
+			{
+			"engine" : JSON.stringify(ui.browsingEngine.getJSON()),
+			"project": theProject.id
+			},
+			function (data)
+			{
+			console.log("success");	
+			});
+}
+
+function splitColumn() {
+
+	var mode = "separator";
+	var config = {
+        columnName: "Column 2",
+        mode: mode,
+        guessCellType: "false",
+        removeOriginalColumn: "true"
+      };
+	config.separator = "|&SPLIT&|";
+	config.regex = "false";
+	config.maxColumns = 3;
+	
+	Refine.postCoreProcess(
+        "split-column", 
+        config,
+        null,
+        { modelsChanged: true },
+        {
+	          onDone: function(o) {
+	          console.log("success");
+	          self._dismissBusy();  
+	          }
+        }
+      );
+
+}
+
+function transformDataCommand() {
+	
+	var self = this;
+	self._dismissBusy = DialogSystem.showBusy('Transforming data ...');
+	
+	$.post("command/quality-extension/transformData/",
+			{
+			"engine" : JSON.stringify(ui.browsingEngine.getJSON()),
+			"project": theProject.id
+			},
+			function (data)
+			{
+			splitColumn();	
+			});
+}
+
 function addNewColumnCommand() {
 	//Add new columns with blank values
 	Refine.postCoreProcess(
@@ -54,37 +112,6 @@ function addNewColumnCommand() {
           }
         }
       );
-}
-
-function assessQualityCommand() {
-
-	// Access the quality of data based on Column 1
-	$.post("command/quality-extension/assessQuality/",
-			{
-			"engine" : JSON.stringify(ui.browsingEngine.getJSON()),
-			"project": theProject.id
-			},
-			function (data)
-			{
-			console.log("success");	
-			});
-}
-
-function transformDataCommand() {
-	
-	var self = this;
-	self._dismissBusy = DialogSystem.showBusy('Transforming data ...');
-	
-	$.post("command/quality-extension/transformData/",
-			{
-			"engine" : JSON.stringify(ui.browsingEngine.getJSON()),
-			"project": theProject.id
-			},
-			function (data)
-			{
-			console.log("success");
-			self._dismissBusy();	
-			});
 }
 
 function assessQuality() {
