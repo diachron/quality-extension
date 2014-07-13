@@ -31,7 +31,7 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 public class VocabularyReader {
         
-        private static String modelsFolderPath = "../extensions/rdf-extension/resources/models";
+        private static String modelsFolderPath = "extensions/quality-extension/resources/models";
         
         private static Logger logger = Logger.getLogger(VocabularyReader.class);
         private static Hashtable<String, Model>vocabularies = new Hashtable<String, Model>();
