@@ -89,7 +89,7 @@ public class TransformData extends Command {
             for (Quad tmpQuad : listQuad) {
                 
                 int rowIndex = i;
-                int cellIndex = 1;
+                int cellIndex = 2;
 
                 String type = "String";
                 String valueString = tmpQuad.getSubject() + splitter + tmpQuad.getPredicate() + splitter + tmpQuad.getObject(); 
