@@ -231,11 +231,11 @@ function addNewColumnCommand() {
 }
 
 function assessQuality() {
-	addNewColumnCommand();
+	alert("Method not implemented");
 }
 
 function identifyQualityProblems() {
-	alert("Method not implemented");	
+	addNewColumnCommand();		
 }
 
 ExtensionBar.addExtensionMenu({
