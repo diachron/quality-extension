@@ -79,14 +79,15 @@ public class OntologyHijacking extends AbstractQualityMetrics{
          * Detects if filtered triples are already defined in vocabulary
          */
         @Override
-        public void compute(Quad quad) {
+        public void compute(Integer index, Quad quad) {
                 try {
                     if (isDefinedClassOrProperty(quad, "type")){ // quad represent a locally defined statement
                             this.totalLocallyDefinedClassesOrPropertiesCount++; // increments defined class or property count
                             Node subject = quad.getSubject(); // retrieve subject
                             if (isHijacked(subject)){ 
                                     this.hijackedClassesOrPropertiesCount++; // increments redefined class or property count
-                                    this.problemList.add(quad);
+                                    ReportProblems reportProblems = new ReportProblems(index, quad, "Class or properties is refined", "OntologyHijacking");
+                                    this.problemList.add(reportProblems);
                             }
                     }
                     else if (isDefinedClassOrProperty(quad, "domain")){ // quad represent a locally defined statement
@@ -94,7 +95,8 @@ public class OntologyHijacking extends AbstractQualityMetrics{
                             Node object = quad.getObject(); // retrieve object
                             if (isHijacked(object)){ 
                                     this.hijackedClassesOrPropertiesCount++; // increments redefined class or property count
-                                    this.problemList.add(quad);
+                                    ReportProblems reportProblems = new ReportProblems(index, quad, "Class or properties is refined", "OntologyHijacking");
+                                    this.problemList.add(reportProblems);
                             }
                     }
                 }

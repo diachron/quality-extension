@@ -34,7 +34,7 @@ public class MalformedDatatypeLiterals extends AbstractQualityMetrics{
 	 *            - to be identified
 	 */
 	@Override
-	public void compute(Quad quad) {
+	public void compute(Integer index, Quad quad) {
         
     		logger.trace("compute() --Started--");
     		// retrieves object from statement
@@ -48,7 +48,8 @@ public class MalformedDatatypeLiterals extends AbstractQualityMetrics{
     				logger.debug("RdfDataTypeLiteral :: " + object.toString());
     				if (!rdfdataType.isValidLiteral(object.getLiteral())) {
     					this.malformedLiterals++;
-    					this.problemList.add(quad);
+    					ReportProblems reportProblems = new ReportProblems(index, quad, "literals does not respect their defined data types", "MalformedDatatypeLiterals");
+    					this.problemList.add(reportProblems);
     					logger.debug("MalformedRDFDataTypeLiteral :: "
     							+ object.toString());
     				}

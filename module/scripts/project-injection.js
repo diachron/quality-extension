@@ -35,6 +35,42 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 var SampleExtension = {};
 
+function removeColumn() {
+	Refine.postCoreProcess(
+	      "remove-column", 
+	      {
+	        columnName: "Column 1"
+	      },
+	      null,
+	      { modelsChanged: true },
+	      {
+	          onDone: function(o) {
+	          	console.log("success");
+	          	self._dismissBusy();
+	          }
+          }
+	    );
+}
+
+function renameFourthColumn() {
+	Refine.postCoreProcess(
+	        "rename-column", 
+	        {
+	          oldColumnName: "Column 2",
+	          newColumnName: "Report Problem"
+	        },
+	        null,
+	        { modelsChanged: true },
+	        {
+	          onDone: function(o) {
+	          	removeColumn();
+	          }
+            }
+	        
+	      );
+}
+
+
 function renameThirdColumn() {
 	Refine.postCoreProcess(
 	        "rename-column", 
@@ -46,8 +82,7 @@ function renameThirdColumn() {
 	        { modelsChanged: true },
 	        {
 	          onDone: function(o) {
-	          	console.log("success");
-	          	self._dismissBusy();
+	          	renameFourthColumn();
 	          }
             }
 	        
@@ -90,23 +125,6 @@ function renameFirstColumn() {
 	        
 	      );
 }
-
-/*
-function removeColumn() {
-	Refine.postCoreProcess(
-	      "remove-column", 
-	      {
-	        columnName: "Column 1"
-	      },
-	      null,
-	      { modelsChanged: true },
-	      {
-	          onDone: function(o) {
-	          	renameFirstColumn();
-	          }
-          }
-	    );
-}*/
 
 function splitColumn() {
 

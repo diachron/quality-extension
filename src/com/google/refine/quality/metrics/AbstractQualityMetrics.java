@@ -11,7 +11,7 @@ public abstract class AbstractQualityMetrics {
        /**
         * list of problematic quad
         */
-        protected List<Quad> problemList = new ArrayList<Quad>();
+        protected List<ReportProblems> problemList = new ArrayList<ReportProblems>();
        /**
         * Returns value of the metric
         * 
@@ -25,15 +25,16 @@ public abstract class AbstractQualityMetrics {
          * 
          * @param quad
          */
-        public void compute(Quad quad) { }
+        public void compute(Integer index, Quad quad) { }
         /**
          * Computes metric Value
          * 
          * @param list of quad
          */
         public void compute (List<Quad> listQuad) {
+                Integer index = 0;
                 for(Quad quad : listQuad){
-                    this.compute(quad);
+                    this.compute(index++, quad);
                 }
         }
         /**
@@ -41,9 +42,9 @@ public abstract class AbstractQualityMetrics {
          * 
          * @return list of problematic quads
          */
-        public List<Quad> getQualityProblems() {
-            List<Quad> tmpProblemList = null;
-            tmpProblemList = new ArrayList<Quad>(this.problemList);
+        public List<ReportProblems> getQualityProblems() {
+            List<ReportProblems> tmpProblemList = null;
+            tmpProblemList = new ArrayList<ReportProblems>(this.problemList);
             return tmpProblemList;
         }
 }
