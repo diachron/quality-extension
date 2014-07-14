@@ -190,9 +190,26 @@ function addNewColumnCommand2() {
       );
 }
 
+function identifyQualityProblemsCommand() {
+	var self = this;
+	self._dismissBusy = DialogSystem.showBusy('Identifying quality problems ...');
+	// Access the quality of data based on Column 1
+	$.post("command/quality-extension/identifyQualityProblems/",
+			{
+			"engine" : JSON.stringify(ui.browsingEngine.getJSON()),
+			"project": theProject.id
+			},
+			function (data)
+			{
+			console.log("success");
+			self._dismissBusy();
+			addNewColumnCommand2();
+			});
+}
+
 function assessQualityCommand() {
 	var self = this;
-	self._dismissBusy = DialogSystem.showBusy('Assessing quality of data ...');
+	self._dismissBusy = DialogSystem.showBusy('Assessing Quality ...');
 	// Access the quality of data based on Column 1
 	$.post("command/quality-extension/assessQuality/",
 			{
@@ -205,11 +222,9 @@ function assessQualityCommand() {
 			self._dismissBusy();
 			addNewColumnCommand2();
 			});
-	self._dismissBusy();
 }
 
-
-function addNewColumnCommand() {
+function addNewColumnCommand(data) {
 	//Add new columns with blank values
 	Refine.postCoreProcess(
         "add-column", 
@@ -224,18 +239,23 @@ function addNewColumnCommand() {
         { modelsChanged: true },
         {
           onDone: function(o) {
-            assessQualityCommand();
+            if (data == "accessQuality"){
+            	assessQualityCommand();
+            }
+            else {
+            	identifyQualityProblemsCommand();
+            }
           }
         }
       );
 }
 
 function assessQuality() {
-	addNewColumnCommand();
+	addNewColumnCommand("accessQuality");
 }
 
 function identifyQualityProblems() {
-	alert("Method not implemented");	
+	addNewColumnCommand("identifyQualityProblems");		
 }
 
 ExtensionBar.addExtensionMenu({

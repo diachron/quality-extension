@@ -33,7 +33,7 @@ import com.google.refine.util.ParsingUtilities;
 import com.google.refine.util.Pool;
 import com.hp.hpl.jena.sparql.core.Quad;
 
-public class AssessQuality extends Command{
+public class IdentifyQualityProblems extends Command{
     
     protected void writeProblemicQuads(HttpServletRequest request, HttpServletResponse response, List<ReportProblems> reportProblemsList) throws ServletException {
         try {
@@ -203,8 +203,8 @@ public class AssessQuality extends Command{
             processMetric(request, response, new MalformedDatatypeLiterals(), listQuad);
             
             
-            // for MisplacedClassesOrProperties - DISABLE B/C TAKES TOO MUCH TIME
-            ////processMetric(request, response, new MisplacedClassesOrProperties(), listQuad);
+            // for MisplacedClassesOrProperties -- DISABLE B/C TAKES TOO MUCH TIME
+            ///processMetric(request, response, new MisplacedClassesOrProperties(), listQuad);
             
             // for MisusedOwlDatatypeOrObjectProperties
             MisusedOwlDatatypeOrObjectProperties.filterAllOwlProperties(listQuad); //Pre-Process
