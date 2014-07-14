@@ -2,6 +2,7 @@ package com.google.refine.quality.metrics;
 
 import org.apache.log4j.Logger;
 
+import com.google.refine.quality.utilities.ProcessProblemProperties;
 import com.hp.hpl.jena.sparql.core.Quad;
 
 public class HelloWorldMetrics extends AbstractQualityMetrics{
@@ -18,6 +19,10 @@ public class HelloWorldMetrics extends AbstractQualityMetrics{
      * total number of malformed literals
      */
     private double helloWorldLiterals = 0;
+    
+    public HelloWorldMetrics() {
+        
+    }
     /**
      * This method does nothing. Its a test metrics
      * 
@@ -30,7 +35,7 @@ public class HelloWorldMetrics extends AbstractQualityMetrics{
             logger.trace("compute() --Started--");
             this.totalLiterals++;
             this.helloWorldLiterals++;
-            ReportProblems reportProblems = new ReportProblems(index, quad, "hello world problem", "hello world metric");
+            ReportProblems reportProblems = new ReportProblems(index, quad, ProcessProblemProperties.getProblemMessage(this.getClass().getName()), this.getClass().getName());
             this.problemList.add(reportProblems);
             logger.trace("compute() --Ended--");
     }

@@ -11,6 +11,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.apache.xerces.util.URI;
 
+import com.google.refine.quality.utilities.ProcessProblemProperties;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.sparql.core.Quad;
 
@@ -108,7 +109,7 @@ public class WhitespaceInAnnotation extends AbstractQualityMetrics{
                                             if (trimValue != null && !trimValue.isEmpty()) { // check if object's value is null or empty
                                                     if (value.length() != trimValue.length()){ // compare length of both string
                                                         this.totalNumberOfWhitespaceLiterals++; // increment whitespace literal count
-                                                        ReportProblems reportProblems = new ReportProblems(index, quad, "White space found in literal", "WhitespaceInAnnotation");
+                                                        ReportProblems reportProblems = new ReportProblems(index, quad, ProcessProblemProperties.getProblemMessage(this.getClass().getName()), this.getClass().getName());
                                                         this.problemList.add(reportProblems); // add invalid quad in problem list
                                                     }
                                             } 

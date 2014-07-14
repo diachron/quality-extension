@@ -1,0 +1,8 @@
+com.google.refine.quality.metrics.EmptyAnnotationValue = The value is empty.
+com.google.refine.quality.metrics.HelloworldMetric = hello world problem.
+com.google.refine.quality.metrics.IncompatibleDatatypeRange = Data type range is not compatible.
+com.google.refine.quality.metrics.MalformedDatatypeLiterals = Literals does not respect their defined data types.
+com.google.refine.quality.metrics.MisplacedClassesOrProperties = Classes or properties are misplaced.
+com.google.refine.quality.metrics.MisusedOwlDatatypeOrObjectProperties = Owl data type or object property is miss used.
+com.google.refine.quality.metrics.OntologyHijacking = Class or properties is refined.
+com.google.refine.quality.metrics.WhitespaceInAnnotation = Leading or ending white space found in the object's literal value.

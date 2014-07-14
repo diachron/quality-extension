@@ -11,6 +11,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.apache.xerces.util.URI;
 
+import com.google.refine.quality.utilities.ProcessProblemProperties;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.sparql.core.Quad;
 
@@ -119,7 +120,7 @@ public class EmptyAnnotationValue extends AbstractQualityMetrics{
                             
                             if (isEmptyLiteral) {
                                     this.totalNumberOfEmptyLiterals++; // increment empty literal count
-                                    ReportProblems reportProblems = new ReportProblems(index, quad, "The value is empty", "EmptyAnnotationValue");
+                                    ReportProblems reportProblems = new ReportProblems(index, quad, ProcessProblemProperties.getProblemMessage(this.getClass().getName()), this.getClass().getName());
                                     this.problemList.add(reportProblems); // add invalid quad in problem list
                             }
                     }
