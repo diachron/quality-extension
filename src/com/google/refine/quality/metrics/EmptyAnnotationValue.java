@@ -94,7 +94,7 @@ public class EmptyAnnotationValue extends AbstractQualityMetrics{
          *    
          */
         @Override
-        public void compute(Quad quad) {
+        public void compute(Integer index, Quad quad) {
             try {
                 Node predicate = quad.getPredicate();
                 if (predicate.isURI()){ // check is the predicate is URI or not
@@ -119,7 +119,8 @@ public class EmptyAnnotationValue extends AbstractQualityMetrics{
                             
                             if (isEmptyLiteral) {
                                     this.totalNumberOfEmptyLiterals++; // increment empty literal count
-                                    this.problemList.add(quad); // add invalid quad in problem list
+                                    ReportProblems reportProblems = new ReportProblems(index, quad, "The value is empty", "EmptyAnnotationValue");
+                                    this.problemList.add(reportProblems); // add invalid quad in problem list
                             }
                     }
                 }

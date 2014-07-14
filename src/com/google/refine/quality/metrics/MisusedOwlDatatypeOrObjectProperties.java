@@ -167,7 +167,7 @@ public class MisusedOwlDatatypeOrObjectProperties extends AbstractQualityMetrics
          *            - to be identified
          */
         @Override
-        public void compute(Quad quad) {
+        public void compute(Integer index, Quad quad) {
 
             logger.trace("compute() --Started--");
 
@@ -181,7 +181,8 @@ public class MisusedOwlDatatypeOrObjectProperties extends AbstractQualityMetrics
                     this.totalDatatypeProperties++;
                     if (!object.isLiteral()) {
                         this.misuseDatatypeProperties++;
-                        this.problemList.add(quad);
+                        ReportProblems reportProblems = new ReportProblems(index, quad, "Owl datatype or object properties are missused", "MisusedOwlDatatypeOrObjectProperties"); 
+                        this.problemList.add(reportProblems);
                     }
                 }
                 // owl:ObjectProperty relates some resource another resource
@@ -190,7 +191,8 @@ public class MisusedOwlDatatypeOrObjectProperties extends AbstractQualityMetrics
                     this.totalObjectProperties++;
                     if (!object.isURI()) {
                         this.misuseObjectProperties++;
-                        this.problemList.add(quad);
+                        ReportProblems reportProblems = new ReportProblems(index, quad, "Owl datatype or object properties are missused", "MisusedOwlDatatypeOrObjectProperties");
+                        this.problemList.add(reportProblems);
                     }
                 }
             } catch (Exception exception) {

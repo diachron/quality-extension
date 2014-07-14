@@ -25,12 +25,13 @@ public class HelloWorldMetrics extends AbstractQualityMetrics{
      *            - to be identified
      */
     @Override
-    public void compute(Quad quad) {
+    public void compute(Integer index, Quad quad) {
     
             logger.trace("compute() --Started--");
             this.totalLiterals++;
             this.helloWorldLiterals++;
-            this.problemList.add(quad);
+            ReportProblems reportProblems = new ReportProblems(index, quad, "hello world problem", "hello world metric");
+            this.problemList.add(reportProblems);
             logger.trace("compute() --Ended--");
     }
 

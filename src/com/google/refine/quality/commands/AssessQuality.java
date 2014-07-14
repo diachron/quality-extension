@@ -28,6 +28,7 @@ import com.google.refine.quality.metrics.MalformedDatatypeLiterals;
 import com.google.refine.quality.metrics.MisplacedClassesOrProperties;
 import com.google.refine.quality.metrics.MisusedOwlDatatypeOrObjectProperties;
 import com.google.refine.quality.metrics.OntologyHijacking;
+import com.google.refine.quality.metrics.ReportProblems;
 import com.google.refine.quality.metrics.WhitespaceInAnnotation;
 import com.google.refine.util.ParsingUtilities;
 import com.google.refine.util.Pool;
@@ -35,9 +36,9 @@ import com.hp.hpl.jena.sparql.core.Quad;
 
 public class AssessQuality extends Command{
     
-    protected void writeProblemicQuads(HttpServletRequest request, HttpServletResponse response, List<Quad> listQuad) throws ServletException {
+    protected void writeProblemicQuads(HttpServletRequest request, HttpServletResponse response, List<ReportProblems> reportProblemsList) throws ServletException {
         try {
-            String splitter = "|";
+
             /** Get Projet Details **/
             
             // Retrieve project object
@@ -47,14 +48,19 @@ public class AssessQuality extends Command{
             EditOneCellProcess process = null;
             HistoryEntry historyEntry = null;
 
-            for (Quad tmpQuad : listQuad) {
+            for (ReportProblems reportProblem : reportProblemsList) {
 
-                int rowIndex = i;
+                int rowIndex = reportProblem.get_rowIndex();
                 int cellIndex = 1;
 
                 String type = "String";
-                String valueString = tmpQuad.getSubject() + splitter + tmpQuad.getPredicate() + splitter
-                        + tmpQuad.getObject();
+                String valueString = "";
+                if (null != project.rows.get(rowIndex).getCell(1)){
+                valueString = project.rows.get(rowIndex).getCell(1) + "\n" + reportProblem.get_problemType() + "[ " + reportProblem.get_sourceMetric() + " ]";
+                }
+                else {
+                    valueString = reportProblem.get_problemType() + "[ " + reportProblem.get_sourceMetric() + " ]";
+                }
                 Serializable value = null;
 
                 if ("number".equals(type)) {
@@ -70,7 +76,6 @@ public class AssessQuality extends Command{
                 process = new EditOneCellProcess(project, "Edit single cell", rowIndex, cellIndex, value);
 
                 historyEntry = project.processManager.queueProcess(process);
-                i++;
             }
 
             if (historyEntry != null) {
@@ -187,37 +192,38 @@ public class AssessQuality extends Command{
             
             
             /** Compute Metrics **/
-            processMetric(request,response,new HelloWorldMetrics(), listQuad);
-            /******************************************************
+            // for Hello World Meric -- DEBUG ONLY
+            //processMetric(request, response, new HelloWorldMetrics(), listQuad);
+            
             // for Empty Annotation value
             EmptyAnnotationValue.loadAnnotationPropertiesSet(null); // Pre-Process
-            processMetric(new EmptyAnnotationValue(), listQuad);
+            processMetric(request, response, new EmptyAnnotationValue(), listQuad);
             EmptyAnnotationValue.clearAnnotationPropertiesSet(); //Post-Process
-            
+            /******************************************************
             //TODO homogeneousDatatypes
             
             // for IncompatiableDatatypeRange
-            processMetric(new IncompatibleDatatypeRange(), listQuad);
+            processMetric(request, response, new IncompatibleDatatypeRange(), listQuad);
             IncompatibleDatatypeRange.clearCache(); //Post-Process
             
             // for Malformed Datatype Literals
-            processMetric(new MalformedDatatypeLiterals(), listQuad);
+            processMetric(request, response, new MalformedDatatypeLiterals(), listQuad);
             
             
             // for MisplacedClassesOrProperties
-            processMetric(new MisplacedClassesOrProperties(), listQuad);
+            processMetric(request, response, new MisplacedClassesOrProperties(), listQuad);
             
             // for MisusedOwlDatatypeOrObjectProperties
             MisusedOwlDatatypeOrObjectProperties.filterAllOwlProperties(listQuad); //Pre-Process
-            processMetric(new MisusedOwlDatatypeOrObjectProperties(), listQuad);
+            processMetric(request, response, new MisusedOwlDatatypeOrObjectProperties(), listQuad);
             MisusedOwlDatatypeOrObjectProperties.clearAllOwlPropertiesList(); //Post-Process
             
             // for OntologyHijacking
-            processMetric(new OntologyHijacking(), listQuad);
+            processMetric(request, response, new OntologyHijacking(), listQuad);
             
             // for WhitespaceInAnnotation
             WhitespaceInAnnotation.loadAnnotationPropertiesSet(null); //Pre-Process
-            processMetric(new WhitespaceInAnnotation(), listQuad);
+            processMetric(request, response, new WhitespaceInAnnotation(), listQuad);
             WhitespaceInAnnotation.clearAnnotationPropertiesSet(); //Post-Process
             ******************************************************/
         } catch (Exception e) {

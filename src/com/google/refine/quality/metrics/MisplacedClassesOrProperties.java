@@ -49,7 +49,7 @@ public class MisplacedClassesOrProperties extends AbstractQualityMetrics{
          *            - to be identified
          */
         @Override
-        public void compute(Quad quad) {
+        public void compute(Integer index, Quad quad) {
             logger.trace("compute() --Started--");
 
             try {
@@ -76,7 +76,8 @@ public class MisplacedClassesOrProperties extends AbstractQualityMetrics{
                                 logger.debug("Misplace Class Found in Subject::"
                                         + subject);
                                 this.misplacedClassesCount++;
-                                this.problemList.add(quad);
+                                ReportProblems reportProblems = new ReportProblems(index, quad, "Classes or properties are misplaced", "MisplacedClassesOrProperties");
+                                this.problemList.add(reportProblems);
                             }
                         }
                     }
@@ -102,7 +103,8 @@ public class MisplacedClassesOrProperties extends AbstractQualityMetrics{
                                 logger.debug("Misplace Property Found in Predicate ::"
                                         + predicate);
                                 this.misplacedPropertiesCount++;
-                                this.problemList.add(quad);
+                                ReportProblems reportProblems = new ReportProblems(index, quad, "Classes or properties are misplaced", "MisplacedClassesOrProperties");
+                                this.problemList.add(reportProblems);
                             }
                         }
                     }
@@ -127,7 +129,8 @@ public class MisplacedClassesOrProperties extends AbstractQualityMetrics{
                                 logger.debug("Misplace Class Found in Object ::"
                                         + object);
                                 this.misplacedClassesCount++;
-                                this.problemList.add(quad);
+                                ReportProblems reportProblems = new ReportProblems(index, quad, "Classes or properties are misplaced", "MisplacedClassesOrProperties");
+                                this.problemList.add(reportProblems);
                             }
                         }
                     }

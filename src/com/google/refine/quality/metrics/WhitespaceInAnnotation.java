@@ -94,7 +94,7 @@ public class WhitespaceInAnnotation extends AbstractQualityMetrics{
          *    
          */
         @Override
-        public void compute(Quad quad) {
+        public void compute(Integer index, Quad quad) {
                 try {
                         Node predicate = quad.getPredicate();
                         if (predicate.isURI()){ // check is the predicate is URI or not
@@ -108,7 +108,8 @@ public class WhitespaceInAnnotation extends AbstractQualityMetrics{
                                             if (trimValue != null && !trimValue.isEmpty()) { // check if object's value is null or empty
                                                     if (value.length() != trimValue.length()){ // compare length of both string
                                                         this.totalNumberOfWhitespaceLiterals++; // increment whitespace literal count
-                                                        this.problemList.add(quad); // add invalid quad in problem list
+                                                        ReportProblems reportProblems = new ReportProblems(index, quad, "White space found in literal", "WhitespaceInAnnotation");
+                                                        this.problemList.add(reportProblems); // add invalid quad in problem list
                                                     }
                                             } 
                                     }
