@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import com.google.refine.quality.utilities.ProcessProblemProperties;
 import com.google.refine.quality.utilities.VocabularyReader;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
@@ -181,7 +182,7 @@ public class MisusedOwlDatatypeOrObjectProperties extends AbstractQualityMetrics
                     this.totalDatatypeProperties++;
                     if (!object.isLiteral()) {
                         this.misuseDatatypeProperties++;
-                        ReportProblems reportProblems = new ReportProblems(index, quad, "Owl datatype or object properties are missused", "MisusedOwlDatatypeOrObjectProperties"); 
+                        ReportProblems reportProblems = new ReportProblems(index, quad, ProcessProblemProperties.getProblemMessage(this.getClass().getName()), this.getClass().getName()); 
                         this.problemList.add(reportProblems);
                     }
                 }
@@ -191,7 +192,7 @@ public class MisusedOwlDatatypeOrObjectProperties extends AbstractQualityMetrics
                     this.totalObjectProperties++;
                     if (!object.isURI()) {
                         this.misuseObjectProperties++;
-                        ReportProblems reportProblems = new ReportProblems(index, quad, "Owl datatype or object properties are missused", "MisusedOwlDatatypeOrObjectProperties");
+                        ReportProblems reportProblems = new ReportProblems(index, quad, ProcessProblemProperties.getProblemMessage(this.getClass().getName()), this.getClass().getName());
                         this.problemList.add(reportProblems);
                     }
                 }

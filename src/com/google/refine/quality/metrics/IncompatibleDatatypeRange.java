@@ -7,8 +7,10 @@ import java.util.Map;
 
 
 
+
 import org.apache.log4j.Logger;
 
+import com.google.refine.quality.utilities.ProcessProblemProperties;
 import com.google.refine.quality.utilities.VocabularyReader;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
@@ -173,7 +175,7 @@ public class IncompatibleDatatypeRange extends AbstractQualityMetrics{
                                                 givenObjectDateTypeURI,
                                                 rangeObjectURI)) {
                                             this.incompatiableDataTypeLiterals++;
-                                            ReportProblems reportProblems = new ReportProblems(index, quad, "data type range is not compitable", "IncompatibleDatatypeRange");
+                                            ReportProblems reportProblems = new ReportProblems(index, quad, ProcessProblemProperties.getProblemMessage(this.getClass().getName()), this.getClass().getName());
                                             this.problemList.add(reportProblems);
                                         }
                                     } catch (URISyntaxException e) {

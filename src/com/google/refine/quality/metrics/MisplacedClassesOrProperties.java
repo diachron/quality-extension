@@ -3,6 +3,7 @@ package com.google.refine.quality.metrics;
 
 import org.apache.log4j.Logger;
 
+import com.google.refine.quality.utilities.ProcessProblemProperties;
 import com.google.refine.quality.utilities.VocabularyReader;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -76,7 +77,7 @@ public class MisplacedClassesOrProperties extends AbstractQualityMetrics{
                                 logger.debug("Misplace Class Found in Subject::"
                                         + subject);
                                 this.misplacedClassesCount++;
-                                ReportProblems reportProblems = new ReportProblems(index, quad, "Classes or properties are misplaced", "MisplacedClassesOrProperties");
+                                ReportProblems reportProblems = new ReportProblems(index, quad, ProcessProblemProperties.getProblemMessage(this.getClass().getName()), this.getClass().getName());
                                 this.problemList.add(reportProblems);
                             }
                         }
@@ -103,7 +104,7 @@ public class MisplacedClassesOrProperties extends AbstractQualityMetrics{
                                 logger.debug("Misplace Property Found in Predicate ::"
                                         + predicate);
                                 this.misplacedPropertiesCount++;
-                                ReportProblems reportProblems = new ReportProblems(index, quad, "Classes or properties are misplaced", "MisplacedClassesOrProperties");
+                                ReportProblems reportProblems = new ReportProblems(index, quad, ProcessProblemProperties.getProblemMessage(this.getClass().getName()), this.getClass().getName());
                                 this.problemList.add(reportProblems);
                             }
                         }
@@ -129,7 +130,7 @@ public class MisplacedClassesOrProperties extends AbstractQualityMetrics{
                                 logger.debug("Misplace Class Found in Object ::"
                                         + object);
                                 this.misplacedClassesCount++;
-                                ReportProblems reportProblems = new ReportProblems(index, quad, "Classes or properties are misplaced", "MisplacedClassesOrProperties");
+                                ReportProblems reportProblems = new ReportProblems(index, quad, ProcessProblemProperties.getProblemMessage(this.getClass().getName()), this.getClass().getName());
                                 this.problemList.add(reportProblems);
                             }
                         }
