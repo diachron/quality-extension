@@ -55,11 +55,11 @@ public class AssessQuality extends Command{
 
                 String type = "String";
                 String valueString = "";
-                if (null != project.rows.get(rowIndex).getCell(1)){
-                valueString = project.rows.get(rowIndex).getCell(1) + "\n" + reportProblem.get_problemType() + "[ " + reportProblem.get_sourceMetric() + " ]";
+                if (null != project.rows.get(rowIndex).getCell(1) && !project.rows.get(rowIndex).getCell(1).toString().trim().isEmpty()){
+                valueString =  project.rows.get(rowIndex).getCell(1) + " , " + reportProblem.get_sourceMetric() + " :: " + reportProblem.get_problemType();
                 }
                 else {
-                    valueString = reportProblem.get_problemType() + "[ " + reportProblem.get_sourceMetric() + " ]";
+                    valueString = reportProblem.get_sourceMetric()+ " :: " + reportProblem.get_problemType();
                 }
                 Serializable value = null;
 
@@ -199,7 +199,7 @@ public class AssessQuality extends Command{
             EmptyAnnotationValue.loadAnnotationPropertiesSet(null); // Pre-Process
             processMetric(request, response, new EmptyAnnotationValue(), listQuad);
             EmptyAnnotationValue.clearAnnotationPropertiesSet(); //Post-Process
-            /******************************************************
+
             //TODO homogeneousDatatypes
             
             // for IncompatiableDatatypeRange
@@ -211,12 +211,12 @@ public class AssessQuality extends Command{
             
             
             // for MisplacedClassesOrProperties
-            processMetric(request, response, new MisplacedClassesOrProperties(), listQuad);
+            ///processMetric(request, response, new MisplacedClassesOrProperties(), listQuad);
             
             // for MisusedOwlDatatypeOrObjectProperties
-            MisusedOwlDatatypeOrObjectProperties.filterAllOwlProperties(listQuad); //Pre-Process
-            processMetric(request, response, new MisusedOwlDatatypeOrObjectProperties(), listQuad);
-            MisusedOwlDatatypeOrObjectProperties.clearAllOwlPropertiesList(); //Post-Process
+            ///MisusedOwlDatatypeOrObjectProperties.filterAllOwlProperties(listQuad); //Pre-Process
+            ///processMetric(request, response, new MisusedOwlDatatypeOrObjectProperties(), listQuad);
+            ///MisusedOwlDatatypeOrObjectProperties.clearAllOwlPropertiesList(); //Post-Process
             
             // for OntologyHijacking
             processMetric(request, response, new OntologyHijacking(), listQuad);
@@ -225,7 +225,7 @@ public class AssessQuality extends Command{
             WhitespaceInAnnotation.loadAnnotationPropertiesSet(null); //Pre-Process
             processMetric(request, response, new WhitespaceInAnnotation(), listQuad);
             WhitespaceInAnnotation.clearAnnotationPropertiesSet(); //Post-Process
-            ******************************************************/
+
         } catch (Exception e) {
             e.printStackTrace();
         }
