@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONWriter;
 
-import com.google.refine.browsing.Engine;
 import com.google.refine.commands.Command;
 import com.google.refine.history.HistoryEntry;
 import com.google.refine.model.Project;
@@ -158,10 +157,6 @@ public class AssessQuality extends Command{
             System.out.println("No problem found for " + abstractQualityMetrics.getClass());
         }
         else {
-            /*
-            for (Quad quad : abstractQualityMetrics.getQualityProblems()){
-                Utilities.printQuad(quad, System.out);
-            }*/
             writeProblemicQuads(request, response, abstractQualityMetrics.getQualityProblems());
         }
     }
@@ -176,9 +171,7 @@ public class AssessQuality extends Command{
             // Retrieve project object
             Project project = getProject(request);
 
-            /** For Debug Only **/
-            
-            //List all Statemtents loaded in model 
+            //List all Statemtents loaded in model -- DEBUG ONLY 
             //Utilities.printStatements(LoadJenaModel.getModel(retrieveRDFData(project)).listStatements(), System.out);
             
             /** Get Project Data **/
@@ -211,12 +204,12 @@ public class AssessQuality extends Command{
             
             
             // for MisplacedClassesOrProperties
-            ///processMetric(request, response, new MisplacedClassesOrProperties(), listQuad);
+            processMetric(request, response, new MisplacedClassesOrProperties(), listQuad);
             
             // for MisusedOwlDatatypeOrObjectProperties
-            ///MisusedOwlDatatypeOrObjectProperties.filterAllOwlProperties(listQuad); //Pre-Process
-            ///processMetric(request, response, new MisusedOwlDatatypeOrObjectProperties(), listQuad);
-            ///MisusedOwlDatatypeOrObjectProperties.clearAllOwlPropertiesList(); //Post-Process
+            MisusedOwlDatatypeOrObjectProperties.filterAllOwlProperties(listQuad); //Pre-Process
+            processMetric(request, response, new MisusedOwlDatatypeOrObjectProperties(), listQuad);
+            MisusedOwlDatatypeOrObjectProperties.clearAllOwlPropertiesList(); //Post-Process
             
             // for OntologyHijacking
             processMetric(request, response, new OntologyHijacking(), listQuad);
