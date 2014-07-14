@@ -98,16 +98,16 @@ public class AssessQuality extends Command{
             Utilities.printStatements(LoadJenaModel.getModel(retrieveRDFData(project)).listStatements(), System.out);
             
             /** Get Project Data **/
-            
+            /******************************************************
             // Retrieve rdf data from project
             InputStream inputStream = retrieveRDFData(project);
             // Retrieve all quad in model
             List<Quad> listQuad = LoadJenaModel.getQuads(inputStream);
             // Close input stream
             inputStream.close();
-            
+            /******************************************************
             /** Compute Metrics **/
-            
+            /******************************************************
             // for Empty Annotation value
             EmptyAnnotationValue.loadAnnotationPropertiesSet(null); // Pre-Process
             processMetric(new EmptyAnnotationValue(), listQuad);
@@ -138,7 +138,7 @@ public class AssessQuality extends Command{
             WhitespaceInAnnotation.loadAnnotationPropertiesSet(null); //Pre-Process
             processMetric(new WhitespaceInAnnotation(), listQuad);
             WhitespaceInAnnotation.clearAnnotationPropertiesSet(); //Post-Process
-
+            ******************************************************/
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -35,25 +35,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 var SampleExtension = {};
 
-function assessQualityCommand() {
-
-	// Access the quality of data based on Column 1
-	$.post("command/quality-extension/assessQuality/",
-			{
-			"engine" : JSON.stringify(ui.browsingEngine.getJSON()),
-			"project": theProject.id
-			},
-			function (data)
-			{
-			console.log("success");	
-			});
-}
-
 function renameThirdColumn() {
 	Refine.postCoreProcess(
 	        "rename-column", 
 	        {
-	          oldColumnName: "Column 2 3",
+	          oldColumnName: "Column 3 3",
 	          newColumnName: "Object"
 	        },
 	        null,
@@ -72,7 +58,7 @@ function renameSecondColumn() {
 	Refine.postCoreProcess(
 	        "rename-column", 
 	        {
-	          oldColumnName: "Column 2 2",
+	          oldColumnName: "Column 3 2",
 	          newColumnName: "Predicate"
 	        },
 	        null,
@@ -91,7 +77,7 @@ function renameFirstColumn() {
 	Refine.postCoreProcess(
 	        "rename-column", 
 	        {
-	          oldColumnName: "Column 2 1",
+	          oldColumnName: "Column 3 1",
 	          newColumnName: "Subject"
 	        },
 	        null,
@@ -105,6 +91,7 @@ function renameFirstColumn() {
 	      );
 }
 
+/*
 function removeColumn() {
 	Refine.postCoreProcess(
 	      "remove-column", 
@@ -119,13 +106,13 @@ function removeColumn() {
 	          }
           }
 	    );
-}
+}*/
 
 function splitColumn() {
 
 	var mode = "separator";
 	var config = {
-        columnName: "Column 2",
+        columnName: "Column 3",
         mode: mode,
         guessCellType: "false",
         removeOriginalColumn: "true"
@@ -141,7 +128,7 @@ function splitColumn() {
         { modelsChanged: true },
         {
 	          onDone: function(o) {
-	          removeColumn();  
+	          renameFirstColumn();  
 	          }
         }
       );
@@ -164,6 +151,46 @@ function transformDataCommand() {
 			});
 }
 
+function addNewColumnCommand2() {
+	//Add new columns with blank values
+	Refine.postCoreProcess(
+        "add-column", 
+        {
+          baseColumnName: "Column 1", 
+          expression: "value.replace(/(?s).*/, \"\")", 
+          newColumnName: "Column 3", 
+          columnInsertIndex: 1,
+          onError: "set-to-blank"
+        },
+        null,
+        { modelsChanged: true },
+        {
+          onDone: function(o) {
+            transformDataCommand();
+          }
+        }
+      );
+}
+
+function assessQualityCommand() {
+	var self = this;
+	self._dismissBusy = DialogSystem.showBusy('Assessing quality of data ...');
+	// Access the quality of data based on Column 1
+	$.post("command/quality-extension/assessQuality/",
+			{
+			"engine" : JSON.stringify(ui.browsingEngine.getJSON()),
+			"project": theProject.id
+			},
+			function (data)
+			{
+			console.log("success");
+			self._dismissBusy();
+			addNewColumnCommand2();
+			});
+	self._dismissBusy();
+}
+
+
 function addNewColumnCommand() {
 	//Add new columns with blank values
 	Refine.postCoreProcess(
@@ -179,7 +206,7 @@ function addNewColumnCommand() {
         { modelsChanged: true },
         {
           onDone: function(o) {
-            transformDataCommand();
+            assessQualityCommand();
           }
         }
       );
@@ -190,30 +217,7 @@ function assessQuality() {
 }
 
 function identifyQualityProblems() {
-
-	var self = this;
-	self._dismissBusy = DialogSystem.showBusy('Identifying quality problems of rdf data set ...');
-		
-	Refine.postCoreProcess(
-	        "add-column", 
-	        {
-	          baseColumnName: "Column 1", 
-	          expression: "value.replace(/(?s).*/, \"\")", 
-	          newColumnName: "Column 2", 
-	          columnInsertIndex: 1,
-	          onError: "set-to-blank"
-	        },
-	        null,
-	        { modelsChanged: true },
-	        {
-	          onDone: function(o) {
-	            dismiss();
-	          }
-	        }
-	      );
-      
-	self._dismissBusy();
-
+	alert("Method not implemented");	
 }
 
 ExtensionBar.addExtensionMenu({
