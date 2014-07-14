@@ -203,7 +203,7 @@ public class AssessQuality extends Command{
             processMetric(request, response, new MalformedDatatypeLiterals(), listQuad);
             
             
-            // for MisplacedClassesOrProperties - DISABLE B/C TAKES TOO MUCH TIME
+            // for MisplacedClassesOrProperties -- DISABLE B/C TAKES TOO MUCH TIME
             ////processMetric(request, response, new MisplacedClassesOrProperties(), listQuad);
             
             // for MisusedOwlDatatypeOrObjectProperties

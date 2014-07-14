@@ -35,6 +35,21 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 var SampleExtension = {};
 
+function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for(var i=0; i<ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1);
+        if (c.indexOf(name) != -1) return c.substring(name.length,c.length);
+    }
+    return "";
+}
+
+function setCookie(cname, cvalue) {
+    document.cookie = cname + "=" + cvalue + "; ";
+}
+
 function removeColumn() {
 	Refine.postCoreProcess(
 	      "remove-column", 
@@ -251,11 +266,21 @@ function addNewColumnCommand(data) {
 }
 
 function assessQuality() {
-	addNewColumnCommand("accessQuality");
+	if ("" == getCookie(theProject.id + "IsProcessed")) {
+		setCookie(theProject.id + "IsProcessed" ,"true");
+		addNewColumnCommand("accessQuality");
+	} else {
+		alert("Quality is already processed.");
+	}
 }
 
 function identifyQualityProblems() {
-	addNewColumnCommand("identifyQualityProblems");		
+	if ("" == getCookie(theProject.id + "IsProcessed")) {
+		setCookie(theProject.id + "IsProcessed","true");
+		addNewColumnCommand("identifyQualityProblems");
+	} else {
+		alert("Quality is already processed.");
+	}		
 }
 
 ExtensionBar.addExtensionMenu({
