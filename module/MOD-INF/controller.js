@@ -48,6 +48,7 @@ function init() {
    * Commands
    */
   RefineServlet.registerCommand(module, "assessQuality", new AssessQuality());
+  RefineServlet.registerCommand(module, "identifyQualityProblems", new IdentifyQualityProblems()); 
   RefineServlet.registerCommand(module, "transformData", new TransformData());
   
   var ClientSideResourceManager = Packages.com.google.refine.ClientSideResourceManager;	
