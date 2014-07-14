@@ -47,7 +47,10 @@ function getCookie(cname) {
 }
 
 function setCookie(cname, cvalue) {
-    document.cookie = cname + "=" + cvalue + "; ";
+    var d = new Date();
+    d.setTime(d.getTime() + (365*24*60*60*1000));
+    var expires = "expires="+d.toGMTString();
+    document.cookie = cname + "=" + cvalue + "; " + expires;
 }
 
 function removeColumn() {
