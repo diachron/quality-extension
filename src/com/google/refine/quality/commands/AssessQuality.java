@@ -52,6 +52,8 @@ public class AssessQuality extends Command{
 
             for (ReportProblems reportProblem : reportProblemsList) {
 
+                if (reportProblemsList.size() < reportProblem.get_rowIndex()) {
+                    
                 int rowIndex = reportProblem.get_rowIndex();
                 int cellIndex = 1;
 
@@ -78,6 +80,8 @@ public class AssessQuality extends Command{
                 process = new EditOneCellProcess(project, "Edit single cell", rowIndex, cellIndex, value);
 
                 historyEntry = project.processManager.queueProcess(process);
+                
+                }
             }
 
             if (historyEntry != null) {
@@ -207,7 +211,7 @@ public class AssessQuality extends Command{
             
             
             // for MisplacedClassesOrProperties -- DISABLE B/C TAKES TOO MUCH TIME
-            ////processMetric(request, response, new MisplacedClassesOrProperties(), listQuad);
+            processMetric(request, response, new MisplacedClassesOrProperties(), listQuad);
             
             // for MisusedOwlDatatypeOrObjectProperties
             MisusedOwlDatatypeOrObjectProperties.filterAllOwlProperties(listQuad); //Pre-Process
@@ -215,7 +219,7 @@ public class AssessQuality extends Command{
             MisusedOwlDatatypeOrObjectProperties.clearAllOwlPropertiesList(); //Post-Process
             
             // for OntologyHijacking
-            processMetric(request, response, new OntologyHijacking(), listQuad);
+            //processMetric(request, response, new OntologyHijacking(), listQuad);
             
             // for WhitespaceInAnnotation
             WhitespaceInAnnotation.loadAnnotationPropertiesSet(null); //Pre-Process
