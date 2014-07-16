@@ -50,7 +50,7 @@ public class LabelsUsingCapitals extends AbstractQualityMetrics {
 	 * Default file path and name for the file that contains list of annotation
 	 * properties
 	 */
-	protected static String defaultFilePathName = "extensions/quality-extension/resources/LabelPropertiesList.txt";
+	protected static String defaultFilePathName = "extensions/quality-extension/resources/LabelPropertiesList";
 	/**
 	 * Number of literals count
 	 */
