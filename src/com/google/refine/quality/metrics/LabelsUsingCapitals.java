@@ -43,10 +43,6 @@ public class LabelsUsingCapitals extends AbstractQualityMetrics {
 	 */
 	static Logger logger = Logger.getLogger(LabelsUsingCapitals.class);
 	/**
-	 * list of problematic quads
-	 */
-	protected List<ReportProblems> problemList = new ArrayList<ReportProblems>();
-	/**
 	 * Default file path and name for the file that contains list of annotation
 	 * properties
 	 */

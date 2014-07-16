@@ -269,12 +269,14 @@ function addNewColumnCommand(data) {
 }
 
 function assessQuality() {
+	/*
 	if ("" == getCookie(theProject.id + "IsProcessed")) {
 		setCookie(theProject.id + "IsProcessed" ,"true");
 		addNewColumnCommand("accessQuality");
 	} else {
 		alert("Quality is already processed.");
-	}
+	}*/
+	alert("Assess Quality is not implemented yet");
 }
 
 function identifyQualityProblems() {

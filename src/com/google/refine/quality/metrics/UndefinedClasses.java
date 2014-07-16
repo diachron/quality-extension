@@ -40,12 +40,6 @@ public class UndefinedClasses extends AbstractQualityMetrics {
 	 * total number classes
 	 */
 	protected long totalClassesCount = 0;
-	
-	
-	/**
-	 * list of problematic quads
-	 */
-	protected List<ReportProblems> problemList = new ArrayList<ReportProblems>();
 
 	/**
 	 * This method identifies whether a component (subject, predicate or object)

@@ -59,11 +59,11 @@ public class AssessQuality extends Command{
 
                 String type = "String";
                 String valueString = "";
-                if (null != project.rows.get(rowIndex).getCell(1) && !project.rows.get(rowIndex).getCell(1).toString().trim().isEmpty()){
-                valueString =  project.rows.get(rowIndex).getCell(1) + " , " + reportProblem.get_sourceMetric() + " :: " + reportProblem.get_problemType();
+                if (null != project.rows.get(rowIndex).getCell(cellIndex).toString() && !project.rows.get(rowIndex).getCell(1).toString().isEmpty()){
+                valueString =  project.rows.get(rowIndex).getCell(cellIndex).toString().trim() + " , " + reportProblem.get_sourceMetric() + " :: " + reportProblem.get_problemType();
                 }
                 else {
-                    valueString = reportProblem.get_sourceMetric()+ " :: " + reportProblem.get_problemType();
+                    valueString = reportProblem.get_sourceMetric().toString() + " :: " + reportProblem.get_problemType();
                 }
                 Serializable value = null;
 
@@ -211,12 +211,12 @@ public class AssessQuality extends Command{
             
             
             // for MisplacedClassesOrProperties -- DISABLE B/C TAKES TOO MUCH TIME
-            processMetric(request, response, new MisplacedClassesOrProperties(), listQuad);
+            ////processMetric(request, response, new MisplacedClassesOrProperties(), listQuad);
             
             // for MisusedOwlDatatypeOrObjectProperties
-            MisusedOwlDatatypeOrObjectProperties.filterAllOwlProperties(listQuad); //Pre-Process
-            processMetric(request, response, new MisusedOwlDatatypeOrObjectProperties(), listQuad);
-            MisusedOwlDatatypeOrObjectProperties.clearAllOwlPropertiesList(); //Post-Process
+            ////MisusedOwlDatatypeOrObjectProperties.filterAllOwlProperties(listQuad); //Pre-Process
+            ////processMetric(request, response, new MisusedOwlDatatypeOrObjectProperties(), listQuad);
+            ////MisusedOwlDatatypeOrObjectProperties.clearAllOwlPropertiesList(); //Post-Process
             
             // for OntologyHijacking
             //processMetric(request, response, new OntologyHijacking(), listQuad);
