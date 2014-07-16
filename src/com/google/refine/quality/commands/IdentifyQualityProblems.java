@@ -3,6 +3,7 @@ package com.google.refine.quality.commands;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 
@@ -23,17 +24,25 @@ import com.google.refine.quality.metrics.AbstractQualityMetrics;
 import com.google.refine.quality.metrics.EmptyAnnotationValue;
 import com.google.refine.quality.metrics.HelloWorldMetrics;
 import com.google.refine.quality.metrics.IncompatibleDatatypeRange;
+import com.google.refine.quality.metrics.LabelsUsingCapitals;
 import com.google.refine.quality.metrics.MalformedDatatypeLiterals;
 import com.google.refine.quality.metrics.MisplacedClassesOrProperties;
 import com.google.refine.quality.metrics.MisusedOwlDatatypeOrObjectProperties;
 import com.google.refine.quality.metrics.OntologyHijacking;
 import com.google.refine.quality.metrics.ReportProblems;
+import com.google.refine.quality.metrics.UndefinedClasses;
+import com.google.refine.quality.metrics.UndefinedProperties;
 import com.google.refine.quality.metrics.WhitespaceInAnnotation;
 import com.google.refine.util.ParsingUtilities;
 import com.google.refine.util.Pool;
 import com.hp.hpl.jena.sparql.core.Quad;
 
 public class IdentifyQualityProblems extends Command{
+    
+    /**
+     * Stores list of quality problems
+     */
+    protected Hashtable<Integer,String> qualityProblemsList = new Hashtable<Integer,String>();
     
     protected void writeProblemicQuads(HttpServletRequest request, HttpServletResponse response, List<ReportProblems> reportProblemsList) throws ServletException {
         try {
@@ -48,17 +57,22 @@ public class IdentifyQualityProblems extends Command{
             HistoryEntry historyEntry = null;
 
             for (ReportProblems reportProblem : reportProblemsList) {
-
-                int rowIndex = reportProblem.get_rowIndex();
+                    
+                Integer rowIndex = reportProblem.get_rowIndex();
                 int cellIndex = 1;
 
                 String type = "String";
                 String valueString = "";
-                if (null != project.rows.get(rowIndex).getCell(1) && !project.rows.get(rowIndex).getCell(1).toString().trim().isEmpty()){
-                valueString =  project.rows.get(rowIndex).getCell(1) + " , " + reportProblem.get_sourceMetric() + " :: " + reportProblem.get_problemType();
+                if (this.qualityProblemsList.containsKey(rowIndex)){
+                    if (! this.qualityProblemsList.get(rowIndex).contains(reportProblem.get_sourceMetric() + " :: " + reportProblem.get_problemType())) {    
+                        valueString = this.qualityProblemsList.get(rowIndex)  + " , " + reportProblem.get_sourceMetric() + " :: " + reportProblem.get_problemType();
+                        this.qualityProblemsList.remove(rowIndex);
+                        this.qualityProblemsList.put(rowIndex, valueString);
+                    }
                 }
                 else {
-                    valueString = reportProblem.get_sourceMetric()+ " :: " + reportProblem.get_problemType();
+                    valueString = reportProblem.get_sourceMetric().toString() + " :: " + reportProblem.get_problemType();
+                    this.qualityProblemsList.put(rowIndex, valueString);
                 }
                 Serializable value = null;
 
@@ -75,6 +89,7 @@ public class IdentifyQualityProblems extends Command{
                 process = new EditOneCellProcess(project, "Edit single cell", rowIndex, cellIndex, value);
 
                 historyEntry = project.processManager.queueProcess(process);
+                
             }
 
             if (historyEntry != null) {
@@ -186,8 +201,8 @@ public class IdentifyQualityProblems extends Command{
             
             /** Compute Metrics **/
             // for Hello World Meric -- DEBUG ONLY
-            //processMetric(request, response, new HelloWorldMetrics(), listQuad);
-            
+            ///processMetric(request, response, new HelloWorldMetrics(), listQuad);
+
             // for Empty Annotation value
             EmptyAnnotationValue.loadAnnotationPropertiesSet(null); // Pre-Process
             processMetric(request, response, new EmptyAnnotationValue(), listQuad);
@@ -204,21 +219,33 @@ public class IdentifyQualityProblems extends Command{
             
             
             // for MisplacedClassesOrProperties -- DISABLE B/C TAKES TOO MUCH TIME
-            ///processMetric(request, response, new MisplacedClassesOrProperties(), listQuad);
+            ////processMetric(request, response, new MisplacedClassesOrProperties(), listQuad);
             
             // for MisusedOwlDatatypeOrObjectProperties
-            MisusedOwlDatatypeOrObjectProperties.filterAllOwlProperties(listQuad); //Pre-Process
-            processMetric(request, response, new MisusedOwlDatatypeOrObjectProperties(), listQuad);
-            MisusedOwlDatatypeOrObjectProperties.clearAllOwlPropertiesList(); //Post-Process
+            ////MisusedOwlDatatypeOrObjectProperties.filterAllOwlProperties(listQuad); //Pre-Process
+            ////processMetric(request, response, new MisusedOwlDatatypeOrObjectProperties(), listQuad);
+            ////MisusedOwlDatatypeOrObjectProperties.clearAllOwlPropertiesList(); //Post-Process
             
             // for OntologyHijacking
-            processMetric(request, response, new OntologyHijacking(), listQuad);
+            //processMetric(request, response, new OntologyHijacking(), listQuad);
             
             // for WhitespaceInAnnotation
-            WhitespaceInAnnotation.loadAnnotationPropertiesSet(null); //Pre-Process
-            processMetric(request, response, new WhitespaceInAnnotation(), listQuad);
-            WhitespaceInAnnotation.clearAnnotationPropertiesSet(); //Post-Process
+            ///WhitespaceInAnnotation.loadAnnotationPropertiesSet(null); //Pre-Process
+            ///processMetric(request, response, new WhitespaceInAnnotation(), listQuad);
+            ///WhitespaceInAnnotation.clearAnnotationPropertiesSet(); //Post-Process
+            
+            // for LabelUsingCapitals
+            LabelsUsingCapitals.loadAnnotationPropertiesSet(null); //Pre-Process
+            processMetric(request, response, new LabelsUsingCapitals(), listQuad);
+            LabelsUsingCapitals.clearAnnotationPropertiesSet();
+            
+            // for Undefined Classes
+            processMetric(request, response, new UndefinedClasses(), listQuad);
+            
+            // for Undefined Properties
+            processMetric(request, response, new UndefinedProperties(), listQuad);
 
+            
         } catch (Exception e) {
             e.printStackTrace();
         }

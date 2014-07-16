@@ -59,7 +59,7 @@ public class AssessQuality extends Command{
 
                 String type = "String";
                 String valueString = "";
-                if (null != project.rows.get(rowIndex).getCell(cellIndex).toString() && !project.rows.get(rowIndex).getCell(1).toString().isEmpty()){
+                if (null != project.rows.get(rowIndex).getCell(cellIndex) && !project.rows.get(rowIndex).getCell(1).toString().isEmpty()){
                 valueString =  project.rows.get(rowIndex).getCell(cellIndex).toString().trim() + " , " + reportProblem.get_sourceMetric() + " :: " + reportProblem.get_problemType();
                 }
                 else {
