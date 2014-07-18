@@ -35,6 +35,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 var SampleExtension = {};
 
+function setCookie(cname, cvalue) {
+    var d = new Date();
+    d.setTime(d.getTime() + (365*24*60*60*1000));
+    var expires = "expires="+d.toGMTString();
+    document.cookie = cname + "=" + cvalue + "; " + expires;
+}
+
 function getCookie(cname) {
     var name = cname + "=";
     var ca = document.cookie.split(';');
@@ -46,12 +53,127 @@ function getCookie(cname) {
     return "";
 }
 
-function setCookie(cname, cvalue) {
-    var d = new Date();
-    d.setTime(d.getTime() + (365*24*60*60*1000));
-    var expires = "expires="+d.toGMTString();
-    document.cookie = cname + "=" + cvalue + "; " + expires;
+function renameColumn24() {
+	Refine.postCoreProcess(
+	        "rename-column", 
+	        {
+	          oldColumnName: "Column 2 4",
+	          newColumnName: "Comments"
+	        },
+	        null,
+	        { modelsChanged: true },
+	        {
+	          onDone: function(o) {
+	          	console.log("success");
+          		self._dismissBusy();
+	          }
+            }
+	        
+	      );
 }
+
+function renameColumn23() {
+	Refine.postCoreProcess(
+	        "rename-column", 
+	        {
+	          oldColumnName: "Column 2 3",
+	          newColumnName: "Recommendation"
+	        },
+	        null,
+	        { modelsChanged: true },
+	        {
+	          onDone: function(o) {
+	          	renameColumn24();
+	          }
+            }
+	        
+	      );
+}
+
+function renameColumn22() {
+	Refine.postCoreProcess(
+	        "rename-column", 
+	        {
+	          oldColumnName: "Column 2 2",
+	          newColumnName: "Problem Description"
+	        },
+	        null,
+	        { modelsChanged: true },
+	        {
+	          onDone: function(o) {
+	          	renameColumn23();
+	          }
+            }
+	        
+	      );
+}
+
+
+function renameColumn21() {
+	Refine.postCoreProcess(
+	        "rename-column", 
+	        {
+	          oldColumnName: "Column 2 1",
+	          newColumnName: "Problem Type"
+	        },
+	        null,
+	        { modelsChanged: true },
+	        {
+	          onDone: function(o) {
+	          	renameColumn22();
+	          }
+            }
+	        
+	      );
+}
+
+function splitReportProblemColumn() {
+
+	var mode = "separator";
+	var config = {
+        columnName: "Column 2",
+        mode: mode,
+        guessCellType: "false",
+        removeOriginalColumn: "true"
+      };
+	config.separator = "|&SPLITCOLUMN&|";
+	config.regex = "false";
+	config.maxColumns = 4;
+	
+	Refine.postCoreProcess(
+        "split-column", 
+        config,
+        null,
+        { modelsChanged: true },
+        {
+	          onDone: function(o) {
+          		renameColumn21();  
+	          }
+        }
+      );
+
+}
+
+
+function splitReportProblemRow() {
+Refine.postCoreProcess(
+        "split-multi-value-cells", 
+        {
+          columnName: "Column 2",
+          keyColumnName: "Subject",
+          separator: "|&SPLITROW&|",
+          mode: "plain"
+        },
+        null,
+        { rowsChanged: true },
+        {
+        	onDone: function(o) {
+        		splitReportProblemColumn();
+        	}
+        }
+      );
+}
+
 
 function removeColumn() {
 	Refine.postCoreProcess(
@@ -63,31 +185,11 @@ function removeColumn() {
 	      { modelsChanged: true },
 	      {
 	          onDone: function(o) {
-	          	console.log("success");
-	          	self._dismissBusy();
+	          	splitReportProblemRow();
 	          }
           }
 	    );
 }
-
-function renameFourthColumn() {
-	Refine.postCoreProcess(
-	        "rename-column", 
-	        {
-	          oldColumnName: "Column 2",
-	          newColumnName: "Report Problem"
-	        },
-	        null,
-	        { modelsChanged: true },
-	        {
-	          onDone: function(o) {
-	          	removeColumn();
-	          }
-            }
-	        
-	      );
-}
-
 
 function renameThirdColumn() {
 	Refine.postCoreProcess(
@@ -100,7 +202,7 @@ function renameThirdColumn() {
 	        { modelsChanged: true },
 	        {
 	          onDone: function(o) {
-	          	renameFourthColumn();
+	          	removeColumn();
 	          }
             }
 	        
@@ -174,7 +276,7 @@ function splitColumn() {
 function transformDataCommand() {
 	
 	var self = this;
-	self._dismissBusy = DialogSystem.showBusy('Transforming data ...');
+	//self._dismissBusy = DialogSystem.showBusy('Transforming data ...');
 	
 	$.post("command/quality-extension/transformData/",
 			{
@@ -269,14 +371,12 @@ function addNewColumnCommand(data) {
 }
 
 function assessQuality() {
-	/*
 	if ("" == getCookie(theProject.id + "IsProcessed")) {
 		setCookie(theProject.id + "IsProcessed" ,"true");
 		addNewColumnCommand("accessQuality");
 	} else {
 		alert("Quality is already processed.");
-	}*/
-	alert("Assess Quality is not implemented yet");
+	}
 }
 
 function identifyQualityProblems() {
@@ -305,4 +405,3 @@ ExtensionBar.addExtensionMenu({
 		}
 		]
 	 });
-

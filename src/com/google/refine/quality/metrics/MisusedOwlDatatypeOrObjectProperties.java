@@ -5,11 +5,13 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.google.refine.quality.utilities.ProcessProblemProperties;
+import com.google.refine.quality.utilities.LoadQualityReportModel;
 import com.google.refine.quality.utilities.VocabularyReader;
+import com.google.refine.quality.vocabularies.QR;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.sparql.core.Quad;
@@ -24,6 +26,10 @@ import com.hp.hpl.jena.sparql.core.Quad;
  * @date 12th May 2014
  */
 public class MisusedOwlDatatypeOrObjectProperties extends AbstractQualityMetrics{
+        /**
+         * Description of quality report 
+         */
+        protected Resource qualityReport  = QR.MisuseOwlDatatypeOrObjectPropertiesProblem;
         /**
          * static logger object
          */
@@ -182,7 +188,7 @@ public class MisusedOwlDatatypeOrObjectProperties extends AbstractQualityMetrics
                     this.totalDatatypeProperties++;
                     if (!object.isLiteral()) {
                         this.misuseDatatypeProperties++;
-                        ReportProblems reportProblems = new ReportProblems(index, quad, ProcessProblemProperties.getProblemMessage(this.getClass().getName()), this.getClass().getName()); 
+                        ReportProblems reportProblems = new ReportProblems(index, quad, qualityReport); 
                         this.problemList.add(reportProblems);
                     }
                 }
@@ -192,7 +198,7 @@ public class MisusedOwlDatatypeOrObjectProperties extends AbstractQualityMetrics
                     this.totalObjectProperties++;
                     if (!object.isURI()) {
                         this.misuseObjectProperties++;
-                        ReportProblems reportProblems = new ReportProblems(index, quad, ProcessProblemProperties.getProblemMessage(this.getClass().getName()), this.getClass().getName());
+                        ReportProblems reportProblems = new ReportProblems(index, quad, qualityReport);
                         this.problemList.add(reportProblems);
                     }
                 }

@@ -9,14 +9,19 @@ import org.apache.xerces.util.URI.MalformedURIException;
 
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.core.Quad;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDFS;
-import com.google.refine.quality.utilities.ProcessProblemProperties;
+import com.google.refine.quality.utilities.LoadQualityReportModel;
 import com.google.refine.quality.utilities.VocabularyReader;
+import com.google.refine.quality.vocabularies.QR;
 
 public class UndefinedProperties extends AbstractQualityMetrics {
-	
+                /**
+                 * Description of quality report 
+                 */
+                protected Resource qualityReport  = QR.UndefinedPropertiesProblem;
 		/**
 		 * static logger object
 		 */
@@ -55,7 +60,7 @@ public class UndefinedProperties extends AbstractQualityMetrics {
 					if (predicateModel == null) { // check if system is able to
 													// retrieve model
 	                        this.undefinedPropertiesCount++;
-	                        ReportProblems reportProblems = new ReportProblems(index, quad, ProcessProblemProperties.getProblemMessage(this.getClass().getName()), this.getClass().getName());
+	                        ReportProblems reportProblems = new ReportProblems(index, quad, qualityReport);
 	                        this.problemList.add(reportProblems);
 					} else {
 						// search for URI resource from Model
@@ -68,7 +73,7 @@ public class UndefinedProperties extends AbstractQualityMetrics {
 											RDFS.range))) {
 						        System.out.println("predicate : " + predicate);    
 								this.undefinedPropertiesCount++;
-								ReportProblems reportProblems = new ReportProblems(index, quad, ProcessProblemProperties.getProblemMessage(this.getClass().getName()), this.getClass().getName());
+								ReportProblems reportProblems = new ReportProblems(index, quad, qualityReport);
 								this.problemList.add(reportProblems);
 							}
 						}
@@ -91,14 +96,14 @@ public class UndefinedProperties extends AbstractQualityMetrics {
 	                        if (objectModel == null) { // check if system is able to
 	                                                    // retrieve model
 	                                this.undefinedPropertiesCount++;
-	                                ReportProblems reportProblems = new ReportProblems(index, quad, ProcessProblemProperties.getProblemMessage(this.getClass().getName()), this.getClass().getName());
+	                                ReportProblems reportProblems = new ReportProblems(index, quad, qualityReport);
 	                                this.problemList.add(reportProblems);
 	                        } else {
 	                             // search for URI resource from Model
 	                                if (!objectModel.getResource(object.getURI())
 	                                                .isURIResource()) {
 	                                    this.undefinedPropertiesCount++;
-	                                    ReportProblems reportProblems = new ReportProblems(index, quad, ProcessProblemProperties.getProblemMessage(this.getClass().getName()), this.getClass().getName());
+	                                    ReportProblems reportProblems = new ReportProblems(index, quad, qualityReport);
 	                                    this.problemList.add(reportProblems);
 	                                }      
 	                        }      

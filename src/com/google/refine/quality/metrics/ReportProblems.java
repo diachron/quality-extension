@@ -1,5 +1,6 @@
 package com.google.refine.quality.metrics;
 
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.core.Quad;
 
 /**
@@ -9,30 +10,22 @@ import com.hp.hpl.jena.sparql.core.Quad;
  *
  */
 public class ReportProblems {
-    protected Integer _rowIndex;
     
-    public Integer get_rowIndex() {
-        return _rowIndex;
+    protected Integer rowIndex;
+    protected Quad quad;
+    protected Resource qualityReport;
+    
+    public Integer getRowIndex() {
+        return rowIndex;
     }
 
-    
-    public Quad get_quad() {
-        return _quad;
+    public Quad getQuad() {
+        return quad;
     }
-
     
-    public String get_problemType() {
-        return _problemType;
+    public Resource getQualityReport() {
+        return qualityReport;
     }
-
-    
-    public String get_sourceMetric() {
-        return _sourceMetric;
-    }
-
-    protected Quad _quad;
-    protected String  _problemType;
-    protected String  _sourceMetric;
     
     /**
      * Default Constructor
@@ -41,10 +34,9 @@ public class ReportProblems {
      * @param problemType
      * @param sourceMetric
      */
-    public ReportProblems(Integer rowIndex, Quad quad, String problemType, String sourceMetric) {
-        this._rowIndex = rowIndex;
-        this._quad = quad;
-        this._problemType = problemType;
-        this._sourceMetric = sourceMetric;
+    public ReportProblems(Integer rowIndex, Quad quad, Resource qualityReport) {
+        this.rowIndex = rowIndex;
+        this.quad = quad;
+        this.qualityReport = qualityReport;
     }
 }

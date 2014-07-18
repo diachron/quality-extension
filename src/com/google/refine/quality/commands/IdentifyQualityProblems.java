@@ -18,7 +18,9 @@ import com.google.refine.commands.Command;
 import com.google.refine.history.HistoryEntry;
 import com.google.refine.model.Project;
 import com.google.refine.quality.utilities.LoadJenaModel;
+import com.google.refine.quality.utilities.LoadQualityReportModel;
 import com.google.refine.quality.utilities.Utilities;
+import com.google.refine.quality.vocabularies.QR;
 import com.google.refine.quality.commands.TransformData.EditOneCellProcess;
 import com.google.refine.quality.metrics.AbstractQualityMetrics;
 import com.google.refine.quality.metrics.EmptyAnnotationValue;
@@ -35,7 +37,9 @@ import com.google.refine.quality.metrics.UndefinedProperties;
 import com.google.refine.quality.metrics.WhitespaceInAnnotation;
 import com.google.refine.util.ParsingUtilities;
 import com.google.refine.util.Pool;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.core.Quad;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class IdentifyQualityProblems extends Command{
     
@@ -58,22 +62,32 @@ public class IdentifyQualityProblems extends Command{
 
             for (ReportProblems reportProblem : reportProblemsList) {
                     
-                Integer rowIndex = reportProblem.get_rowIndex();
+                Integer rowIndex = reportProblem.getRowIndex();
                 int cellIndex = 1;
 
+                String splitColumn = "|&SPLITCOLUMN&|";
+                String splitRow = "|&SPLITROW&|";
                 String type = "String";
                 String valueString = "";
+                
+                String problemName = LoadQualityReportModel.getResourcePropertyValue(reportProblem.getQualityReport(), RDFS.label);
+                String problemDescription = LoadQualityReportModel.getResourcePropertyValue(reportProblem.getQualityReport(), QR.problemDescription);
+                String recommedation = LoadQualityReportModel.getResourcePropertyValue(reportProblem.getQualityReport(), QR.recommedation);
+                String comment = LoadQualityReportModel.getResourcePropertyValue(reportProblem.getQualityReport(), RDFS.comment);
+                
+                valueString = problemName + splitColumn + problemDescription + splitColumn + recommedation + splitColumn + comment;
+                
                 if (this.qualityProblemsList.containsKey(rowIndex)){
-                    if (! this.qualityProblemsList.get(rowIndex).contains(reportProblem.get_sourceMetric() + " :: " + reportProblem.get_problemType())) {    
-                        valueString = this.qualityProblemsList.get(rowIndex)  + " , " + reportProblem.get_sourceMetric() + " :: " + reportProblem.get_problemType();
+                    if (! this.qualityProblemsList.get(rowIndex).contains(valueString)) {    
+                        valueString = this.qualityProblemsList.get(rowIndex)  + splitRow + valueString;
                         this.qualityProblemsList.remove(rowIndex);
                         this.qualityProblemsList.put(rowIndex, valueString);
                     }
                 }
                 else {
-                    valueString = reportProblem.get_sourceMetric().toString() + " :: " + reportProblem.get_problemType();
                     this.qualityProblemsList.put(rowIndex, valueString);
                 }
+                
                 Serializable value = null;
 
                 if ("number".equals(type)) {
@@ -201,7 +215,7 @@ public class IdentifyQualityProblems extends Command{
             
             /** Compute Metrics **/
             // for Hello World Meric -- DEBUG ONLY
-            ///processMetric(request, response, new HelloWorldMetrics(), listQuad);
+            ////processMetric(request, response, new HelloWorldMetrics(), listQuad);
 
             // for Empty Annotation value
             EmptyAnnotationValue.loadAnnotationPropertiesSet(null); // Pre-Process
@@ -227,12 +241,12 @@ public class IdentifyQualityProblems extends Command{
             ////MisusedOwlDatatypeOrObjectProperties.clearAllOwlPropertiesList(); //Post-Process
             
             // for OntologyHijacking
-            //processMetric(request, response, new OntologyHijacking(), listQuad);
+            processMetric(request, response, new OntologyHijacking(), listQuad);
             
             // for WhitespaceInAnnotation
-            ///WhitespaceInAnnotation.loadAnnotationPropertiesSet(null); //Pre-Process
-            ///processMetric(request, response, new WhitespaceInAnnotation(), listQuad);
-            ///WhitespaceInAnnotation.clearAnnotationPropertiesSet(); //Post-Process
+            WhitespaceInAnnotation.loadAnnotationPropertiesSet(null); //Pre-Process
+            processMetric(request, response, new WhitespaceInAnnotation(), listQuad);
+            WhitespaceInAnnotation.clearAnnotationPropertiesSet(); //Post-Process
             
             // for LabelUsingCapitals
             LabelsUsingCapitals.loadAnnotationPropertiesSet(null); //Pre-Process

@@ -7,12 +7,14 @@ import org.apache.log4j.Logger;
 
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.core.Quad;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
-import com.google.refine.quality.utilities.ProcessProblemProperties;
+import com.google.refine.quality.utilities.LoadQualityReportModel;
 import com.google.refine.quality.utilities.VocabularyReader;
+import com.google.refine.quality.vocabularies.QR;
 
 /**
  * Detects undefined classes and properties from data set by checking for 
@@ -26,7 +28,13 @@ import com.google.refine.quality.utilities.VocabularyReader;
  * @date 11th March 2014
  */
 public class UndefinedClasses extends AbstractQualityMetrics {
-	
+        /**
+         * Description of quality report 
+         */
+        protected Resource qualityReport  = QR.UndefinedClassesProblem;
+        /**
+         * Rdf prefix URI
+         */
 	final  String RDF_PREFIX="http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 	/**
 	 * static logger object
@@ -91,14 +99,14 @@ public class UndefinedClasses extends AbstractQualityMetrics {
                             if (objectModel == null) { // check if system is able to
                                                         // retrieve model
                                     this.undefinedClassesCount++;
-                                    ReportProblems reportProblems = new ReportProblems(index, quad, ProcessProblemProperties.getProblemMessage(this.getClass().getName()), this.getClass().getName());  
+                                    ReportProblems reportProblems = new ReportProblems(index, quad, qualityReport);  
                                     this.problemList.add(reportProblems);
                             } else {
                                  // search for URI resource from Model
                                     if (!objectModel.getResource(object.getURI())
                                                     .isURIResource()) {
                                         this.undefinedClassesCount++;
-                                        ReportProblems reportProblems = new ReportProblems(index, quad, ProcessProblemProperties.getProblemMessage(this.getClass().getName()), this.getClass().getName());
+                                        ReportProblems reportProblems = new ReportProblems(index, quad, qualityReport);
                                         this.problemList.add(reportProblems);
                                     }      
                             }

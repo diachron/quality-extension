@@ -11,8 +11,10 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.apache.xerces.util.URI;
 
-import com.google.refine.quality.utilities.ProcessProblemProperties;
+import com.google.refine.quality.utilities.LoadQualityReportModel;
+import com.google.refine.quality.vocabularies.QR;
 import com.hp.hpl.jena.graph.Node;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.core.Quad;
 
 /**
@@ -25,6 +27,10 @@ import com.hp.hpl.jena.sparql.core.Quad;
  * @date 19th June 2014
  */
 public class EmptyAnnotationValue extends AbstractQualityMetrics{
+        /**
+         * Description of quality report 
+         */
+        protected Resource qualityReport  = QR.EmptyAnnotationValueProblem;
         /**
          * logger static object
          */
@@ -120,7 +126,7 @@ public class EmptyAnnotationValue extends AbstractQualityMetrics{
                             
                             if (isEmptyLiteral) {
                                     this.totalNumberOfEmptyLiterals++; // increment empty literal count
-                                    ReportProblems reportProblems = new ReportProblems(index, quad, ProcessProblemProperties.getProblemMessage(this.getClass().getName()), this.getClass().getName());
+                                    ReportProblems reportProblems = new ReportProblems(index, quad, qualityReport);
                                     this.problemList.add(reportProblems); // add invalid quad in problem list
                             }
                     }
