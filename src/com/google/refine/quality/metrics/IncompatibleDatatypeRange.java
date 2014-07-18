@@ -8,13 +8,18 @@ import java.util.Map;
 
 
 
+
+
+
 import org.apache.log4j.Logger;
 
-import com.google.refine.quality.utilities.ProcessProblemProperties;
+import com.google.refine.quality.utilities.LoadQualityReportModel;
 import com.google.refine.quality.utilities.VocabularyReader;
+import com.google.refine.quality.vocabularies.QR;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.sparql.core.Quad;
 import com.hp.hpl.jena.vocabulary.RDFS;
@@ -27,6 +32,10 @@ import com.hp.hpl.jena.vocabulary.RDFS;
  * @date 21st June 2014 
  */
 public class IncompatibleDatatypeRange extends AbstractQualityMetrics{
+        /**
+         * Description of quality report 
+         */
+        protected Resource qualityReport  = QR.IncompatibleDatatypeRangeProblem;
         /**
          * logger object
          */
@@ -175,7 +184,7 @@ public class IncompatibleDatatypeRange extends AbstractQualityMetrics{
                                                 givenObjectDateTypeURI,
                                                 rangeObjectURI)) {
                                             this.incompatiableDataTypeLiterals++;
-                                            ReportProblems reportProblems = new ReportProblems(index, quad, ProcessProblemProperties.getProblemMessage(this.getClass().getName()), this.getClass().getName());
+                                            ReportProblems reportProblems = new ReportProblems(index, quad, qualityReport);
                                             this.problemList.add(reportProblems);
                                         }
                                     } catch (URISyntaxException e) {

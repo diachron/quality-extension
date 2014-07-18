@@ -7,8 +7,10 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import com.google.refine.quality.vocabularies.QR;
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.graph.Node;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.core.Quad;
 
 /**
@@ -26,6 +28,10 @@ import com.hp.hpl.jena.sparql.core.Quad;
  * @date 12th May 2014
  */
 public class HomogeneousDatatypes extends AbstractQualityMetrics{
+        /**
+         * Description of quality report 
+         */
+        protected Resource qualityReport  = QR.HomogeneousDatatypesProblem;
         /**
          * logger static object
          */

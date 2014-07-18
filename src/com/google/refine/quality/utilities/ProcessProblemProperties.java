@@ -37,7 +37,6 @@ public class ProcessProblemProperties {
             for(String line:lines){
               if (!line.startsWith("#")) {  
                   String[] tmpLine = line.split("=");
-                  System.out.println("TESTING_______________" + tmpLine[0] + " :: " + tmpLine[1]);
                   ProcessProblemProperties.problemPropertiesList.put(tmpLine[0].toLowerCase().trim(), tmpLine[1].trim());
               }
             }
@@ -53,16 +52,17 @@ public class ProcessProblemProperties {
      * @return
      */
     public static String getProblemMessage(String className) {
-        System.out.println("Class NAME ---" + className);
+        System.out.print("Class Name :" + className);
         if (null != className && !className.isEmpty()){
             if (null == ProcessProblemProperties.problemPropertiesList ){
                 readProblemPropertiesFile();
             }
             if (problemPropertiesList.containsKey(className.toLowerCase().trim())){
-                System.out.println("MESSAGE --- " +  problemPropertiesList.get(className.toLowerCase().trim()));
+                System.out.println(" Message : " +  problemPropertiesList.get(className.toLowerCase().trim()));
                 return problemPropertiesList.get(className.toLowerCase().trim());
             }
         }
+        System.out.println(" Message : " +  " default message.");
         return className.toLowerCase().trim() + " default message.";
     }
 }

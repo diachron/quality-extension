@@ -5,10 +5,11 @@ import org.apache.log4j.Logger;
 import org.apache.xerces.util.URI;
 import org.apache.xerces.util.URI.MalformedURIException;
 
-import com.google.refine.quality.utilities.ProcessProblemProperties;
+import com.google.refine.quality.utilities.LoadQualityReportModel;
 import com.google.refine.quality.utilities.VocabularyReader;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.core.Quad;
 import com.hp.hpl.jena.vocabulary.RDF;
 
@@ -24,6 +25,10 @@ import com.hp.hpl.jena.vocabulary.RDF;
  * 
  */
 public class OntologyHijacking extends AbstractQualityMetrics{
+        /**
+         * Description of quality report 
+         */
+        protected Resource qualityReport  = null;
         /**
          * logger static object
          */
@@ -87,7 +92,7 @@ public class OntologyHijacking extends AbstractQualityMetrics{
                             Node subject = quad.getSubject(); // retrieve subject
                             if (isHijacked(subject)){ 
                                     this.hijackedClassesOrPropertiesCount++; // increments redefined class or property count
-                                    ReportProblems reportProblems = new ReportProblems(index, quad, ProcessProblemProperties.getProblemMessage(this.getClass().getName()), this.getClass().getName());
+                                    ReportProblems reportProblems = new ReportProblems(index, quad, qualityReport);
                                     this.problemList.add(reportProblems);
                             }
                     }
@@ -96,7 +101,7 @@ public class OntologyHijacking extends AbstractQualityMetrics{
                             Node object = quad.getObject(); // retrieve object
                             if (isHijacked(object)){ 
                                     this.hijackedClassesOrPropertiesCount++; // increments redefined class or property count
-                                    ReportProblems reportProblems = new ReportProblems(index, quad, ProcessProblemProperties.getProblemMessage(this.getClass().getName()), this.getClass().getName());
+                                    ReportProblems reportProblems = new ReportProblems(index, quad, qualityReport);
                                     this.problemList.add(reportProblems);
                             }
                     }

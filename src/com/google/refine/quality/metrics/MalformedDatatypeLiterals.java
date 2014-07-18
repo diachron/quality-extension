@@ -2,9 +2,11 @@ package com.google.refine.quality.metrics;
 
 import org.apache.log4j.Logger;
 
-import com.google.refine.quality.utilities.ProcessProblemProperties;
+import com.google.refine.quality.utilities.LoadQualityReportModel;
+import com.google.refine.quality.vocabularies.QR;
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.graph.Node;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.core.Quad;
 
 /**
@@ -15,6 +17,10 @@ import com.hp.hpl.jena.sparql.core.Quad;
  * @date 13th Feb 2014
  */
 public class MalformedDatatypeLiterals extends AbstractQualityMetrics{
+        /**
+         * Description of quality report 
+         */
+        protected Resource qualityReport  = QR.MalformedDatatypeLiteralsProblem;
 	/**
 	 * logger static object
 	 */
@@ -49,7 +55,7 @@ public class MalformedDatatypeLiterals extends AbstractQualityMetrics{
     				logger.debug("RdfDataTypeLiteral :: " + object.toString());
     				if (!rdfdataType.isValidLiteral(object.getLiteral())) {
     					this.malformedLiterals++;
-    					ReportProblems reportProblems = new ReportProblems(index, quad, ProcessProblemProperties.getProblemMessage(this.getClass().getName()), this.getClass().getName());
+    					ReportProblems reportProblems = new ReportProblems(index, quad, qualityReport);
     					this.problemList.add(reportProblems);
     					logger.debug("MalformedRDFDataTypeLiteral :: "
     							+ object.toString());

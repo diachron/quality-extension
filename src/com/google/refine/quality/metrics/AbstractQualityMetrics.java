@@ -3,11 +3,15 @@ package com.google.refine.quality.metrics;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.core.Quad;
 
 
 public abstract class AbstractQualityMetrics {
-       
+       /**
+        * Description of quality report 
+        */
+       protected Resource qualityReport  = null;   
        /**
         * list of problematic quad
         */

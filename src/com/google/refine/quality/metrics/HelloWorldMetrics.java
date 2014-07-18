@@ -2,7 +2,7 @@ package com.google.refine.quality.metrics;
 
 import org.apache.log4j.Logger;
 
-import com.google.refine.quality.utilities.ProcessProblemProperties;
+import com.google.refine.quality.utilities.LoadQualityReportModel;
 import com.hp.hpl.jena.sparql.core.Quad;
 
 public class HelloWorldMetrics extends AbstractQualityMetrics{
@@ -35,7 +35,7 @@ public class HelloWorldMetrics extends AbstractQualityMetrics{
             logger.trace("compute() --Started--");
             this.totalLiterals++;
             this.helloWorldLiterals++;
-            ReportProblems reportProblems = new ReportProblems(index, quad, ProcessProblemProperties.getProblemMessage(this.getClass().getName()), this.getClass().getName());
+            ReportProblems reportProblems = new ReportProblems(index, quad, qualityReport);
             this.problemList.add(reportProblems);
             logger.trace("compute() --Ended--");
     }

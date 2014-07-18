@@ -32,7 +32,7 @@ import com.hp.hpl.jena.sparql.core.Quad;
 
 public class TransformData extends Command {
     
-    protected final String splitter = "|&SPLIT&|";
+    protected final String splitter = "|&SPLITCOLUMN&|";
     /**
      * Retrieves rdf - turtel data from project. RDF data is only stored in first column of the data grid.
      * 
