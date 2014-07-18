@@ -56,7 +56,12 @@
         </fileset>
         <pathelement path="${refine.classes.dir}"/>
     </path>
-            
+    
+	<java classname="jena.schemagen" >
+		<classpath refid="class.path" />
+		<arg line="-i resources/vocabularies/qr/qr.trig -e N3 --inference --package com.google.refine.quality.vocabularies -o src/ -n QR" />
+	</java>
+	
     <target name="build_java">
         <mkdir dir="${classes.dir}" />
         <javac source="${java_version}" target="${java_version}" encoding="utf-8" destdir="${classes.dir}" debug="true" includeAntRuntime="no">
