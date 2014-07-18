@@ -1,5 +1,5 @@
 */target/**
 /.settings
-/module/MOD-INF/classe/**
+/module/MOD-INF/classes/**
 /resources/models/**
 /src/com/google/refine/quality/vocabularies/**
