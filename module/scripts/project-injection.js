@@ -255,7 +255,7 @@ function splitColumn() {
         guessCellType: "false",
         removeOriginalColumn: "true"
       };
-	config.separator = "|&SPLIT&|";
+	config.separator = "|&SPLITCOLUMN&|";
 	config.regex = "false";
 	config.maxColumns = 3;
 	

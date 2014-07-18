@@ -26,6 +26,8 @@
         <not><isset property="dist.dir"/></not>
     </condition>
 
+	<property name="java_version" value="1.6" />
+	
     <property name="fullname" value="${name}-${version}-${revision}" />
     
     <property name="refine.dir" value="${basedir}/../../main" />
