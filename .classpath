@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="lib" path="C:/Users/Muhammad/workspace/OpenRefine/extensions/quality-extension/module/MOD-INF/lib/httpclient-cache-4.2.6.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Muhammad/workspace/OpenRefine/extensions/quality-extension/module/MOD-INF/lib/jackson-annotations-2.3.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Muhammad/workspace/OpenRefine/extensions/quality-extension/module/MOD-INF/lib/jackson-core-2.3.3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Muhammad/workspace/OpenRefine/extensions/quality-extension/module/MOD-INF/lib/jackson-databind-2.3.3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Muhammad/workspace/OpenRefine/extensions/quality-extension/module/MOD-INF/lib/jena-arq-2.11.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Muhammad/workspace/OpenRefine/extensions/quality-extension/module/MOD-INF/lib/jena-core-2.11.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Muhammad/workspace/OpenRefine/extensions/quality-extension/module/MOD-INF/lib/jena-iri-1.0.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Muhammad/workspace/OpenRefine/extensions/quality-extension/module/MOD-INF/lib/jena-sdb-1.4.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Muhammad/workspace/OpenRefine/extensions/quality-extension/module/MOD-INF/lib/jena-tdb-1.0.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Muhammad/workspace/OpenRefine/extensions/quality-extension/module/MOD-INF/lib/jsonld-java-0.4.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/OpenRefine"/>
+	<classpathentry kind="output" path="module/MOD-INF/classes"/>
+</classpath>

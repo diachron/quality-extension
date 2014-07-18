@@ -1,6 +1,0 @@
-*/target/**
-.classpath
-/.settings
-/module/MOD-INF/classe/**
-/resources/models/**
-/src/com/google/refine/quality/vocabularies/**
