@@ -233,12 +233,12 @@ public class IdentifyQualityProblems extends Command{
             
             
             // for MisplacedClassesOrProperties -- DISABLE B/C TAKES TOO MUCH TIME
-            ////processMetric(request, response, new MisplacedClassesOrProperties(), listQuad);
+            processMetric(request, response, new MisplacedClassesOrProperties(), listQuad);
             
             // for MisusedOwlDatatypeOrObjectProperties
-            ////MisusedOwlDatatypeOrObjectProperties.filterAllOwlProperties(listQuad); //Pre-Process
-            ////processMetric(request, response, new MisusedOwlDatatypeOrObjectProperties(), listQuad);
-            ////MisusedOwlDatatypeOrObjectProperties.clearAllOwlPropertiesList(); //Post-Process
+            MisusedOwlDatatypeOrObjectProperties.filterAllOwlProperties(listQuad); //Pre-Process
+            processMetric(request, response, new MisusedOwlDatatypeOrObjectProperties(), listQuad);
+            MisusedOwlDatatypeOrObjectProperties.clearAllOwlPropertiesList(); //Post-Process
             
             // for OntologyHijacking
             processMetric(request, response, new OntologyHijacking(), listQuad);
