@@ -94,7 +94,7 @@ qr:LabelsUsingCapitalsProblem a rdfs:Class ;
 	
 qr:BlankNodeUsageProblem a rdfs:Class ;
 	rdfs:subClassOf qr:QualityProblem ;
-	qr:problemDescription "The triple contains a blank node"
+	qr:problemDescription "The triple contains a blank node";
 	rdfs:comment "Represents a kind of quality problems in which blank nodes are used in subject or object position." ;
 	qr:recommedation "Assign an URI to the node";
 	rdfs:label "Blank Node Usage Problem".
@@ -102,7 +102,7 @@ qr:BlankNodeUsageProblem a rdfs:Class ;
 
 qr:RDFAccessibilityProblem a rdfs:Class ;
 	rdfs:subClassOf qr:QualityProblem ;
-	qr:problemDescription "RDF dump is not available"
+	qr:problemDescription "RDF dump is not available";
 	rdfs:comment "Represents a kind of quality problems when RDF can not be accessed." ;
 	qr:recommedation "Check the path to RDF dump or remove the triple";
 	rdfs:label "RDF Accessibility Problem".
@@ -110,7 +110,7 @@ qr:RDFAccessibilityProblem a rdfs:Class ;
 	
 qr:SPARQLAccessibilityProblem a rdfs:Class ;
 	rdfs:subClassOf qr:QualityProblem ;
-	qr:problemDescription "SPARQL Endpoint is not accessible"
+	qr:problemDescription "SPARQL Endpoint is not accessible";
 	rdfs:comment "Represents a kind of quality problems when SPARQL Endpoint can not be accessed." ;
 	qr:recommedation "Check the SPARQL Endpoint  URI or remove the triple";
 	rdfs:label "SPARQL Accessibility Problem".
