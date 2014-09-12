@@ -58,7 +58,7 @@ function renameColumn24() {
 	        "rename-column", 
 	        {
 	          oldColumnName: "Column 2 4",
-	          newColumnName: "Comments"
+	          newColumnName: "GREL Expresiion"
 	        },
 	        null,
 	        { modelsChanged: true },
@@ -77,7 +77,7 @@ function renameColumn23() {
 	        "rename-column", 
 	        {
 	          oldColumnName: "Column 2 3",
-	          newColumnName: "Recommendation"
+	          newColumnName: "Cleaning Suggestion"
 	        },
 	        null,
 	        { modelsChanged: true },
@@ -390,18 +390,20 @@ function identifyQualityProblems() {
 
 ExtensionBar.addExtensionMenu({
 	"id": "diachron",
-	"label": "Quality",
+	"label": "Diachron Quality",
 	"submenu": [
 		 {
-			 "id":"diachron/quality",
-			        	 label: "Assess Quality",
-			        	 click: function(){assessQuality();}
+			 
+		"id":"diachron/improve",
+		label: "Identify Quality Problems",
+		click: function(){identifyQualityProblems();}
 		}
 	  ,{},
 	  	 {
-			 "id":"diachron/improve",
-			        	 label: "Identify Quality Problems",
-			        	 click: function(){identifyQualityProblems();}
+		  "id":"diachron/quality",
+     	 label: "ExportAsRDF",
+     	 click: function(){assessQuality();}
+		 
 		}
 		]
 	 });

@@ -20,6 +20,7 @@ import com.google.refine.model.Project;
 import com.google.refine.quality.utilities.LoadJenaModel;
 import com.google.refine.quality.utilities.LoadQualityReportModel;
 import com.google.refine.quality.utilities.Utilities;
+import com.google.refine.quality.vocabularies.QPROB;
 import com.google.refine.quality.vocabularies.QR;
 import com.google.refine.quality.commands.TransformData.EditOneCellProcess;
 import com.google.refine.quality.metrics.AbstractQualityMetrics;
@@ -31,10 +32,10 @@ import com.google.refine.quality.metrics.MalformedDatatypeLiterals;
 import com.google.refine.quality.metrics.MisplacedClassesOrProperties;
 import com.google.refine.quality.metrics.MisusedOwlDatatypeOrObjectProperties;
 import com.google.refine.quality.metrics.OntologyHijacking;
-import com.google.refine.quality.metrics.ReportProblems;
 import com.google.refine.quality.metrics.UndefinedClasses;
 import com.google.refine.quality.metrics.UndefinedProperties;
 import com.google.refine.quality.metrics.WhitespaceInAnnotation;
+import com.google.refine.quality.problems.QualityProblem;
 import com.google.refine.util.ParsingUtilities;
 import com.google.refine.util.Pool;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -48,10 +49,10 @@ public class IdentifyQualityProblems extends Command{
      */
     protected Hashtable<Integer,String> qualityProblemsList = new Hashtable<Integer,String>();
     
-    protected void writeProblemicQuads(HttpServletRequest request, HttpServletResponse response, List<ReportProblems> reportProblemsList) throws ServletException {
+    protected void writeProblemicQuads(HttpServletRequest request, HttpServletResponse response, List<QualityProblem> problems) throws ServletException {
         try {
 
-            /** Get Projet Details **/
+            /** Get Projekt Details **/
             
             // Retrieve project object
             Project project = getProject(request);
@@ -60,7 +61,7 @@ public class IdentifyQualityProblems extends Command{
             EditOneCellProcess process = null;
             HistoryEntry historyEntry = null;
 
-            for (ReportProblems reportProblem : reportProblemsList) {
+            for (QualityProblem reportProblem : problems) {
                     
                 Integer rowIndex = reportProblem.getRowIndex();
                 int cellIndex = 1;
@@ -70,10 +71,10 @@ public class IdentifyQualityProblems extends Command{
                 String type = "String";
                 String valueString = "";
                 
-                String problemName = LoadQualityReportModel.getResourcePropertyValue(reportProblem.getQualityReport(), RDFS.label);
-                String problemDescription = LoadQualityReportModel.getResourcePropertyValue(reportProblem.getQualityReport(), QR.problemDescription);
-                String recommedation = LoadQualityReportModel.getResourcePropertyValue(reportProblem.getQualityReport(), QR.recommedation);
-                String comment = LoadQualityReportModel.getResourcePropertyValue(reportProblem.getQualityReport(), RDFS.comment);
+                String problemName = reportProblem.getProblemName();
+                String problemDescription = reportProblem.getProblemDescription();
+                String recommedation = reportProblem.getCleaningSuggestion();
+                String comment = reportProblem.getGrelExpression();
                 
                 valueString = problemName + splitColumn + problemDescription + splitColumn + recommedation + splitColumn + comment;
                 
@@ -229,19 +230,19 @@ public class IdentifyQualityProblems extends Command{
             IncompatibleDatatypeRange.clearCache(); //Post-Process
             
             // for Malformed Datatype Literals
-            processMetric(request, response, new MalformedDatatypeLiterals(), listQuad);
+          //  processMetric(request, response, new MalformedDatatypeLiterals(), listQuad);
             
             
             // for MisplacedClassesOrProperties -- DISABLE B/C TAKES TOO MUCH TIME
-            processMetric(request, response, new MisplacedClassesOrProperties(), listQuad);
+          //  processMetric(request, response, new MisplacedClassesOrProperties(), listQuad);
             
             // for MisusedOwlDatatypeOrObjectProperties
-            MisusedOwlDatatypeOrObjectProperties.filterAllOwlProperties(listQuad); //Pre-Process
-            processMetric(request, response, new MisusedOwlDatatypeOrObjectProperties(), listQuad);
-            MisusedOwlDatatypeOrObjectProperties.clearAllOwlPropertiesList(); //Post-Process
+          //  MisusedOwlDatatypeOrObjectProperties.filterAllOwlProperties(listQuad); //Pre-Process
+         //   processMetric(request, response, new MisusedOwlDatatypeOrObjectProperties(), listQuad);
+         //   MisusedOwlDatatypeOrObjectProperties.clearAllOwlPropertiesList(); //Post-Process
             
             // for OntologyHijacking
-            processMetric(request, response, new OntologyHijacking(), listQuad);
+           // processMetric(request, response, new OntologyHijacking(), listQuad);
             
             // for WhitespaceInAnnotation
             WhitespaceInAnnotation.loadAnnotationPropertiesSet(null); //Pre-Process
@@ -254,10 +255,10 @@ public class IdentifyQualityProblems extends Command{
             LabelsUsingCapitals.clearAnnotationPropertiesSet();
             
             // for Undefined Classes
-            processMetric(request, response, new UndefinedClasses(), listQuad);
+          //  processMetric(request, response, new UndefinedClasses(), listQuad);
             
             // for Undefined Properties
-            processMetric(request, response, new UndefinedProperties(), listQuad);
+        //    processMetric(request, response, new UndefinedProperties(), listQuad);
 
             
         } catch (Exception e) {

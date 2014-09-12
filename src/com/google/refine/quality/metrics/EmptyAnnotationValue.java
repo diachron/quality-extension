@@ -11,7 +11,9 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.apache.xerces.util.URI;
 
+import com.google.refine.quality.problems.QualityProblem;
 import com.google.refine.quality.utilities.LoadQualityReportModel;
+import com.google.refine.quality.vocabularies.QPROB;
 import com.google.refine.quality.vocabularies.QR;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -30,7 +32,7 @@ public class EmptyAnnotationValue extends AbstractQualityMetrics{
         /**
          * Description of quality report 
          */
-        protected Resource qualityReport  = QR.EmptyAnnotationValueProblem;
+        protected Resource qualityReport  = QPROB.EmptyAnnotationValueProblem;
         /**
          * logger static object
          */
@@ -126,7 +128,7 @@ public class EmptyAnnotationValue extends AbstractQualityMetrics{
                             
                             if (isEmptyLiteral) {
                                     this.totalNumberOfEmptyLiterals++; // increment empty literal count
-                                    ReportProblems reportProblems = new ReportProblems(index, quad, qualityReport);
+                                    QualityProblem reportProblems = new QualityProblem(index, quad, qualityReport);
                                     this.problemList.add(reportProblems); // add invalid quad in problem list
                             }
                     }

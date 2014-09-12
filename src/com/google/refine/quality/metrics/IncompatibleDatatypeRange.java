@@ -13,8 +13,10 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.google.refine.quality.problems.DatatypeQualityProblem;
 import com.google.refine.quality.utilities.LoadQualityReportModel;
 import com.google.refine.quality.utilities.VocabularyReader;
+import com.google.refine.quality.vocabularies.QPROB;
 import com.google.refine.quality.vocabularies.QR;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
@@ -35,7 +37,7 @@ public class IncompatibleDatatypeRange extends AbstractQualityMetrics{
         /**
          * Description of quality report 
          */
-        protected Resource qualityReport  = QR.IncompatibleDatatypeRangeProblem;
+        protected Resource qualityReport  = QPROB.IncompatibleDatatypeRangeProblem;
         /**
          * logger object
          */
@@ -184,7 +186,8 @@ public class IncompatibleDatatypeRange extends AbstractQualityMetrics{
                                                 givenObjectDateTypeURI,
                                                 rangeObjectURI)) {
                                             this.incompatiableDataTypeLiterals++;
-                                            ReportProblems reportProblems = new ReportProblems(index, quad, qualityReport);
+                                            DatatypeQualityProblem reportProblems = new DatatypeQualityProblem(index, quad, qualityReport);
+                                            reportProblems.setDatatypes(rangeObjectURI, givenObjectDateTypeURI);
                                             this.problemList.add(reportProblems);
                                         }
                                     } catch (URISyntaxException e) {

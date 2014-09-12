@@ -12,8 +12,11 @@ import com.hp.hpl.jena.sparql.core.Quad;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
+import com.google.refine.quality.problems.QualityProblem;
+import com.google.refine.quality.problems.UndefinedClassORPropertyProblem;
 import com.google.refine.quality.utilities.LoadQualityReportModel;
 import com.google.refine.quality.utilities.VocabularyReader;
+import com.google.refine.quality.vocabularies.QPROB;
 import com.google.refine.quality.vocabularies.QR;
 
 /**
@@ -31,7 +34,7 @@ public class UndefinedClasses extends AbstractQualityMetrics {
         /**
          * Description of quality report 
          */
-        protected Resource qualityReport  = QR.UndefinedClassesProblem;
+        protected Resource qualityReport  = QPROB.UndefinedClassesProblem;
         /**
          * Rdf prefix URI
          */
@@ -99,15 +102,15 @@ public class UndefinedClasses extends AbstractQualityMetrics {
                             if (objectModel == null) { // check if system is able to
                                                         // retrieve model
                                     this.undefinedClassesCount++;
-                                    ReportProblems reportProblems = new ReportProblems(index, quad, qualityReport);  
+                                    QualityProblem reportProblems = new QualityProblem(index, quad, qualityReport);  
                                     this.problemList.add(reportProblems);
                             } else {
                                  // search for URI resource from Model
                                     if (!objectModel.getResource(object.getURI())
                                                     .isURIResource()) {
                                         this.undefinedClassesCount++;
-                                        ReportProblems reportProblems = new ReportProblems(index, quad, qualityReport);
-                                        this.problemList.add(reportProblems);
+                                        UndefinedClassORPropertyProblem reportProblems = new UndefinedClassORPropertyProblem(index, quad, qualityReport);
+                                         this.problemList.add(reportProblems);
                                     }      
                             }
                         }

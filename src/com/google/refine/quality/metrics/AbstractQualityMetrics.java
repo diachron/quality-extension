@@ -3,6 +3,7 @@ package com.google.refine.quality.metrics;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.refine.quality.problems.QualityProblem;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.core.Quad;
 
@@ -15,7 +16,7 @@ public abstract class AbstractQualityMetrics {
        /**
         * list of problematic quad
         */
-        protected List<ReportProblems> problemList = new ArrayList<ReportProblems>();
+        protected List<QualityProblem> problemList = new ArrayList<QualityProblem>();
        /**
         * Returns value of the metric
         * 
@@ -46,9 +47,9 @@ public abstract class AbstractQualityMetrics {
          * 
          * @return list of problematic quads
          */
-        public List<ReportProblems> getQualityProblems() {
-            List<ReportProblems> tmpProblemList = null;
-            tmpProblemList = new ArrayList<ReportProblems>(this.problemList);
+        public List<QualityProblem> getQualityProblems() {
+            List<QualityProblem> tmpProblemList = null;
+            tmpProblemList = new ArrayList<QualityProblem>(this.problemList);
             return tmpProblemList;
         }
 }

@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import org.apache.xerces.util.URI;
 import org.apache.xerces.util.URI.MalformedURIException;
 
+import com.google.refine.quality.problems.QualityProblem;
 import com.google.refine.quality.utilities.LoadQualityReportModel;
 import com.google.refine.quality.utilities.VocabularyReader;
 import com.hp.hpl.jena.graph.Node;
@@ -92,7 +93,7 @@ public class OntologyHijacking extends AbstractQualityMetrics{
                             Node subject = quad.getSubject(); // retrieve subject
                             if (isHijacked(subject)){ 
                                     this.hijackedClassesOrPropertiesCount++; // increments redefined class or property count
-                                    ReportProblems reportProblems = new ReportProblems(index, quad, qualityReport);
+                                    QualityProblem reportProblems = new QualityProblem(index, quad, qualityReport);
                                     this.problemList.add(reportProblems);
                             }
                     }
@@ -101,7 +102,7 @@ public class OntologyHijacking extends AbstractQualityMetrics{
                             Node object = quad.getObject(); // retrieve object
                             if (isHijacked(object)){ 
                                     this.hijackedClassesOrPropertiesCount++; // increments redefined class or property count
-                                    ReportProblems reportProblems = new ReportProblems(index, quad, qualityReport);
+                                    QualityProblem reportProblems = new QualityProblem(index, quad, qualityReport);
                                     this.problemList.add(reportProblems);
                             }
                     }

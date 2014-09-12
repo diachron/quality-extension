@@ -16,7 +16,7 @@ public class LoadQualityReportModel {
     /**
      * Default file path name
      */
-    protected static String filePathName = "extensions/quality-extension/resources/vocabularies/qr/qr.rdf";
+    protected static String filePathName = "extensions/quality-extension/resources/vocabularies/qprob/qprob.rdf";
     protected static Model qualityReportModel = null;
     public static String getResourcePropertyValue(Resource resource ,Property property) {
         

@@ -13,7 +13,9 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.apache.xerces.util.URI;
 
+import com.google.refine.quality.problems.QualityProblem;
 import com.google.refine.quality.utilities.LoadQualityReportModel;
+import com.google.refine.quality.vocabularies.QPROB;
 import com.google.refine.quality.vocabularies.QR;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -42,7 +44,7 @@ public class LabelsUsingCapitals extends AbstractQualityMetrics {
         /**
          * Description of quality report 
          */
-        protected Resource qualityReport  = QR.LabelsUsingCapitalsProblem;
+        protected Resource qualityReport  = QPROB.LabelsUsingCapitalsProblem;
 	/**
 	 * logger static object
 	 */
@@ -152,7 +154,7 @@ public class LabelsUsingCapitals extends AbstractQualityMetrics {
 								this.totalNumberOfBadCapitalizationLiterals++; // increment
 																				// whitespace
 																				// literal
-								ReportProblems reportProblems = new ReportProblems(index, quad, qualityReport);
+								QualityProblem reportProblems = new QualityProblem(index, quad, qualityReport);
 								this.problemList.add(reportProblems); // add invalid quad
 															// in problem list
 							}

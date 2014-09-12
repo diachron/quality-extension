@@ -5,8 +5,10 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import com.google.refine.quality.problems.QualityProblem;
 import com.google.refine.quality.utilities.LoadQualityReportModel;
 import com.google.refine.quality.utilities.VocabularyReader;
+import com.google.refine.quality.vocabularies.QPROB;
 import com.google.refine.quality.vocabularies.QR;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
@@ -29,7 +31,8 @@ public class MisusedOwlDatatypeOrObjectProperties extends AbstractQualityMetrics
         /**
          * Description of quality report 
          */
-        protected Resource qualityReport  = QR.MisuseOwlDatatypeOrObjectPropertiesProblem;
+        protected Resource datatypeProperty  = QPROB.MisuseOwlDatatypePropertyProblem;
+        protected Resource objectPropertyProblem  = QPROB.MisuseOwlObjectPropertyProblem;
         /**
          * static logger object
          */
@@ -188,7 +191,7 @@ public class MisusedOwlDatatypeOrObjectProperties extends AbstractQualityMetrics
                     this.totalDatatypeProperties++;
                     if (!object.isLiteral()) {
                         this.misuseDatatypeProperties++;
-                        ReportProblems reportProblems = new ReportProblems(index, quad, qualityReport); 
+                        QualityProblem reportProblems = new QualityProblem(index, quad, datatypeProperty); 
                         this.problemList.add(reportProblems);
                     }
                 }
@@ -198,7 +201,7 @@ public class MisusedOwlDatatypeOrObjectProperties extends AbstractQualityMetrics
                     this.totalObjectProperties++;
                     if (!object.isURI()) {
                         this.misuseObjectProperties++;
-                        ReportProblems reportProblems = new ReportProblems(index, quad, qualityReport);
+                        QualityProblem reportProblems = new QualityProblem(index, quad, objectPropertyProblem);
                         this.problemList.add(reportProblems);
                     }
                 }

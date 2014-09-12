@@ -19,7 +19,7 @@ qprob:MalformedDatatypeLiteralsProblem a rdfs:Class ;
 	qprob:problemDescription "Literal value is not consistent with the defined data type.";
 	qprob:cleaningSuggestion "Parse or convert literal into the value space of the data type." ;
 	qr:identifiedBy dqm:MalformedDatatypeLiteralsMetric;
-	rdfs:label "Malformed Datatype literals Problem" . 
+	rdfs:label "Malformed Datatype Literal" . 
 	
 qprob:IncompatibleDatatypeRangeProblem a rdfs:Class ;
 	rdfs:subClassOf qr:QualityProblem ;
@@ -27,7 +27,7 @@ qprob:IncompatibleDatatypeRangeProblem a rdfs:Class ;
 	qprob:problemDescription "Literal value is not consistent with data type defined by property range" ;
 	qprob:cleaningSuggestion "Parse or convert the literal value into the value space of the range datatype" ;
 	qr:identifiedBy dqm:IncompatibleDatatypeRangeMetric;
-	rdfs:label "Incompatible Datatype Range Problem " . 
+	rdfs:label "Incompatible Datatype Range" . 
 	
 
 qprob:HomogeneousDatatypesProblem a rdfs:Class ;
@@ -36,7 +36,7 @@ qprob:HomogeneousDatatypesProblem a rdfs:Class ;
 	qprob:cleaningSuggestion "Parse or convert literal values to unique data type" ;
 	rdfs:comment "Represents a kind of quality problems in which data type are not homogeneous" ;
 	qr:identifiedBy dqm:HomogeneousDatatypesMetric;
-	rdfs:label "Homogeneous Datatype Problem " . 
+	rdfs:label "Homogeneous Datatype" . 
 	
 
 qprob:MisplacedClassesOrPropertiesProblem a rdfs:Class ;
@@ -50,14 +50,14 @@ qprob:MisplacedClassProblem a rdfs:Class ;
 	rdfs:comment "Represents a kind of quality problems in which classes is not places properly." ;
 	qprob:problemDescription "Class is used in the property position" ;
 	qprob:cleaningSuggestion "Define an appropriate property" ;
-	rdfs:label "Misplaced classes Problem " . 
+	rdfs:label "Misplaced Class" . 
 	
 qprob:MisplacedPropertyProblem a rdfs:Class ;
 	rdfs:subClassOf qprob:MisplacedClassesOrPropertiesProblem ;
 	rdfs:comment "Represents a kind of quality problems in which property is not places properly." ;
 	qprob:problemDescription "Property is used in a class position" ;
 	qprob:cleaningSuggestion "Define an appropriate class" ;
-	rdfs:label "Misplaced Property Problem " . 
+	rdfs:label "Misplaced Property" . 
 	
 
 qprob:MisuseOwlDatatypeOrObjectPropertiesProblem a rdfs:Class ;
@@ -72,14 +72,14 @@ qprob:MisuseOwlDatatypePropertyProblem a rdfs:Class ;
 	rdfs:comment "Represents a kind of quality problems in which the property of the class  owl:DatatypeProperty is used as owl:ObjectProperty." ;
 	qprob:problemDescription "The property of the class owl:ObjectProperty points to a literal" ;
 	qprob:cleaningSuggestion "Use class of owl:DatatypeProperty or change object to rdfs:Resource" ;
-	rdfs:label "Misuse Owl Datatype Property Problem" .
+	rdfs:label "Misused Owl DatatypeProperty" .
 	
-qprob:MisuseOwlDatatypePropertyProblem a rdfs:Class ;
+qprob:MisuseOwlObjectPropertyProblem a rdfs:Class ;
 	rdfs:subClassOf qprob:MisuseOwlDatatypeOrObjectPropertiesProblem ;
 	rdfs:comment "Represents a kind of quality problems in which the property of the class owl:ObjectProperty is used as owl:DatatypeProperty." ;
 	qprob:problemDescription "The property of the class owl:DatatypeProperty points to a ressource" ;
 	qprob:cleaningSuggestion "Use class of owl:ObjectProperty or change object to rdfs:Literal" ;
-	rdfs:label "Misuse Owl ObjectProperty Problem" .
+	rdfs:label "Misused Owl ObjectProperty" .
 	
 
 qprob:UndefinedClassesProblem a rdfs:Class ;
@@ -88,7 +88,7 @@ qprob:UndefinedClassesProblem a rdfs:Class ;
 	rdfs:comment "Represents a kind of quality problems in which classes are not defined" ;
 	qprob:cleaningSuggestion "Use a defined class. " ;
 	qr:identifiedBy dqm:UndefinedClassesMetric;
-	rdfs:label "Undefined Classes Problem" .
+	rdfs:label "Undefined Class" .
 	
 qprob:UndefinedPropertiesProblem a rdfs:Class ;
 	rdfs:subClassOf qr:QualityProblem ;
@@ -96,7 +96,7 @@ qprob:UndefinedPropertiesProblem a rdfs:Class ;
 	qprob:cleaningSuggestion "Use a defined property." ;
 	rdfs:comment "Represents a kind of quality problems in which classes or properties are not defined" ;
 	qr:identifiedBy dqm:UndefinedPropertiesMetric;
-	rdfs:label "Undefined Properties Problem".
+	rdfs:label "Undefined Property".
 	
 	
 qprob:WhitespaceInAnnotationProblem a rdfs:Class ;
@@ -104,9 +104,9 @@ qprob:WhitespaceInAnnotationProblem a rdfs:Class ;
 	qprob:problemDescription "Literal value contains white spaces";
 	qprob:cleaningSuggestion "Trim leading and trailing whitespace" ;
 	rdfs:comment "Represents a kind of quality problems in which object in annotation property contains white spaces." ;
-	qprob:qrefineRule "";
+	qprob:qrefineRule "value.trim()";
 	qr:identifiedBy dqm:WhitespaceInAnnotationMetric;
-	rdfs:label "Whitespace in Annotation Problem".
+	rdfs:label "Whitespace in Annotation".
 	
 	
 qprob:OntologyHijackingProblem a rdfs:Class ;
