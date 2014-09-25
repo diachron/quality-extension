@@ -21,6 +21,7 @@ import com.google.refine.model.Column;
 import com.google.refine.model.Project;
 import com.google.refine.model.changes.CellChange;
 import com.google.refine.process.QuickHistoryEntryProcess;
+import com.google.refine.quality.exceptions.QualityExtensionException;
 import com.google.refine.quality.utilities.LoadJenaModel;
 import com.google.refine.quality.utilities.Utilities;
 import com.google.refine.util.Pool;
@@ -65,11 +66,10 @@ public class TransformData extends Command {
   }
 
   private void updateCell(HistoryEntry historyEntry, EditOneCellProcess process,
-     HttpServletResponse response) {
+    HttpServletResponse response) {
     try {
       if (historyEntry != null) {
         JSONWriter writer = new JSONWriter(response.getWriter());
-
         Pool pool = new Pool();
         Properties options = new Properties();
         options.put("pool", pool);
@@ -104,7 +104,7 @@ public class TransformData extends Command {
     Cell newCell;
 
     EditOneCellProcess(Project project, String briefDescription, int rowIndex, int cellIndex,
-        Serializable value) {
+      Serializable value) {
       super(project, briefDescription);
 
       this.rowIndex = rowIndex;
@@ -113,11 +113,11 @@ public class TransformData extends Command {
     }
 
     @Override
-    protected HistoryEntry createHistoryEntry(long historyEntryID) throws Exception {
+    protected HistoryEntry createHistoryEntry(long historyEntryID) {
       Cell cell = _project.rows.get(rowIndex).getCell(cellIndex);
       Column column = _project.columnModel.getColumnByCellIndex(cellIndex);
       if (column == null) {
-        throw new Exception("No such column");
+        throw new QualityExtensionException("No such column");
       }
 
       newCell = new Cell(value, cell != null ? cell.recon : null);

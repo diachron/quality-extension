@@ -19,6 +19,7 @@ import com.google.refine.commands.Command;
 import com.google.refine.history.HistoryEntry;
 import com.google.refine.model.Project;
 import com.google.refine.quality.commands.TransformData.EditOneCellProcess;
+import com.google.refine.quality.exceptions.QualityExtensionException;
 import com.google.refine.quality.metrics.AbstractQualityMetric;
 import com.google.refine.quality.metrics.LabelsUsingCapitals;
 import com.google.refine.quality.problems.QualityProblem;
@@ -56,6 +57,7 @@ public class IdentifyQualityProblems extends Command {
       }
       updateCell(process, historyEntry);
     } catch (Exception e) {
+      //TODO checked exception?
       LOG.error(e.getLocalizedMessage());
     }
   }
@@ -154,8 +156,12 @@ public class IdentifyQualityProblems extends Command {
         //Utilities.printStatements(LoadJenaModel.getModel(retrieveRDFData(project)).listStatements(), System.out);
       } catch (IOException e) {
         LOG.error(e.getLocalizedMessage());
+        throw new QualityExtensionException("Project can not be written to an InputStream. "
+          + e.getLocalizedMessage());
       } catch (ServletException e) {
         LOG.error(e.getLocalizedMessage());
+        throw new QualityExtensionException("Can not get a project from OpenRefine. "
+          + e.getLocalizedMessage());
       }
 
       // for Hello World Meric -- DEBUG ONLY
