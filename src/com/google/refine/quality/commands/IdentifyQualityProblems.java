@@ -23,7 +23,7 @@ import com.google.refine.quality.exceptions.QualityExtensionException;
 import com.google.refine.quality.metrics.AbstractQualityMetric;
 import com.google.refine.quality.metrics.LabelsUsingCapitals;
 import com.google.refine.quality.problems.QualityProblem;
-import com.google.refine.quality.utilities.LoadJenaModel;
+import com.google.refine.quality.utilities.JenaModelLoader;
 import com.google.refine.quality.utilities.Utilities;
 import com.google.refine.util.Pool;
 
@@ -151,7 +151,7 @@ public class IdentifyQualityProblems extends Command {
 
       try {
         project = getProject(request);
-        quards = LoadJenaModel.getQuads(Utilities.projectToInputStream(project));
+        quards = JenaModelLoader.getQuads(Utilities.projectToInputStream(project));
 
         //Utilities.printStatements(LoadJenaModel.getModel(retrieveRDFData(project)).listStatements(), System.out);
       } catch (IOException e) {

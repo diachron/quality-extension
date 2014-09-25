@@ -8,21 +8,19 @@ public class UndefinedClassORPropertyProblem extends QualityProblem {
 
   public UndefinedClassORPropertyProblem(Integer rowIndex, Quad quad, Resource qualityReport) {
     super(rowIndex, quad, qualityReport);
-    // TODO Auto-generated constructor stub
   }
 
-  public void isProperty() {
+  public void setToProperty() {
     isClass = false;
   }
 
   @Override
   public String getProblemDescription() {
-    String description = " is not defined";
+    String description = " is not defined.";
     if (isClass) {
-      return this.quad.getObject() + description;
+      return quad.getObject() + description;
     } else {
-      return this.quad.getPredicate() + description;
+      return quad.getPredicate() + description;
     }
   }
-
 }

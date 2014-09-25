@@ -1,8 +1,5 @@
 package com.google.refine.quality.metrics;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.apache.xerces.util.URI;
 import org.apache.xerces.util.URI.MalformedURIException;
@@ -15,7 +12,6 @@ import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import com.google.refine.quality.problems.QualityProblem;
 import com.google.refine.quality.problems.UndefinedClassORPropertyProblem;
-import com.google.refine.quality.utilities.LoadQualityReportModel;
 import com.google.refine.quality.utilities.VocabularyReader;
 import com.google.refine.quality.vocabularies.QPROB;
 
@@ -76,7 +72,7 @@ public class UndefinedProperties extends AbstractQualityMetric {
 						        System.out.println("predicate : " + predicate);    
 								this.undefinedPropertiesCount++;
 								UndefinedClassORPropertyProblem reportProblems = new UndefinedClassORPropertyProblem(index, quad, qualityReport);
-								reportProblems.isProperty();
+								reportProblems.setToProperty();
 								this.problemList.add(reportProblems);
 							}
 						}

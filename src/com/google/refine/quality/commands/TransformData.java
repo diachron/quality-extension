@@ -22,7 +22,7 @@ import com.google.refine.model.Project;
 import com.google.refine.model.changes.CellChange;
 import com.google.refine.process.QuickHistoryEntryProcess;
 import com.google.refine.quality.exceptions.QualityExtensionException;
-import com.google.refine.quality.utilities.LoadJenaModel;
+import com.google.refine.quality.utilities.JenaModelLoader;
 import com.google.refine.quality.utilities.Utilities;
 import com.google.refine.util.Pool;
 
@@ -38,7 +38,7 @@ public class TransformData extends Command {
     throws ServletException, IOException {
 
     Project project = getProject(request);
-    List<Quad> quads = LoadJenaModel.getQuads(Utilities.projectToInputStream(project));
+    List<Quad> quads = JenaModelLoader.getQuads(Utilities.projectToInputStream(project));
 
     EditOneCellProcess process = null;
     HistoryEntry historyEntry = null;

@@ -22,6 +22,7 @@ public abstract class AbstractQualityMetric {
    * Computes a metric value.
    * @param quad A quad a metric applied to.
    */
+  //TODO get rid of Integer obj
   public abstract void compute(Integer index, Quad quad);
 
   /**
