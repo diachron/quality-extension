@@ -28,6 +28,7 @@ import com.google.refine.util.Pool;
 
 public class IdentifyQualityProblems extends Command {
   private static final Logger LOG = Logger.getLogger(IdentifyQualityProblems.class);
+
   private static final String COLUMN_SPLITER = "|&SPLITCOLUMN&|";
   private static final String ROW_SPLITER = "|&SPLITROW&|";
 
@@ -45,10 +46,11 @@ public class IdentifyQualityProblems extends Command {
       HistoryEntry historyEntry = null;
       EditOneCellProcess process = null;
 
+      int cell = 1;
       for (QualityProblem qualityProblem : qualityProblems) {
         int row = qualityProblem.getRowIndex();
-        int cell = 1;
         String problemString = composeProblemDescString(qualityProblem, row);
+
         process = new EditOneCellProcess(project, "Edit single cell", row, cell, problemString);
         historyEntry = project.processManager.queueProcess(process);
       }
@@ -156,8 +158,6 @@ public class IdentifyQualityProblems extends Command {
         LOG.error(e.getLocalizedMessage());
       }
 
-
-      /** Compute Metrics **/
       // for Hello World Meric -- DEBUG ONLY
       ////processMetric(request, response, new HelloWorldMetrics(), quards);
 
