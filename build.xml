@@ -39,6 +39,7 @@
     <property name="server.lib.dir" value="${server.dir}/lib" />
     
     <property name="src.dir" value="${basedir}/src" />
+     <property name="test.dir" value="${basedir}/test" />
     <property name="module.dir" value="${basedir}/module" />
     <property name="modinf.dir" value="${module.dir}/MOD-INF" />
     <property name="lib.dir" value="${modinf.dir}/lib" />
@@ -68,7 +69,27 @@
             <src path="${src.dir}"/>
             <classpath refid="class.path" />
         </javac>
+           <javac source="${java_version}" target="${java_version}" encoding="utf-8" destdir="${classes.dir}" debug="true" includeAntRuntime="no">
+            <src path="${test.dir}"/>
+            <classpath refid="class.path" />
+        </javac>
     </target>
+    
+     <target name="test" depends="build_java">
+        <junit printsummary="yes" haltonfailure="yes">
+            <classpath refid="class.path" /> <classpath>
+                <pathelement location="${classes.dir}" />
+            </classpath>
+
+
+            <batchtest fork="yes">
+                  <formatter type="brief" usefile="false"/>
+                <fileset dir="${test.dir}">
+                    <include name="**/*Test*.java" />
+                </fileset>
+            </batchtest>
+        </junit>
+  </target>
 
     <target name="build" depends="build_java"/>
 

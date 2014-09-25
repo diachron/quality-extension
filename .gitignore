@@ -5,3 +5,7 @@
 /src/com/google/refine/quality/vocabularies/**
 .classpath
 bin/
+TEST*
+.checkstyle
+
+
