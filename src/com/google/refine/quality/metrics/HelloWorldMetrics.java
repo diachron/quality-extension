@@ -6,7 +6,7 @@ import com.google.refine.quality.problems.QualityProblem;
 import com.google.refine.quality.utilities.LoadQualityReportModel;
 import com.hp.hpl.jena.sparql.core.Quad;
 
-public class HelloWorldMetrics extends AbstractQualityMetrics{
+public class HelloWorldMetrics extends AbstractQualityMetric {
     /**
      * logger static object
      */

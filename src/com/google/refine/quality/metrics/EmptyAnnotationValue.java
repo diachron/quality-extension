@@ -27,7 +27,7 @@ import com.hp.hpl.jena.sparql.core.Quad;
  * @author Muhammad Ali Qasmi
  * @date 19th June 2014
  */
-public class EmptyAnnotationValue extends AbstractQualityMetrics{
+public class EmptyAnnotationValue extends AbstractQualityMetric {
         /**
          * Description of quality report 
          */

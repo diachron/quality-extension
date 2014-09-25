@@ -26,7 +26,7 @@ import com.hp.hpl.jena.sparql.core.Quad;
  * @author Muhammad Ali Qasmi
  * @date 12th May 2014
  */
-public class MisusedOwlDatatypeOrObjectProperties extends AbstractQualityMetrics{
+public class MisusedOwlDatatypeOrObjectProperties extends AbstractQualityMetric {
         /**
          * Description of quality report 
          */

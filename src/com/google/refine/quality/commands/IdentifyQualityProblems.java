@@ -19,7 +19,7 @@ import com.google.refine.commands.Command;
 import com.google.refine.history.HistoryEntry;
 import com.google.refine.model.Project;
 import com.google.refine.quality.commands.TransformData.EditOneCellProcess;
-import com.google.refine.quality.metrics.AbstractQualityMetrics;
+import com.google.refine.quality.metrics.AbstractQualityMetric;
 import com.google.refine.quality.metrics.LabelsUsingCapitals;
 import com.google.refine.quality.problems.QualityProblem;
 import com.google.refine.quality.utilities.LoadJenaModel;
@@ -40,7 +40,7 @@ public class IdentifyQualityProblems extends Command {
    * 
    * @param qualityProblems
    */
-  protected void writeProblematicQuads(List<QualityProblem> qualityProblems) {
+  protected void postProblematicQuads(List<QualityProblem> qualityProblems) {
     try {
       HistoryEntry historyEntry = null;
       EditOneCellProcess process = null;
@@ -128,7 +128,7 @@ public class IdentifyQualityProblems extends Command {
    * @param metric An applied metric.
    * @param quards A list of quards to process.
    */
-  protected void processMetric(AbstractQualityMetrics metric, List<Quad> quards) {
+  protected void processMetric(AbstractQualityMetric metric, List<Quad> quards) {
     LOG.info(String.format("Processing for %s", metric.getClass()));
 
     metric.compute(quards);
@@ -136,7 +136,7 @@ public class IdentifyQualityProblems extends Command {
     if (metric.getQualityProblems().isEmpty()){
       LOG.info(String.format("No problem found for %s", metric.getClass()));
     } else {
-      writeProblematicQuads(metric.getQualityProblems());
+      postProblematicQuads(metric.getQualityProblems());
     }
   }
 

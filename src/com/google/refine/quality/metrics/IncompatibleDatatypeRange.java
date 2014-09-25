@@ -32,7 +32,7 @@ import com.hp.hpl.jena.vocabulary.RDFS;
  * @author Muhammad Ali Qasmi
  * @date 21st June 2014 
  */
-public class IncompatibleDatatypeRange extends AbstractQualityMetrics{
+public class IncompatibleDatatypeRange extends AbstractQualityMetric {
         /**
          * Description of quality report 
          */

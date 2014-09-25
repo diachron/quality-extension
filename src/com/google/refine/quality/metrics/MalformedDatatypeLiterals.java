@@ -20,7 +20,7 @@ import com.hp.hpl.jena.sparql.core.Quad;
  * @author Muhammad Ali Qasmi
  * @date 13th Feb 2014
  */
-public class MalformedDatatypeLiterals extends AbstractQualityMetrics{
+public class MalformedDatatypeLiterals extends AbstractQualityMetric {
         /**
          * Description of quality report 
          */

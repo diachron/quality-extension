@@ -23,7 +23,7 @@ import com.hp.hpl.jena.vocabulary.RDFS;
  * @author Muhammad Ali Qasmi
  * @date 13th March 2014
  */
-public class MisplacedClassesOrProperties extends AbstractQualityMetrics{
+public class MisplacedClassesOrProperties extends AbstractQualityMetric {
         /**
          * Description of quality report 
          */

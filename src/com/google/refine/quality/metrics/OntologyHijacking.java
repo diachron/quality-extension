@@ -25,7 +25,7 @@ import com.hp.hpl.jena.vocabulary.RDF;
  * @date 10th June 2014
  * 
  */
-public class OntologyHijacking extends AbstractQualityMetrics{
+public class OntologyHijacking extends AbstractQualityMetric {
         /**
          * Description of quality report 
          */

@@ -29,7 +29,7 @@ import com.google.refine.quality.vocabularies.QPROB;
  * @author Muhammad Ali Qasmi
  * @date 11th March 2014
  */
-public class UndefinedClasses extends AbstractQualityMetrics {
+public class UndefinedClasses extends AbstractQualityMetric {
         /**
          * Description of quality report 
          */

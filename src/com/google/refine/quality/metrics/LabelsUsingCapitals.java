@@ -39,7 +39,7 @@ import com.hp.hpl.jena.sparql.core.Quad;
  * @author Muhammad Ali Qasmi
  * @date 19th June 2014
  */
-public class LabelsUsingCapitals extends AbstractQualityMetrics {
+public class LabelsUsingCapitals extends AbstractQualityMetric {
         /**
          * Description of quality report 
          */

@@ -19,7 +19,7 @@ import com.google.refine.quality.utilities.LoadQualityReportModel;
 import com.google.refine.quality.utilities.VocabularyReader;
 import com.google.refine.quality.vocabularies.QPROB;
 
-public class UndefinedProperties extends AbstractQualityMetrics {
+public class UndefinedProperties extends AbstractQualityMetric {
                 /**
                  * Description of quality report 
                  */
