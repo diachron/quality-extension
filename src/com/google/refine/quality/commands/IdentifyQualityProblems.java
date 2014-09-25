@@ -1,8 +1,6 @@
 package com.google.refine.quality.commands;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.Serializable;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
@@ -11,259 +9,198 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
+import org.json.JSONException;
 import org.json.JSONWriter;
+
+import com.hp.hpl.jena.sparql.core.Quad;
 
 import com.google.refine.commands.Command;
 import com.google.refine.history.HistoryEntry;
 import com.google.refine.model.Project;
-import com.google.refine.quality.utilities.LoadJenaModel;
-import com.google.refine.quality.utilities.LoadQualityReportModel;
-import com.google.refine.quality.utilities.Utilities;
-import com.google.refine.quality.vocabularies.QPROB;
-import com.google.refine.quality.vocabularies.QR;
 import com.google.refine.quality.commands.TransformData.EditOneCellProcess;
 import com.google.refine.quality.metrics.AbstractQualityMetrics;
-import com.google.refine.quality.metrics.EmptyAnnotationValue;
-import com.google.refine.quality.metrics.HelloWorldMetrics;
-import com.google.refine.quality.metrics.IncompatibleDatatypeRange;
 import com.google.refine.quality.metrics.LabelsUsingCapitals;
-import com.google.refine.quality.metrics.MalformedDatatypeLiterals;
-import com.google.refine.quality.metrics.MisplacedClassesOrProperties;
-import com.google.refine.quality.metrics.MisusedOwlDatatypeOrObjectProperties;
-import com.google.refine.quality.metrics.OntologyHijacking;
-import com.google.refine.quality.metrics.UndefinedClasses;
-import com.google.refine.quality.metrics.UndefinedProperties;
-import com.google.refine.quality.metrics.WhitespaceInAnnotation;
 import com.google.refine.quality.problems.QualityProblem;
-import com.google.refine.util.ParsingUtilities;
+import com.google.refine.quality.utilities.LoadJenaModel;
+import com.google.refine.quality.utilities.Utilities;
 import com.google.refine.util.Pool;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.sparql.core.Quad;
-import com.hp.hpl.jena.vocabulary.RDFS;
 
-public class IdentifyQualityProblems extends Command{
-    
-    /**
-     * Stores list of quality problems
-     */
-    protected Hashtable<Integer,String> qualityProblemsList = new Hashtable<Integer,String>();
-    
-    protected void writeProblemicQuads(HttpServletRequest request, HttpServletResponse response, List<QualityProblem> problems) throws ServletException {
-        try {
+public class IdentifyQualityProblems extends Command {
+  private static final Logger LOG = Logger.getLogger(IdentifyQualityProblems.class);
+  private static final String COLUMN_SPLITER = "|&SPLITCOLUMN&|";
+  private static final String ROW_SPLITER = "|&SPLITROW&|";
 
-            /** Get Projekt Details **/
-            
-            // Retrieve project object
-            Project project = getProject(request);
-            int i = 0;
+  /** A hashtable accumulates problem messages for row entries */
+  private Hashtable<Integer, String> problemMessages = new Hashtable<Integer, String>();
+  private HttpServletResponse response;
+  private Project project;
 
-            EditOneCellProcess process = null;
-            HistoryEntry historyEntry = null;
+  /**
+   * 
+   * @param qualityProblems
+   */
+  protected void writeProblematicQuads(List<QualityProblem> qualityProblems) {
+    try {
+      HistoryEntry historyEntry = null;
+      EditOneCellProcess process = null;
 
-            for (QualityProblem reportProblem : problems) {
-                    
-                Integer rowIndex = reportProblem.getRowIndex();
-                int cellIndex = 1;
-
-                String splitColumn = "|&SPLITCOLUMN&|";
-                String splitRow = "|&SPLITROW&|";
-                String type = "String";
-                String valueString = "";
-                
-                String problemName = reportProblem.getProblemName();
-                String problemDescription = reportProblem.getProblemDescription();
-                String recommedation = reportProblem.getCleaningSuggestion();
-                String comment = reportProblem.getGrelExpression();
-                
-                valueString = problemName + splitColumn + problemDescription + splitColumn + recommedation + splitColumn + comment;
-                
-                if (this.qualityProblemsList.containsKey(rowIndex)){
-                    if (! this.qualityProblemsList.get(rowIndex).contains(valueString)) {    
-                        valueString = this.qualityProblemsList.get(rowIndex)  + splitRow + valueString;
-                        this.qualityProblemsList.remove(rowIndex);
-                        this.qualityProblemsList.put(rowIndex, valueString);
-                    }
-                }
-                else {
-                    this.qualityProblemsList.put(rowIndex, valueString);
-                }
-                
-                Serializable value = null;
-
-                if ("number".equals(type)) {
-                    value = Double.parseDouble(valueString);
-                } else if ("boolean".equals(type)) {
-                    value = "true".equalsIgnoreCase(valueString);
-                } else if ("date".equals(type)) {
-                    value = ParsingUtilities.stringToDate(valueString);
-                } else {
-                    value = valueString;
-                }
-
-                process = new EditOneCellProcess(project, "Edit single cell", rowIndex, cellIndex, value);
-
-                historyEntry = project.processManager.queueProcess(process);
-                
-            }
-
-            if (historyEntry != null) {
-                /*
-                 * If the operation has been done, return the new cell's data so
-                 * the client side can update the cell's rendering right away.
-                 */
-                JSONWriter writer = new JSONWriter(response.getWriter());
-
-                Pool pool = new Pool();
-                Properties options = new Properties();
-                options.put("pool", pool);
-
-                writer.object();
-                writer.key("code");
-                writer.value("ok");
-                writer.key("historyEntry");
-                historyEntry.write(writer, options);
-                writer.key("cell");
-                process.newCell.write(writer, options);
-                writer.key("pool");
-                pool.write(writer, options);
-                writer.endObject();
-            } else {
-                respond(response, "{ \"code\" : \"pending\" }");
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+      for (QualityProblem qualityProblem : qualityProblems) {
+        int row = qualityProblem.getRowIndex();
+        int cell = 1;
+        String problemString = composeProblemDescString(qualityProblem, row);
+        process = new EditOneCellProcess(project, "Edit single cell", row, cell, problemString);
+        historyEntry = project.processManager.queueProcess(process);
+      }
+      updateCell(process, historyEntry);
+    } catch (Exception e) {
+      LOG.error(e.getLocalizedMessage());
     }
-    
-    /**
-     * Retrieves rdf - turtel data from project. RDF data is only stored in first column of the data grid.
-     * 
-     * @param project
-     * @return
-     */
-    protected InputStream retrieveRDFData(Project project) {
-        
-        InputStream inputStream = null;
+  }
 
-        try {
-            int start = 0; 
-            int limit = project.rows.size(); 
-            
-            String tmpStr = "";
-            
-            for (int i=start; i < limit; i++){
-                if (null == project.rows.get(i).getCell(0)) {
-                    tmpStr += "\n";
-                }
-                else {
-                    tmpStr += project.rows.get(i).getCell(0).toString() + "\n";
-                }
-            }
-            
-            inputStream = IOUtils.toInputStream(tmpStr, "UTF-8");
-        
-        } catch (IOException e){
-            e.printStackTrace();
-        }
-        
-        return inputStream;
+  /**
+   * 
+   * @param problem A data quality problem detected by a metric.
+   * @param row A tow in data where the problem occurred.
+   * @return String object containing description of a problem.
+   */
+  private String composeProblemDescString(QualityProblem problem, int row) {
+    StringBuffer string = new StringBuffer();
+
+    string.append(problem.getProblemName());
+    string.append(COLUMN_SPLITER);
+    string.append(problem.getProblemDescription());
+    string.append(COLUMN_SPLITER);
+    string.append(problem.getCleaningSuggestion());
+    string.append(COLUMN_SPLITER);
+    string.append(problem.getGrelExpression());
+
+    if (problemMessages.containsKey(row)) {
+      if (!problemMessages.get(row).contains(string.toString())) {
+        string.insert(0, problemMessages.get(row) + ROW_SPLITER);
+        problemMessages.put(row, string.toString());
+      }
+    } else {
+      problemMessages.put(row, string.toString());
     }
-    
-    /**
-     * Process quads for given quality metric
-     * 
-     * @param abstractQualityMetrics
-     * @param listQuad
-     * @throws ServletException 
-     */
-    protected void processMetric(HttpServletRequest request, HttpServletResponse response, AbstractQualityMetrics abstractQualityMetrics, List<Quad> listQuad) throws ServletException{
-        
-        System.out.println("Processing for " +  abstractQualityMetrics.getClass());
-        
-        abstractQualityMetrics.compute(listQuad);
-        if (abstractQualityMetrics.getQualityProblems().isEmpty()){
-            System.out.println("No problem found for " + abstractQualityMetrics.getClass());
-        }
-        else {
-            writeProblemicQuads(request, response, abstractQualityMetrics.getQualityProblems());
-        }
+
+    return string.toString();
+  }
+
+  /**
+   * Updates an entry in OpenRefine with a problem information.
+   * @param process
+   * @param entry
+   */
+  private void updateCell(EditOneCellProcess process, HistoryEntry entry) {
+    try {
+      if (entry != null) {
+        JSONWriter writer = new JSONWriter(response.getWriter());
+        Pool pool = new Pool();
+        Properties options = new Properties();
+        options.put("pool", pool);
+
+        writer.object();
+        writer.key("code");
+        writer.value("ok");
+        writer.key("historyEntry");
+        entry.write(writer, options);
+        writer.key("cell");
+        process.newCell.write(writer, options);
+        writer.key("pool");
+        pool.write(writer, options);
+        writer.endObject();
+      } else {
+        respond(response, "{ \"code\" : \"pending\" }");
+      }
+    } catch (JSONException e) {
+      LOG.error(e.getLocalizedMessage());
+    } catch (IOException e) {
+      LOG.error(e.getLocalizedMessage());
+    } catch (ServletException e) {
+      LOG.error(e.getLocalizedMessage());
     }
-    
-    @Override
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        
-        try {
-             
-            /** Get Projet Details **/
-            
-            // Retrieve project object
-            Project project = getProject(request);
 
-            //List all Statemtents loaded in model -- DEBUG ONLY 
-            //Utilities.printStatements(LoadJenaModel.getModel(retrieveRDFData(project)).listStatements(), System.out);
-            
-            /** Get Project Data **/
-            
-            // Retrieve rdf data from project
-            InputStream inputStream = retrieveRDFData(project);
-            // Retrieve all quad in model
-            List<Quad> listQuad = LoadJenaModel.getQuads(inputStream);
-            // Close input stream
-            inputStream.close();
-            
-            
-            /** Compute Metrics **/
-            // for Hello World Meric -- DEBUG ONLY
-            ////processMetric(request, response, new HelloWorldMetrics(), listQuad);
+  }
 
-            // for Empty Annotation value
-            EmptyAnnotationValue.loadAnnotationPropertiesSet(null); // Pre-Process
-            processMetric(request, response, new EmptyAnnotationValue(), listQuad);
-            EmptyAnnotationValue.clearAnnotationPropertiesSet(); //Post-Process
+  /**
+   * Processes retrieved quards for a given quality metric.
+   * @param metric An applied metric.
+   * @param quards A list of quards to process.
+   */
+  protected void processMetric(AbstractQualityMetrics metric, List<Quad> quards) {
+    LOG.info(String.format("Processing for %s", metric.getClass()));
 
-            //TODO homogeneousDatatypes
-            
-            // for IncompatiableDatatypeRange
-            processMetric(request, response, new IncompatibleDatatypeRange(), listQuad);
-            IncompatibleDatatypeRange.clearCache(); //Post-Process
-            
-            // for Malformed Datatype Literals
-          //  processMetric(request, response, new MalformedDatatypeLiterals(), listQuad);
-            
-            
-            // for MisplacedClassesOrProperties -- DISABLE B/C TAKES TOO MUCH TIME
-          //  processMetric(request, response, new MisplacedClassesOrProperties(), listQuad);
-            
-            // for MisusedOwlDatatypeOrObjectProperties
-          //  MisusedOwlDatatypeOrObjectProperties.filterAllOwlProperties(listQuad); //Pre-Process
-         //   processMetric(request, response, new MisusedOwlDatatypeOrObjectProperties(), listQuad);
-         //   MisusedOwlDatatypeOrObjectProperties.clearAllOwlPropertiesList(); //Post-Process
-            
-            // for OntologyHijacking
-           // processMetric(request, response, new OntologyHijacking(), listQuad);
-            
-            // for WhitespaceInAnnotation
-            WhitespaceInAnnotation.loadAnnotationPropertiesSet(null); //Pre-Process
-            processMetric(request, response, new WhitespaceInAnnotation(), listQuad);
-            WhitespaceInAnnotation.clearAnnotationPropertiesSet(); //Post-Process
-            
-            // for LabelUsingCapitals
-            LabelsUsingCapitals.loadAnnotationPropertiesSet(null); //Pre-Process
-            processMetric(request, response, new LabelsUsingCapitals(), listQuad);
-            LabelsUsingCapitals.clearAnnotationPropertiesSet();
-            
-            // for Undefined Classes
-          //  processMetric(request, response, new UndefinedClasses(), listQuad);
-            
-            // for Undefined Properties
-        //    processMetric(request, response, new UndefinedProperties(), listQuad);
+    metric.compute(quards);
 
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    if (metric.getQualityProblems().isEmpty()){
+      LOG.info(String.format("No problem found for %s", metric.getClass()));
+    } else {
+      writeProblematicQuads(metric.getQualityProblems());
     }
-    
+  }
+
+  @Override
+  public void doPost(HttpServletRequest request, HttpServletResponse response) {
+      this.response = response;
+      List<Quad> quards = null;
+
+      try {
+        project = getProject(request);
+        quards = LoadJenaModel.getQuads(Utilities.projectToInputStream(project));
+
+        //Utilities.printStatements(LoadJenaModel.getModel(retrieveRDFData(project)).listStatements(), System.out);
+      } catch (IOException e) {
+        LOG.error(e.getLocalizedMessage());
+      } catch (ServletException e) {
+        LOG.error(e.getLocalizedMessage());
+      }
+
+
+      /** Compute Metrics **/
+      // for Hello World Meric -- DEBUG ONLY
+      ////processMetric(request, response, new HelloWorldMetrics(), quards);
+
+      // for Empty Annotation value
+      //            EmptyAnnotationValue.loadAnnotationPropertiesSet(null); // Pre-Process
+      //            processMetric(request, response, new EmptyAnnotationValue(), quards);
+      //            EmptyAnnotationValue.clearAnnotationPropertiesSet(); //Post-Process
+      //
+      //            //TODO homogeneousDatatypes
+      //            
+      //            // for IncompatiableDatatypeRange
+      //            processMetric(request, response, new IncompatibleDatatypeRange(), quards);
+      //            IncompatibleDatatypeRange.clearCache(); //Post-Process
+
+      // for Malformed Datatype Literals
+      //  processMetric(request, response, new MalformedDatatypeLiterals(), quards);
+
+
+      // for MisplacedClassesOrProperties -- DISABLE B/C TAKES TOO MUCH TIME
+      //  processMetric(request, response, new MisplacedClassesOrProperties(), quards);
+
+      // for MisusedOwlDatatypeOrObjectProperties
+      //  MisusedOwlDatatypeOrObjectProperties.filterAllOwlProperties(listQuad); //Pre-Process
+      //   processMetric(request, response, new MisusedOwlDatatypeOrObjectProperties(), listQuad);
+      //   MisusedOwlDatatypeOrObjectProperties.clearAllOwlPropertiesList(); //Post-Process
+
+      // for OntologyHijacking
+      // processMetric(request, response, new OntologyHijacking(), quards);
+
+      // for WhitespaceInAnnotation
+      //            WhitespaceInAnnotation.loadAnnotationPropertiesSet(null); //Pre-Process
+      //            processMetric(request, response, new WhitespaceInAnnotation(), quards);
+      //            WhitespaceInAnnotation.clearAnnotationPropertiesSet(); //Post-Process
+
+      // for LabelUsingCapitals
+      LabelsUsingCapitals.loadAnnotationPropertiesSet(null); //Pre-Process
+      processMetric(new LabelsUsingCapitals(), quards);
+      LabelsUsingCapitals.clearAnnotationPropertiesSet();
+
+      // for Undefined Classes
+      //  processMetric(request, response, new UndefinedClasses(), quards);
+
+      // for Undefined Properties
+      //    processMetric(request, response, new UndefinedProperties(), quards);
+    }
 }
