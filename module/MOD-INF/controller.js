@@ -50,15 +50,18 @@ function init() {
   RefineServlet.registerCommand(module, "assessQuality", new AssessQuality());
   RefineServlet.registerCommand(module, "identifyQualityProblems", new IdentifyQualityProblems()); 
   RefineServlet.registerCommand(module, "transformData", new TransformData());
-  
+
   var ClientSideResourceManager = Packages.com.google.refine.ClientSideResourceManager;	
   // Script files to inject into /project page
   ClientSideResourceManager.addPaths(
-    "project/scripts",
-    module,
-    [
-      "scripts/project-injection.js"
-    ]
+      "project/scripts",
+      module,
+      [
+       "scripts/project-injection.js",
+       "scripts/collapsible.js",
+       "scripts/metrics-dialog.js",
+       "scripts/menu.js",
+       ]
   );
 
   // Style files to inject into /project page
@@ -66,7 +69,8 @@ function init() {
     "project/styles",
     module,
     [
-      "styles/project-injection.less"
+     "styles/metrics-dialog.less",
+     "styles/project-injection.less"
     ]
   );
 }

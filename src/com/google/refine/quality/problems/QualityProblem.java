@@ -31,13 +31,11 @@ public class QualityProblem {
   }
 
   public String getProblemDescription() {
-    return LoadQualityReportModel.getResourcePropertyValue(this.problemtURI,
-      QPROB.problemDescription);
+    return LoadQualityReportModel.getResourcePropertyValue(this.problemtURI, QPROB.problemDescription);
   }
 
   public String getCleaningSuggestion() {
-    return LoadQualityReportModel.getResourcePropertyValue(this.problemtURI,
-      QPROB.cleaningSuggestion);
+    return LoadQualityReportModel.getResourcePropertyValue(this.problemtURI, QPROB.cleaningSuggestion);
   }
 
   public String getProblemName() {

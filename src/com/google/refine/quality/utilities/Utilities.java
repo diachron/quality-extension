@@ -42,7 +42,7 @@ public final class Utilities {
   /**
    * Prints a quad to stream in readable format.
    * @param quad RDF quad.
-   * @param printStream  
+   * @param printStream
    */
   public static void printQuad(Quad quad, PrintStream printStream) {
     if (quad != null) {

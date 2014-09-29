@@ -13,6 +13,8 @@ import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONWriter;
 
+import com.hp.hpl.jena.sparql.core.Quad;
+
 import com.google.refine.commands.Command;
 import com.google.refine.history.Change;
 import com.google.refine.history.HistoryEntry;
@@ -22,16 +24,14 @@ import com.google.refine.model.Project;
 import com.google.refine.model.changes.CellChange;
 import com.google.refine.process.QuickHistoryEntryProcess;
 import com.google.refine.quality.exceptions.QualityExtensionException;
+import com.google.refine.quality.utilities.Constants;
 import com.google.refine.quality.utilities.JenaModelLoader;
 import com.google.refine.quality.utilities.Utilities;
 import com.google.refine.util.Pool;
 
-import com.hp.hpl.jena.sparql.core.Quad;
-
 public class TransformData extends Command {
 
   private static final Logger LOG = Logger.getLogger(TransformData.class);
-  private final static String COLUMN_SPLITTER = "|&SPLITCOLUMN&|";
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -49,9 +49,9 @@ public class TransformData extends Command {
 
       StringBuilder value = new StringBuilder();
       value.append(qaud.getSubject());
-      value.append(COLUMN_SPLITTER);
+      value.append(Constants.COLUMN_SPLITER);
       value.append(qaud.getPredicate());
-      value.append(COLUMN_SPLITTER);
+      value.append(Constants.COLUMN_SPLITER);
       value.append(qaud.getObject());
 
       process = new EditOneCellProcess(project, "Edit single cell", rowIndex++, cellIndex,

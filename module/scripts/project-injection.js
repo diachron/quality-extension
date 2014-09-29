@@ -294,7 +294,7 @@ function addNewColumnCommand2() {
 	Refine.postCoreProcess(
         "add-column", 
         {
-          baseColumnName: "Column 1", 
+          baseColumnName: "Column 1",
           expression: "value.replace(/(?s).*/, \"\")", 
           newColumnName: "Column 3", 
           columnInsertIndex: 1,
@@ -310,100 +310,76 @@ function addNewColumnCommand2() {
       );
 }
 
-function identifyQualityProblemsCommand() {
-	var self = this;
-	self._dismissBusy = DialogSystem.showBusy('Identifying quality problems ...');
-	// Access the quality of data based on Column 1
-	$.post("command/quality-extension/identifyQualityProblems/",
-			{
-			"engine" : JSON.stringify(ui.browsingEngine.getJSON()),
-			"project": theProject.id
-			},
-			function (data)
-			{
-			console.log("success");
-			self._dismissBusy();
-			addNewColumnCommand2();
-			});
+function identifyQualityProblemsCommand(metrics) {
+  var self = this;
+  self._dismissBusy = DialogSystem.showBusy('Identifying quality problems ...');
+  // Access the quality of data based on Column 1
+  $.post("command/quality-extension/identifyQualityProblems/",
+    {
+      "engine" : JSON.stringify(ui.browsingEngine.getJSON()),
+      "project": theProject.id,
+      "metrics": JSON.stringify(metrics)
+    }, function (data) {
+        console.log("success");
+        self._dismissBusy();
+        addNewColumnCommand2();
+       }
+  );
 }
 
 function assessQualityCommand() {
-	var self = this;
-	self._dismissBusy = DialogSystem.showBusy('Assessing Quality ...');
-	// Access the quality of data based on Column 1
-	$.post("command/quality-extension/assessQuality/",
-			{
-			"engine" : JSON.stringify(ui.browsingEngine.getJSON()),
-			"project": theProject.id
-			},
-			function (data)
-			{
-			console.log("success");
-			self._dismissBusy();
-			addNewColumnCommand2();
-			});
+  var self = this;
+  self._dismissBusy = DialogSystem.showBusy('Assessing Quality ...');
+  // Access the quality of data based on Column 1
+  $.post("command/quality-extension/assessQuality/",
+      {
+    "engine" : JSON.stringify(ui.browsingEngine.getJSON()),
+    "project": theProject.id
+      },
+      function (data)
+      {
+        console.log("success");
+        self._dismissBusy();
+        addNewColumnCommand2();
+      });
 }
 
-function addNewColumnCommand(data) {
-	//Add new columns with blank values
-	Refine.postCoreProcess(
-        "add-column", 
-        {
-          baseColumnName: "Column 1", 
-          expression: "value.replace(/(?s).*/, \"\")", 
-          newColumnName: "Column 2", 
-          columnInsertIndex: 1,
-          onError: "set-to-blank"
-        },
-        null,
-        { modelsChanged: true },
-        {
-          onDone: function(o) {
-            if (data == "accessQuality"){
-            	assessQualityCommand();
-            }
-            else {
-            	identifyQualityProblemsCommand();
-            }
+function addNewColumnCommand(data, metrics) {
+  //Add new columns with blank values
+  Refine.postCoreProcess("add-column", {
+        baseColumnName: "Column 1",
+        expression: "value.replace(/(?s).*/, \"\")",
+        newColumnName: "Column 2",
+        columnInsertIndex: 1,
+        onError: "set-to-blank"
+      }, null, {
+        modelsChanged: true
+      }, {
+        onDone: function(o) {
+          if (data == "accessQuality") {
+            assessQualityCommand();
+          } else {
+            identifyQualityProblemsCommand(metrics);
           }
         }
-      );
+      }
+  );
 }
 
-function assessQuality() {
-	if ("" == getCookie(theProject.id + "IsProcessed")) {
-		setCookie(theProject.id + "IsProcessed" ,"true");
-		addNewColumnCommand("accessQuality");
-	} else {
-		alert("Quality is already processed.");
-	}
-}
+//function assessQuality() {
+//  if ("" == getCookie(theProject.id + "IsProcessed")) {
+//    setCookie(theProject.id + "IsProcessed" ,"true");
+//    addNewColumnCommand("accessQuality");
+//  } else {
+//    alert("Quality is already processed.");
+//  }
+//}
 
-function identifyQualityProblems() {
-	if ("" == getCookie(theProject.id + "IsProcessed")) {
-		setCookie(theProject.id + "IsProcessed","true");
-		addNewColumnCommand("identifyQualityProblems");
-	} else {
-		alert("Quality is already processed.");
-	}		
+function identifyQualityProblems(metrics) {
+  if ("" == getCookie(theProject.id + "IsProcessed")) {
+    setCookie(theProject.id + "IsProcessed","true");
+    addNewColumnCommand("identifyQualityProblems", metrics);
+  } else {
+    alert("Quality is already processed.");
+  }
 }
-
-ExtensionBar.addExtensionMenu({
-	"id": "diachron",
-	"label": "Diachron Quality",
-	"submenu": [
-		 {
-			 
-		"id":"diachron/improve",
-		label: "Identify Quality Problems",
-		click: function(){identifyQualityProblems();}
-		}
-	  ,{},
-	  	 {
-		  "id":"diachron/quality",
-     	 label: "ExportAsRDF",
-     	 click: function(){assessQuality();}
-		 
-		}
-		]
-	 });
