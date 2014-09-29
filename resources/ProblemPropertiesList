@@ -8,4 +8,4 @@ com.google.refine.quality.metrics.OntologyHijacking = Class or property is refin
 com.google.refine.quality.metrics.WhitespaceInAnnotation = Leading or ending white space(s) found in the object's literal value.
 com.google.refine.quality.metrics.UndefinedClasses = Class is not defined.
 com.google.refine.quality.metrics.UndefinedProperties = Property is not defined.
-com.google.refine.quality.metrics.LabelsUsingCapitals = Value of label is not in human readable format. 
+com.google.refine.quality.metrics.LabelsUsingCapitals = Value of label is not in human readable format.
