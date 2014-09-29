@@ -11,7 +11,9 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.apache.xerces.util.URI;
 
+import com.google.refine.quality.exceptions.QualityExtensionException;
 import com.google.refine.quality.problems.QualityProblem;
+import com.google.refine.quality.utilities.Constants;
 import com.google.refine.quality.vocabularies.QPROB;
 
 import com.hp.hpl.jena.graph.Node;
@@ -36,7 +38,6 @@ public class LabelsUsingCapitals extends AbstractQualityMetric {
 
   // TODO move to class with constants.
   private final static String CAMEL_CASE_REGEX = "[A-Z]([A-Z0-9]*[a-z][a-z0-9]*[A-Z]|[a-z0-9]*[A-Z][A-Z0-9]*[a-z])[A-Za-z0-9]*";
-  private final static String LABEL_PROPERTIES_FILE = "extensions/quality-extension/resources/LabelPropertiesList";
 
   private int literals = 0;
   private int badCapitalizationLiterals = 0;
@@ -45,20 +46,19 @@ public class LabelsUsingCapitals extends AbstractQualityMetric {
   private static Set<String> annotationPropertiesSet = new HashSet<String>();
  
   /**
-   * Loads a list of annotation properties.
-   * @param path
-   *          A path to annotation properties file.
+   * Loads a list of label properties.
+   * @param args Arguments, args[0] is a path to label properties file.
    */
   @Override
   public void before(Object... args) {
-    String path = (args == null || args.length == 0) ? LABEL_PROPERTIES_FILE : (String) args[0];
+    String path = (args == null || args.length == 0) ? Constants.LABEL_PROPERTIES_FILE : (String) args[0];
     File file = null;
     try {
       file = new File(path);
       if (file.exists() && file.isFile()) {
         String line = null;
         BufferedReader in = new BufferedReader(new FileReader(file));
-        while ((line = in.readLine()) != null) {
+        while ((line = in.readLine()) != null && !line.isEmpty()) {
           if (new URI(line) != null) {
             annotationPropertiesSet.add(line);
           }
@@ -66,11 +66,13 @@ public class LabelsUsingCapitals extends AbstractQualityMetric {
         in.close();
       }
     } catch (FileNotFoundException e) {
-      LOG.debug(e.getStackTrace());
       LOG.error(e.getMessage());
+      throw new QualityExtensionException("Label properties file is not found. "
+        + e.getLocalizedMessage());
     } catch (IOException e) {
-      LOG.debug(e.getStackTrace());
       LOG.error(e.getMessage());
+      throw new QualityExtensionException("Label properties file is not found. "
+        + e.getLocalizedMessage());
     }
   }
 

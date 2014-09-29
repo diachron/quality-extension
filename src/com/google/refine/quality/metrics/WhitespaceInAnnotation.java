@@ -11,8 +11,9 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.apache.xerces.util.URI;
 
+import com.google.refine.quality.exceptions.QualityExtensionException;
 import com.google.refine.quality.problems.QualityProblem;
-import com.google.refine.quality.utilities.LoadQualityReportModel;
+import com.google.refine.quality.utilities.Constants;
 import com.google.refine.quality.vocabularies.QPROB;
 
 import com.hp.hpl.jena.graph.Node;
@@ -20,166 +21,107 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.core.Quad;
 
 /**
- * WhitespaceInAnnotation consider the following widely used annotation 
- * properties (labels, comments, notes, etc.) and identifies triples 
- * whose property is from a pre-configured list of annotation properties, 
+ * WhitespaceInAnnotation consider the following widely used annotation
+ * properties (labels, comments, notes, etc.) and identifies triples
+ * whose property is from a pre-configured list of annotation properties,
  * and whose object value has leading or ending white space in string.
- * 
- *  
- * @author Muhammad Ali Qasmi
- * @date 19th June 2014
  */
 public class WhitespaceInAnnotation extends AbstractQualityMetric {
-        /**
-         * Description of quality report 
-         */
-        protected Resource qualityReport  = QPROB.WhitespaceInAnnotationProblem;
-        /**
-         * logger static object
-         */
-        static Logger logger = Logger.getLogger(WhitespaceInAnnotation.class);
-        /**
-         * Default file path and name for the file that contains
-         * list of annotation properties
-         */
-        protected static String defaultFilePathName = "extensions/quality-extension/resources/AnnotationPropertiesList";
-        /**
-         * Number of literals count
-         */
-        protected long totalNumberOfLiterals = 0;
-        /**
-         * Number of white space literals count
-         */
-        protected long totalNumberOfWhitespaceLiterals = 0;
-        /**
-         * list of annotation properties to be evaluated.        
-         */
-        protected static Set<String> annotationPropertiesSet = new HashSet<String>();
-        
-        @Override
-        public void before(Object... args) {
-          String tmpFilePathName = (args == null || args.length == 0) ? defaultFilePathName : (String) args[0];
+  private final static Logger LOG = Logger.getLogger(LabelsUsingCapitals.class);
+  private final Resource qualityReport  = QPROB.WhitespaceInAnnotationProblem;
 
-          File file = null;
-//          String tmpFilePathName = (filePathName == null) ? EmptyAnnotationValue.defaultFilePathName : filePathName;
-          try {
-              if (!tmpFilePathName.isEmpty()){
-                      file = new File(tmpFilePathName);
-                      if (file.exists() && file.isFile()){
-                          String strLine = null;
-                          BufferedReader in = new BufferedReader(new FileReader(file));
-                          while ((strLine = in.readLine()) != null) {
-                                  URI tmpURI = new URI(strLine);
-                                  if (tmpURI != null) {
-                                          EmptyAnnotationValue.annotationPropertiesSet.add(strLine);
-                                  }
-                                }
-                         in.close();    
-                      }
-              }
-          } catch (FileNotFoundException e) {
-                  logger.debug(e.getStackTrace());
-                  logger.error(e.getMessage());
-          } catch (IOException e) {
-                  logger.debug(e.getStackTrace());
-                  logger.error(e.getMessage());
+  private long numberOfLiterals = 0;
+  private long numberOfWhitespaceLiterals = 0;
+  private static Set<String> annotationPropertiesSet = new HashSet<String>();
+
+  /**
+   * Loads a list of annotation properties.
+   * @param args Arguments, args[0] is a path to annotation properties file.
+   */
+  @Override
+  public void before(Object... args) {
+    String path = (args == null || args.length == 0) ? Constants.ANNOTATION_PROPERTIES_FILE
+      : (String) args[0];
+    File file = null;
+    try {
+      if (!path.isEmpty()){
+        file = new File(path);
+        if (file.exists() && file.isFile()){
+          String line = null;
+          BufferedReader in = new BufferedReader(new FileReader(file));
+          while ((line = in.readLine()) != null && !line.isEmpty()) {
+            if (new URI(line) != null) {
+              annotationPropertiesSet.add(line);
+            }
           }
+          in.close();
         }
-        /**
-         * loads list of annotation properties in set
-         * 
-         * if filePathName is null then default path will be used.
-         * 
-         * @param filePathName - file Path and name, default : ../extensions/rdf-extension/resources/files/AnnotationPropertiesList 
-         */
-        public static void loadAnnotationPropertiesSet(String filePathName) {
-                File file = null;
-                String tmpFilePathName = (filePathName == null) ? EmptyAnnotationValue.defaultFilePathName : filePathName;
-                try {
-                    if (!tmpFilePathName.isEmpty()){
-                            file = new File(tmpFilePathName);
-                            if (file.exists() && file.isFile()){
-                                String strLine = null;
-                                BufferedReader in = new BufferedReader(new FileReader(file));
-                                while ((strLine = in.readLine()) != null) {
-                                        URI tmpURI = new URI(strLine);
-                                        if (tmpURI != null) {
-                                                EmptyAnnotationValue.annotationPropertiesSet.add(strLine);
-                                        }
-                                      }
-                               in.close();    
-                            }
-                    }
-                } catch (FileNotFoundException e) {
-                        logger.debug(e.getStackTrace());
-                        logger.error(e.getMessage());
-                } catch (IOException e) {
-                        logger.debug(e.getStackTrace());
-                        logger.error(e.getMessage());
-                }
-        }
-        
-        @Override
-        public void after() {
-          EmptyAnnotationValue.annotationPropertiesSet.clear();
+      }
+    } catch (FileNotFoundException e) {
+      LOG.error(e.getMessage());
+      throw new QualityExtensionException("Annotation properties file is not found. "
+        + e.getLocalizedMessage());
+    } catch (IOException e) {
+      LOG.error(e.getMessage());
+      throw new QualityExtensionException("Annotation properties file is not found. "
+        + e.getLocalizedMessage());
+    }
+  }
 
-        }
-        
-        
-        /**
-         * clears list of annotation properties in set
-         */
-        public static void clearAnnotationPropertiesSet() {
-                EmptyAnnotationValue.annotationPropertiesSet.clear();
-        }
-        
-        /**
-         * Checks whether given quad has predicate with URI found in annotation properties set
-         * if true then checks the object's value in that quad; whether it is whitespace or not.
-         *    
-         */
-        @Override
-        public void compute(Integer index, Quad quad) {
-                try {
-                        Node predicate = quad.getPredicate();
-                        if (predicate.isURI()){ // check is the predicate is URI or not
-                            if (EmptyAnnotationValue.annotationPropertiesSet.contains(predicate.getURI())){ // check if given predicate is found in annotation properties list
-                                    Node object = quad.getObject();
-                                    this.totalNumberOfLiterals++; // increment total number of literals
-                                    if (object.isLiteral()){ // check whether object is literal or not
-                                            String  value = object.getLiteralValue().toString(); // retrieve object's value
-                                            String trimValue = value.trim(); // removes whitespace from both ends
-                                            
-                                            if (trimValue != null && !trimValue.isEmpty()) { // check if object's value is null or empty
-                                                    if (value.length() != trimValue.length()){ // compare length of both string
-                                                        this.totalNumberOfWhitespaceLiterals++; // increment whitespace literal count
-                                                        QualityProblem reportProblems = new QualityProblem(index, quad, qualityReport);
-                                                        this.problemList.add(reportProblems); // add invalid quad in problem list
-                                                        logger.info("Whitespce here: \n" + quad.toString());
-                                                    }
-                                            } 
-                                    }
-                            }
-                        }
-                    }  catch (Exception e){
-                        logger.debug(e.getStackTrace());
-                        logger.debug(e.getMessage());
-                    }
-        }
-        
-        /**
-         * metric value  = total number of whitespace literals / total number of literals
-         * 
-         * @return ( (total number of whitespace literals) / (total number of literals) )
-         */
-        @Override
-        public double metricValue() {
-                logger.debug("Total number of whitespace literals : " + this.totalNumberOfWhitespaceLiterals);
-                logger.debug("Total total number of literals : " + this.totalNumberOfLiterals);
-                if (this.totalNumberOfLiterals <= 0) {
-                        logger.warn("Total total number of literals are ZERO");
-                        return 0;
-                }
-                return ((double) this.totalNumberOfWhitespaceLiterals / (double) this.totalNumberOfLiterals);
-        }
+  /**
+   * Clears a list of annotation properties.
+   */
+  @Override
+  public void after() {
+    annotationPropertiesSet.clear();
+  }
+
+  /**
+   * Check an object of a quad for whitespace.
+   * @param index
+   * @param quad A quad to check.
+   */
+  @Override
+  public void compute(Integer index, Quad quad) {
+    Node predicate = quad.getPredicate();
+    if (predicate.isURI()) {
+      if (annotationPropertiesSet.contains(predicate.getURI())){
+        numberOfLiterals++;
+        detectWhitespaces(index, quad);
+      }
+    }
+  }
+
+  /**
+   * Check whether annotation in a quad has whitespace.
+   * @param index 
+   * @param quad A quad to check.
+   */
+  private void detectWhitespaces(Integer index, Quad quad) {
+    Node object = quad.getObject();
+    if (object.isLiteral()) {
+      String value = object.getLiteralValue().toString();
+
+      if (!value.equals(value.trim())) {
+        numberOfWhitespaceLiterals++;
+        problemList.add(new QualityProblem(index, quad, qualityReport));
+        LOG.info(String.format("Whitespce found in annotation: %s", quad.getObject()));
+      }
+    }
+  }
+
+  /**
+   * Calculates a metric value. Ratio of literals with whitespace to total number of literals.
+   * @return Ratio of literals with whitespace to total number of literals.
+   */
+  @Override
+  public double metricValue() {
+    LOG.debug("Total number of whitespace literals : " + numberOfWhitespaceLiterals);
+    LOG.debug("Total total number of literals : " + numberOfLiterals);
+    if (numberOfLiterals <= 0) {
+      LOG.warn("Total number of literals is 0.");
+      return 0;
+    }
+    return ((double) numberOfWhitespaceLiterals / (double) numberOfLiterals);
+  }
 }
