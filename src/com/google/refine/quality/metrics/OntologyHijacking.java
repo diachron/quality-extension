@@ -8,6 +8,7 @@ import org.apache.xerces.util.URI.MalformedURIException;
 import com.google.refine.quality.problems.QualityProblem;
 import com.google.refine.quality.utilities.LoadQualityReportModel;
 import com.google.refine.quality.utilities.VocabularyReader;
+
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -41,6 +42,11 @@ public class OntologyHijacking extends AbstractQualityMetric {
         /**
          * total number of hijacked classes or properties found 
          */
+        @Override
+        public void before(Object... args) {}
+        
+        @Override
+        public void after() {}
         protected double hijackedClassesOrPropertiesCount = 0;
         /**
          * Check if the given quad has predicate of URI with given fragment
@@ -74,7 +80,7 @@ public class OntologyHijacking extends AbstractQualityMetric {
                 if (model != null){
                         if (model.getResource(node.getURI()).isURIResource()){
                                 if ( model.getResource(node.getURI()).hasProperty(RDF.type)) {
-                                     return true;   
+                                     return true;
                                 }
                         }
                 }

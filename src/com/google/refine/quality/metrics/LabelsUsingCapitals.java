@@ -13,6 +13,7 @@ import org.apache.xerces.util.URI;
 
 import com.google.refine.quality.problems.QualityProblem;
 import com.google.refine.quality.vocabularies.QPROB;
+
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.core.Quad;
@@ -42,22 +43,15 @@ public class LabelsUsingCapitals extends AbstractQualityMetric {
 
   private final static Resource qualityReport = QPROB.LabelsUsingCapitalsProblem;
   private static Set<String> annotationPropertiesSet = new HashSet<String>();
-
-  /**
-   * Loads a list of annotation properties. Uses the default annotation property file.
-   * @param path
-   *          A path to annotation properties file.
-   */
-  public static void loadAnnotationPropertiesSet() {
-    loadAnnotationPropertiesSet(LABEL_PROPERTIES_FILE);
-  }
-
+ 
   /**
    * Loads a list of annotation properties.
    * @param path
    *          A path to annotation properties file.
    */
-  public static void loadAnnotationPropertiesSet(String path) {
+  @Override
+  public void before(Object... args) {
+    String path = (args == null || args.length == 0) ? LABEL_PROPERTIES_FILE : (String) args[0];
     File file = null;
     try {
       file = new File(path);
@@ -83,8 +77,9 @@ public class LabelsUsingCapitals extends AbstractQualityMetric {
   /**
    * Clears a list of annotation properties.
    */
-  public static void clearAnnotationPropertiesSet() {
-    LabelsUsingCapitals.annotationPropertiesSet.clear();
+  @Override
+  public void after() {
+    annotationPropertiesSet.clear();
   }
 
   /**
@@ -119,6 +114,7 @@ public class LabelsUsingCapitals extends AbstractQualityMetric {
         if (value.matches(CAMEL_CASE_REGEX)) {
           badCapitalizationLiterals++;
           problemList.add(new QualityProblem(index, quad, qualityReport));
+          LOG.info(String.format("Bad capitalization in the triple: %s\n", quad.toString()));
         }
       }
     }

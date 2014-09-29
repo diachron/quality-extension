@@ -14,6 +14,7 @@ import org.apache.xerces.util.URI;
 import com.google.refine.quality.problems.QualityProblem;
 import com.google.refine.quality.utilities.LoadQualityReportModel;
 import com.google.refine.quality.vocabularies.QPROB;
+
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.core.Quad;
@@ -55,6 +56,35 @@ public class WhitespaceInAnnotation extends AbstractQualityMetric {
          */
         protected static Set<String> annotationPropertiesSet = new HashSet<String>();
         
+        @Override
+        public void before(Object... args) {
+          String tmpFilePathName = (args == null || args.length == 0) ? defaultFilePathName : (String) args[0];
+
+          File file = null;
+//          String tmpFilePathName = (filePathName == null) ? EmptyAnnotationValue.defaultFilePathName : filePathName;
+          try {
+              if (!tmpFilePathName.isEmpty()){
+                      file = new File(tmpFilePathName);
+                      if (file.exists() && file.isFile()){
+                          String strLine = null;
+                          BufferedReader in = new BufferedReader(new FileReader(file));
+                          while ((strLine = in.readLine()) != null) {
+                                  URI tmpURI = new URI(strLine);
+                                  if (tmpURI != null) {
+                                          EmptyAnnotationValue.annotationPropertiesSet.add(strLine);
+                                  }
+                                }
+                         in.close();    
+                      }
+              }
+          } catch (FileNotFoundException e) {
+                  logger.debug(e.getStackTrace());
+                  logger.error(e.getMessage());
+          } catch (IOException e) {
+                  logger.debug(e.getStackTrace());
+                  logger.error(e.getMessage());
+          }
+        }
         /**
          * loads list of annotation properties in set
          * 
@@ -89,6 +119,13 @@ public class WhitespaceInAnnotation extends AbstractQualityMetric {
                 }
         }
         
+        @Override
+        public void after() {
+          EmptyAnnotationValue.annotationPropertiesSet.clear();
+
+        }
+        
+        
         /**
          * clears list of annotation properties in set
          */
@@ -118,6 +155,7 @@ public class WhitespaceInAnnotation extends AbstractQualityMetric {
                                                         this.totalNumberOfWhitespaceLiterals++; // increment whitespace literal count
                                                         QualityProblem reportProblems = new QualityProblem(index, quad, qualityReport);
                                                         this.problemList.add(reportProblems); // add invalid quad in problem list
+                                                        logger.info("Whitespce here: \n" + quad.toString());
                                                     }
                                             } 
                                     }

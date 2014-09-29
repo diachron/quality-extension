@@ -14,6 +14,7 @@ import org.apache.xerces.util.URI;
 import com.google.refine.quality.problems.QualityProblem;
 import com.google.refine.quality.utilities.LoadQualityReportModel;
 import com.google.refine.quality.vocabularies.QPROB;
+
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.core.Quad;
@@ -61,6 +62,38 @@ public class EmptyAnnotationValue extends AbstractQualityMetric {
          * 
          * @param filePathName - file Path and name, default : src/main/resources/AnnotationPropertiesList.txt 
          */
+        
+        @Override
+        public void before(Object... args) {  File file = null;
+        String tmpFilePathName = (args == null || args.length == 0) ? defaultFilePathName : (String) args[0];
+        
+        try {
+            if (!tmpFilePathName.isEmpty()){
+                    file = new File(tmpFilePathName);
+                    if (file.exists() && file.isFile()){
+                        String strLine = null;
+                        BufferedReader in = new BufferedReader(new FileReader(file));
+                        while ((strLine = in.readLine()) != null) {
+                                URI tmpURI = new URI(strLine);
+                                if (tmpURI != null) {
+                                        EmptyAnnotationValue.annotationPropertiesSet.add(strLine);
+                                }
+                              }
+                       in.close();    
+                    }
+            }
+        } catch (FileNotFoundException e) {
+                logger.debug(e.getStackTrace());
+                logger.error(e.getMessage());
+        } catch (IOException e) {
+                logger.debug(e.getStackTrace());
+                logger.error(e.getMessage());
+        }}
+        
+        @Override
+        public void after() {                EmptyAnnotationValue.annotationPropertiesSet.clear();
+}
+        protected double hijackedClassesOrPropertiesCount = 0;
         public static void loadAnnotationPropertiesSet(String filePathName) {
                 File file = null;
                 String tmpFilePathName = (filePathName == null) ? EmptyAnnotationValue.defaultFilePathName : filePathName;
