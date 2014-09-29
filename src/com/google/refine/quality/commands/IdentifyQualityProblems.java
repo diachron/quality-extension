@@ -1,6 +1,7 @@
 package com.google.refine.quality.commands;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
@@ -10,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONWriter;
 
@@ -21,8 +23,8 @@ import com.google.refine.model.Project;
 import com.google.refine.quality.commands.TransformData.EditOneCellProcess;
 import com.google.refine.quality.exceptions.QualityExtensionException;
 import com.google.refine.quality.metrics.AbstractQualityMetric;
-import com.google.refine.quality.metrics.LabelsUsingCapitals;
 import com.google.refine.quality.problems.QualityProblem;
+import com.google.refine.quality.utilities.Constants;
 import com.google.refine.quality.utilities.JenaModelLoader;
 import com.google.refine.quality.utilities.Utilities;
 import com.google.refine.util.Pool;
@@ -30,12 +32,10 @@ import com.google.refine.util.Pool;
 public class IdentifyQualityProblems extends Command {
   private static final Logger LOG = Logger.getLogger(IdentifyQualityProblems.class);
 
-  private static final String COLUMN_SPLITER = "|&SPLITCOLUMN&|";
-  private static final String ROW_SPLITER = "|&SPLITROW&|";
-
   /** A hashtable accumulates problem messages for row entries */
   private Hashtable<Integer, String> problemMessages = new Hashtable<Integer, String>();
   private HttpServletResponse response;
+  private HttpServletRequest request;
   private Project project;
 
   /**
@@ -44,17 +44,21 @@ public class IdentifyQualityProblems extends Command {
    */
   protected void postProblematicQuads(List<QualityProblem> qualityProblems) {
     try {
+      project = getProject(request);
       HistoryEntry historyEntry = null;
       EditOneCellProcess process = null;
-
       int cell = 1;
+      
       for (QualityProblem qualityProblem : qualityProblems) {
         int row = qualityProblem.getRowIndex();
+        LOG.info(qualityProblem.getProblemDescription() + "  size " + qualityProblems.size() + " at row "+ row);
         String problemString = composeProblemDescString(qualityProblem, row);
 
         process = new EditOneCellProcess(project, "Edit single cell", row, cell, problemString);
+        LOG.info(String.format("Edit single cell at row: %s, col: %s", row, cell));
         historyEntry = project.processManager.queueProcess(process);
       }
+
       updateCell(process, historyEntry);
     } catch (Exception e) {
       //TODO checked exception?
@@ -72,22 +76,21 @@ public class IdentifyQualityProblems extends Command {
     StringBuffer string = new StringBuffer();
 
     string.append(problem.getProblemName());
-    string.append(COLUMN_SPLITER);
+    string.append(Constants.COLUMN_SPLITER);
     string.append(problem.getProblemDescription());
-    string.append(COLUMN_SPLITER);
+    string.append(Constants.COLUMN_SPLITER);
     string.append(problem.getCleaningSuggestion());
-    string.append(COLUMN_SPLITER);
+    string.append(Constants.COLUMN_SPLITER);
     string.append(problem.getGrelExpression());
 
     if (problemMessages.containsKey(row)) {
       if (!problemMessages.get(row).contains(string.toString())) {
-        string.insert(0, problemMessages.get(row) + ROW_SPLITER);
+        string.insert(0, problemMessages.get(row) + Constants.ROW_SPLITER);
         problemMessages.put(row, string.toString());
       }
     } else {
       problemMessages.put(row, string.toString());
     }
-
     return string.toString();
   }
 
@@ -95,9 +98,11 @@ public class IdentifyQualityProblems extends Command {
    * Updates an entry in OpenRefine with a problem information.
    * @param process
    * @param entry
+   * @throws InterruptedException 
    */
-  private void updateCell(EditOneCellProcess process, HistoryEntry entry) {
+  private void updateCell(EditOneCellProcess process, HistoryEntry entry) throws InterruptedException {
     try {
+
       if (entry != null) {
         JSONWriter writer = new JSONWriter(response.getWriter());
         Pool pool = new Pool();
@@ -128,15 +133,14 @@ public class IdentifyQualityProblems extends Command {
   }
 
   /**
-   * Processes retrieved quards for a given quality metric.
+   * Processes retrieved quads for a given quality metric.
    * @param metric An applied metric.
-   * @param quards A list of quards to process.
+   * @param quards A list of quads to process.
    */
   protected void processMetric(AbstractQualityMetric metric, List<Quad> quards) {
     LOG.info(String.format("Processing for %s", metric.getClass()));
 
     metric.compute(quards);
-
     if (metric.getQualityProblems().isEmpty()){
       LOG.info(String.format("No problem found for %s", metric.getClass()));
     } else {
@@ -147,13 +151,27 @@ public class IdentifyQualityProblems extends Command {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) {
       this.response = response;
+      this.request = request;
       List<Quad> quards = null;
 
       try {
         project = getProject(request);
         quards = JenaModelLoader.getQuads(Utilities.projectToInputStream(project));
 
-        //Utilities.printStatements(LoadJenaModel.getModel(retrieveRDFData(project)).listStatements(), System.out);
+        JSONArray metrics = new JSONArray(request.getParameter("metrics"));
+        for (int i = 0; i < metrics.length(); i++) {
+
+          // using reflection to get dynamically instances of metrics
+          String metricName = (String) metrics.get(i);
+          Class<?> cls = Class.forName(String.format("%s.%s", Constants.METRICS_PACKAGE, metricName));
+          AbstractQualityMetric metric = (AbstractQualityMetric) cls.newInstance();
+
+          Object[] args = { new String[]{} };
+          metric.getClass().getDeclaredMethod("before", Object[].class).invoke(metric, args);
+          processMetric(metric, quards);
+          metric.getClass().getMethod("after",  (Class[]) null).invoke(metric, (Object[]) null);
+        }
+
       } catch (IOException e) {
         LOG.error(e.getLocalizedMessage());
         throw new QualityExtensionException("Project can not be written to an InputStream. "
@@ -162,24 +180,39 @@ public class IdentifyQualityProblems extends Command {
         LOG.error(e.getLocalizedMessage());
         throw new QualityExtensionException("Can not get a project from OpenRefine. "
           + e.getLocalizedMessage());
+      } catch (JSONException e) {
+        throw new QualityExtensionException("Can not parse json srting containg metrics "
+            + "to process. " + e.getLocalizedMessage());
+      } catch (ClassNotFoundException e) {
+        throw new QualityExtensionException("Can not find a class to initialize. " 
+          + e.getLocalizedMessage());
+      } catch (InstantiationException e) {
+        throw new QualityExtensionException("Can not instantiate the class. " 
+          + e.getLocalizedMessage());
+      } catch (IllegalAccessException e) {
+        throw new QualityExtensionException(e.getLocalizedMessage());
+      } catch (NoSuchMethodException e) {
+        throw new QualityExtensionException("Can not find the invoking method. "
+          + e.getLocalizedMessage());
+      } catch (SecurityException e) {
+        throw new QualityExtensionException(e.getLocalizedMessage());
+      } catch (IllegalArgumentException e) {
+        throw new QualityExtensionException("Illegal arguments. " + e.getLocalizedMessage());
+      } catch (InvocationTargetException e) {
+        throw new QualityExtensionException("Can not invoke the method. " + e.getLocalizedMessage());
       }
 
-      // for Hello World Meric -- DEBUG ONLY
-      ////processMetric(request, response, new HelloWorldMetrics(), quards);
-
       // for Empty Annotation value
-      //            EmptyAnnotationValue.loadAnnotationPropertiesSet(null); // Pre-Process
-      //            processMetric(request, response, new EmptyAnnotationValue(), quards);
-      //            EmptyAnnotationValue.clearAnnotationPropertiesSet(); //Post-Process
-      //
-      //            //TODO homogeneousDatatypes
-      //            
-      //            // for IncompatiableDatatypeRange
-      //            processMetric(request, response, new IncompatibleDatatypeRange(), quards);
-      //            IncompatibleDatatypeRange.clearCache(); //Post-Process
+//                  EmptyAnnotationValue.loadAnnotationPropertiesSet(null); // Pre-Process
+//                  processMetric(new EmptyAnnotationValue(), quards);
+//                  EmptyAnnotationValue.clearAnnotationPropertiesSet(); //Post-Process
+      
+//                  // for IncompatiableDatatypeRange
+//                  processMetric(new IncompatibleDatatypeRange(), quards);
+//                  IncompatibleDatatypeRange.clearCache(); //Post-Process
 
       // for Malformed Datatype Literals
-      //  processMetric(request, response, new MalformedDatatypeLiterals(), quards);
+//        processMetric( new MalformedDatatypeLiterals(), quards);
 
 
       // for MisplacedClassesOrProperties -- DISABLE B/C TAKES TOO MUCH TIME
@@ -193,15 +226,15 @@ public class IdentifyQualityProblems extends Command {
       // for OntologyHijacking
       // processMetric(request, response, new OntologyHijacking(), quards);
 
-      // for WhitespaceInAnnotation
-      //            WhitespaceInAnnotation.loadAnnotationPropertiesSet(null); //Pre-Process
-      //            processMetric(request, response, new WhitespaceInAnnotation(), quards);
-      //            WhitespaceInAnnotation.clearAnnotationPropertiesSet(); //Post-Process
+//      // for WhitespaceInAnnotation
+//                  WhitespaceInAnnotation.loadAnnotationPropertiesSet(null); //Pre-Process
+//                  processMetric(new WhitespaceInAnnotation(), quards);
+//                  WhitespaceInAnnotation.clearAnnotationPropertiesSet(); //Post-Process
 
       // for LabelUsingCapitals
-      LabelsUsingCapitals.loadAnnotationPropertiesSet(null); //Pre-Process
-      processMetric(new LabelsUsingCapitals(), quards);
-      LabelsUsingCapitals.clearAnnotationPropertiesSet();
+//      LabelsUsingCapitals.loadAnnotationPropertiesSet(null); //Pre-Process
+//      processMetric(new LabelsUsingCapitals(), quards);
+//      LabelsUsingCapitals.clearAnnotationPropertiesSet();
 
       // for Undefined Classes
       //  processMetric(request, response, new UndefinedClasses(), quards);

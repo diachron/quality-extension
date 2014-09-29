@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!--+
-    |
-    |  OpenRefine Extension Sample Extension Build File    
-    |                
-    +-->
-    
 <project name="refine-sample-extension" default="build" basedir=".">
 
     <property environment="env"/>
@@ -57,19 +51,23 @@
         </fileset>
         <pathelement path="${refine.classes.dir}"/>
     </path>
-    
-	<java classname="jena.schemagen" >
-		<classpath refid="class.path" />
-		<arg line="-i resources/vocabularies/qprob/qprob.trig -e N3 --inference --package com.google.refine.quality.vocabularies -o src/ -n QPROB" />
-	</java>
-	
+
+    <java classname="jena.schemagen">
+        <classpath refid="class.path" />
+        <arg line="-i ${basedir}/resources/vocabularies/qprob/qprob.trig -e N3 --inference --package
+            com.google.refine.quality.vocabularies -o src/ -n QPROB" />
+    </java>
+
     <target name="build_java">
+        <echo message="${basedir}/resources/vocabularies/qprob/qprob.trig"/>
         <mkdir dir="${classes.dir}" />
-        <javac source="${java_version}" target="${java_version}" encoding="utf-8" destdir="${classes.dir}" debug="true" includeAntRuntime="no">
+        <javac source="${java_version}" target="${java_version}" encoding="utf-8"
+            destdir="${classes.dir}" debug="true" includeAntRuntime="no">
             <src path="${src.dir}"/>
             <classpath refid="class.path" />
         </javac>
-           <javac source="${java_version}" target="${java_version}" encoding="utf-8" destdir="${classes.dir}" debug="true" includeAntRuntime="no">
+           <javac source="${java_version}" target="${java_version}" encoding="utf-8"
+                destdir="${classes.dir}" debug="true" includeAntRuntime="no">
             <src path="${test.dir}"/>
             <classpath refid="class.path" />
         </javac>
@@ -80,7 +78,6 @@
             <classpath refid="class.path" /> <classpath>
                 <pathelement location="${classes.dir}" />
             </classpath>
-
 
             <batchtest fork="yes">
                   <formatter type="brief" usefile="false"/>
@@ -97,7 +94,7 @@
         <delete dir="${classes.dir}" />
     </target>
 	
-	<!--+  
+	<!--+  TODO create zip.
 	 #target name="install" depends="build_java">
 	        <move file="${release.targetDir}/${release.name}" todir="${rm.plugins}" overwrite="true" />
 	    </target>

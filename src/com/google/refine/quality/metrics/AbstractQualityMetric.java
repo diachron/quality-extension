@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.refine.quality.problems.QualityProblem;
+
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.core.Quad;
 
@@ -22,7 +23,6 @@ public abstract class AbstractQualityMetric {
    * Computes a metric value.
    * @param quad A quad a metric applied to.
    */
-  //TODO get rid of Integer obj
   public abstract void compute(Integer index, Quad quad);
 
   /**
@@ -37,10 +37,14 @@ public abstract class AbstractQualityMetric {
   }
 
   /**
-   * Returns a list of problematic quards.
+   * Returns a list of problematic quads.
    * @return A list of problematic quads.
    */
   public List<QualityProblem> getQualityProblems() {
     return new ArrayList<QualityProblem>(this.problemList);
   }
+  
+  //TODO change to abstract later.
+  public void before(Object... args) {}
+  public void after() {}
 }
