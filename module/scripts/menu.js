@@ -6,13 +6,13 @@ ExtensionBar.addExtensionMenu({
     "id" : "diachron/improve",
     label : "Identify Quality Problems",
     click : function() {
-      var jm = new AboutDialog();
-      jm.show();
+      new AboutDialog().show();
     }
   }, {}, {
     "id" : "diachron/export",
-    label : "About",
+    label : "Export",
     click : function() {
+//      transform();
     }
   } ]
 });

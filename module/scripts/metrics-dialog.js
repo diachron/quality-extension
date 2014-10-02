@@ -63,7 +63,7 @@ AboutDialog.prototype = {
 
   init : function() {
 
-    this.dialogElement = $(DOM.loadHTML("quality-extension", "scripts/metrics-dialog.html"));
+    this.dialogElement = $(DOM.loadHTML("quality-extension", "scripts/dialogs/metrics-dialog.html"));
     this._elmts = DOM.bind(this.dialogElement);
     self.main_ul = this.dialogElement.find('ul#example');
 
@@ -111,7 +111,7 @@ AboutDialog.prototype = {
           metrics.push(name);
         }
       });
-      identifyQualityProblems(metrics);
+      transform(metrics);
     });
 
   },

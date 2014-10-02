@@ -1,4 +1,3 @@
-
 (function($) {
   
   $.fn.collapsibleCheckboxTree = function(options) {
