@@ -6,7 +6,7 @@ import org.apache.xerces.util.URI;
 import org.apache.xerces.util.URI.MalformedURIException;
 
 import com.google.refine.quality.problems.QualityProblem;
-import com.google.refine.quality.utilities.LoadQualityReportModel;
+import com.google.refine.quality.utilities.QualityReportModelLoader;
 import com.google.refine.quality.utilities.VocabularyReader;
 
 import com.hp.hpl.jena.graph.Node;

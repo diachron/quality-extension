@@ -1,0 +1,10 @@
+before_install:
+  - cd ..
+  - cd ..
+  - git clone https://github.com/OpenRefine/OpenRefine.git OpenRefine
+  - cp -r /home/travis/build/diachron/quality-extension/ /home/travis/build/OpenRefine/extensions/
+  - cd OpenRefine/
+  - ant build
+  - cd extensions/quality-extension
+
+language: java

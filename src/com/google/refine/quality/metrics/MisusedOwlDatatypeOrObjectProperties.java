@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.google.refine.quality.problems.QualityProblem;
-import com.google.refine.quality.utilities.LoadQualityReportModel;
+import com.google.refine.quality.utilities.QualityReportModelLoader;
 import com.google.refine.quality.utilities.VocabularyReader;
 import com.google.refine.quality.vocabularies.QPROB;
 import com.hp.hpl.jena.graph.Node;

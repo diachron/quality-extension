@@ -91,6 +91,7 @@ public class LabelsUsingCapitals extends AbstractQualityMetric {
   @Override
   public void compute(Integer index, Quad quad) {
     Node predicate = quad.getPredicate();
+    LOG.info( Constants.LABEL_PROPERTIES_FILE);
     if (predicate.isURI()) {
       if (LabelsUsingCapitals.annotationPropertiesSet.contains(predicate.getURI())) {
         Node object = quad.getObject();

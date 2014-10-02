@@ -14,7 +14,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import com.google.refine.quality.problems.DatatypeQualityProblem;
-import com.google.refine.quality.utilities.LoadQualityReportModel;
+import com.google.refine.quality.utilities.QualityReportModelLoader;
 import com.google.refine.quality.utilities.VocabularyReader;
 import com.google.refine.quality.vocabularies.QPROB;
 import com.hp.hpl.jena.graph.Node;

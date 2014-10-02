@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
 import org.apache.xerces.util.URI;
 
 import com.google.refine.quality.problems.QualityProblem;
-import com.google.refine.quality.utilities.LoadQualityReportModel;
+import com.google.refine.quality.utilities.QualityReportModelLoader;
 import com.google.refine.quality.vocabularies.QPROB;
 
 import com.hp.hpl.jena.graph.Node;
