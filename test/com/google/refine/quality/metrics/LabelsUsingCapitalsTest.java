@@ -75,6 +75,7 @@ public class LabelsUsingCapitalsTest {
     Assert.assertTrue(problems.size() == 2);
     Assert.assertEquals(0.5, metric.metricValue(), 0.0);
   }
+  
 
   @After
   public void tearDown() throws IllegalAccessException, IllegalArgumentException,

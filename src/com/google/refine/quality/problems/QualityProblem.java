@@ -1,6 +1,6 @@
 package com.google.refine.quality.problems;
 
-import com.google.refine.quality.utilities.LoadQualityReportModel;
+import com.google.refine.quality.utilities.QualityReportModelLoader;
 import com.google.refine.quality.vocabularies.QPROB;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.core.Quad;
@@ -31,24 +31,45 @@ public class QualityProblem {
   }
 
   public String getProblemDescription() {
-    return LoadQualityReportModel.getResourcePropertyValue(this.problemtURI, QPROB.problemDescription);
+    return QualityReportModelLoader.getResourcePropertyValue(this.problemtURI,
+        QPROB.problemDescription);
   }
 
   public String getCleaningSuggestion() {
-    return LoadQualityReportModel.getResourcePropertyValue(this.problemtURI, QPROB.cleaningSuggestion);
+    return QualityReportModelLoader.getResourcePropertyValue(this.problemtURI,
+        QPROB.cleaningSuggestion);
   }
 
   public String getProblemName() {
-    return LoadQualityReportModel.getResourcePropertyValue(this.problemtURI, RDFS.label);
+    return QualityReportModelLoader.getResourcePropertyValue(this.problemtURI, RDFS.label);
   }
 
   public String getGrelExpression() {
-    return LoadQualityReportModel.getResourcePropertyValue(this.problemtURI, QPROB.qrefineRule);
+    return QualityReportModelLoader.getResourcePropertyValue(this.problemtURI, QPROB.qrefineRule);
   }
 
   public QualityProblem(Integer rowIndex, Quad quad, Resource qualityReport) {
     this.rowIndex = rowIndex;
     this.quad = quad;
     this.problemtURI = qualityReport;
+  }
+
+  @Override
+  public boolean equals(Object other){
+      if(this == other) return true;
+      if(other == null || (this.getClass() != other.getClass())){
+          return false;
+      }
+      QualityProblem obj = (QualityProblem) other;
+      return ((this.quad != null && this.quad.equals(obj.quad)) &&
+             (this.problemtURI != null && this.problemtURI.equals(obj.problemtURI)));
+  }
+
+   @Override
+  public int hashCode() {
+    int hash = 17;
+    hash = 31 * hash + quad.hashCode();
+    hash = 31 * hash + problemtURI.hashCode();
+    return hash;
   }
 }
