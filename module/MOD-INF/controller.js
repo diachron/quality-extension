@@ -51,13 +51,13 @@ function init() {
   RefineServlet.registerCommand(module, "identifyQualityProblems", new IdentifyQualityProblems()); 
   RefineServlet.registerCommand(module, "transformData", new TransformData());
 
-  var ClientSideResourceManager = Packages.com.google.refine.ClientSideResourceManager;	
+  var ClientSideResourceManager = Packages.com.google.refine.ClientSideResourceManager;
   // Script files to inject into /project page
   ClientSideResourceManager.addPaths(
       "project/scripts",
       module,
       [
-       "scripts/project-injection.js",
+       "scripts/commands.js",
        "scripts/collapsible.js",
        "scripts/metrics-dialog.js",
        "scripts/menu.js",
@@ -70,7 +70,7 @@ function init() {
     module,
     [
      "styles/metrics-dialog.less",
-     "styles/project-injection.less"
+     "styles/commands.less"
     ]
   );
 }
@@ -80,15 +80,7 @@ function init() {
  */
 function process(path, request, response) {
   // Analyze path and handle this request yourself.
-
   if (path == "/" || path == "") {
-    var context = {};
-    // here's how to pass things into the .vt templates
-    context.someList = ["Superior","Michigan","Huron","Erie","Ontario"];
-    context.someString = "foo";
-    context.someInt = Packages.com.google.refine.sampleExtension.SampleUtil.stringArrayLength(context.someList);
-
-    send(request, response, "index.vt", context);
   }
 }
 
