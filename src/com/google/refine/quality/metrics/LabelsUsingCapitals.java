@@ -36,9 +36,6 @@ import com.hp.hpl.jena.sparql.core.Quad;
 public class LabelsUsingCapitals extends AbstractQualityMetric {
   private final static Logger LOG = Logger.getLogger(LabelsUsingCapitals.class);
 
-  // TODO move to class with constants.
-  private final static String CAMEL_CASE_REGEX = "[A-Z]([A-Z0-9]*[a-z][a-z0-9]*[A-Z]|[a-z0-9]*[A-Z][A-Z0-9]*[a-z])[A-Za-z0-9]*";
-
   private int literals = 0;
   private int badCapitalizationLiterals = 0;
 
@@ -51,7 +48,8 @@ public class LabelsUsingCapitals extends AbstractQualityMetric {
    */
   @Override
   public void before(Object... args) {
-    String path = (args == null || args.length == 0) ? Constants.LABEL_PROPERTIES_FILE : (String) args[0];
+    String path = (args == null || args.length == 0) ? Constants.LABEL_PROPERTIES_FILE :
+      (String) args[0];
     File file = null;
     try {
       file = new File(path);
@@ -59,7 +57,7 @@ public class LabelsUsingCapitals extends AbstractQualityMetric {
         String line = null;
         BufferedReader in = new BufferedReader(new FileReader(file));
         while ((line = in.readLine()) != null && !line.isEmpty()) {
-          if (new URI(line) != null) {
+          if (new URI(line.trim()) != null) {
             annotationPropertiesSet.add(line);
           }
         }
@@ -113,8 +111,9 @@ public class LabelsUsingCapitals extends AbstractQualityMetric {
       String value = object.getLiteralValue().toString().trim();
 
       if (value != null && !value.isEmpty()) {
-        if (value.matches(CAMEL_CASE_REGEX)) {
+        if (value.matches(Constants.CAMEL_CASE_REGEX)) {
           badCapitalizationLiterals++;
+          QualityProblem prob = new QualityProblem(index, quad, qualityReport);
           problemList.add(new QualityProblem(index, quad, qualityReport));
           LOG.info(String.format("Bad capitalization in the triple: %s\n", quad.toString()));
         }

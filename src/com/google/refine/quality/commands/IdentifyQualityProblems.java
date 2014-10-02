@@ -16,7 +16,6 @@ import org.json.JSONException;
 import org.json.JSONWriter;
 
 import com.hp.hpl.jena.sparql.core.Quad;
-
 import com.google.refine.commands.Command;
 import com.google.refine.history.HistoryEntry;
 import com.google.refine.model.Project;
@@ -26,6 +25,7 @@ import com.google.refine.quality.metrics.AbstractQualityMetric;
 import com.google.refine.quality.problems.QualityProblem;
 import com.google.refine.quality.utilities.Constants;
 import com.google.refine.quality.utilities.JenaModelLoader;
+import com.google.refine.quality.utilities.RefineUtils;
 import com.google.refine.quality.utilities.Utilities;
 import com.google.refine.util.Pool;
 
@@ -37,6 +37,7 @@ public class IdentifyQualityProblems extends Command {
   private HttpServletResponse response;
   private HttpServletRequest request;
   private Project project;
+  private List<Quad> quads;
 
   /**
    * 
@@ -47,19 +48,18 @@ public class IdentifyQualityProblems extends Command {
       project = getProject(request);
       HistoryEntry historyEntry = null;
       EditOneCellProcess process = null;
-      int cell = 1;
+      int cell = 5;
       
       for (QualityProblem qualityProblem : qualityProblems) {
         int row = qualityProblem.getRowIndex();
-        LOG.info(qualityProblem.getProblemDescription() + "  size " + qualityProblems.size() + " at row "+ row);
+        LOG.info(qualityProblem.getProblemDescription() + "  size " + qualityProblems.size() +
+          " at row "+ row);
         String problemString = composeProblemDescString(qualityProblem, row);
-
         process = new EditOneCellProcess(project, "Edit single cell", row, cell, problemString);
         LOG.info(String.format("Edit single cell at row: %s, col: %s", row, cell));
         historyEntry = project.processManager.queueProcess(process);
+        updateCell(process, historyEntry);
       }
-
-      updateCell(process, historyEntry);
     } catch (Exception e) {
       //TODO checked exception?
       LOG.error(e.getLocalizedMessage());
@@ -152,15 +152,15 @@ public class IdentifyQualityProblems extends Command {
   public void doPost(HttpServletRequest request, HttpServletResponse response) {
       this.response = response;
       this.request = request;
-      List<Quad> quards = null;
 
       try {
         project = getProject(request);
-        quards = JenaModelLoader.getQuads(Utilities.projectToInputStream(project));
+        RefineUtils.addColumn(project, request, response, "Problems", "Object", 4);
+
+        quads = JenaModelLoader.getQuads(Utilities.projectToInputStream(project));
 
         JSONArray metrics = new JSONArray(request.getParameter("metrics"));
         for (int i = 0; i < metrics.length(); i++) {
-
           // using reflection to get dynamically instances of metrics
           String metricName = (String) metrics.get(i);
           Class<?> cls = Class.forName(String.format("%s.%s", Constants.METRICS_PACKAGE, metricName));
@@ -168,9 +168,15 @@ public class IdentifyQualityProblems extends Command {
 
           Object[] args = { new String[]{} };
           metric.getClass().getDeclaredMethod("before", Object[].class).invoke(metric, args);
-          processMetric(metric, quards);
+          processMetric(metric, quads);
           metric.getClass().getMethod("after",  (Class[]) null).invoke(metric, (Object[]) null);
         }
+
+        RefineUtils.splitColumn(project, request, response, "Problems", 5);
+        RefineUtils.renameColumn(project, request, response, "Problem Type", "Problems 1");
+        RefineUtils.renameColumn(project, request, response, "Problem Description", "Problems 2");
+        RefineUtils.renameColumn(project, request, response, "Cleaning Suggestion", "Problems 3");
+        RefineUtils.renameColumn(project, request, response, "GREL Expresiion", "Problems 4");
 
       } catch (IOException e) {
         LOG.error(e.getLocalizedMessage());
@@ -201,45 +207,5 @@ public class IdentifyQualityProblems extends Command {
       } catch (InvocationTargetException e) {
         throw new QualityExtensionException("Can not invoke the method. " + e.getLocalizedMessage());
       }
-
-      // for Empty Annotation value
-//                  EmptyAnnotationValue.loadAnnotationPropertiesSet(null); // Pre-Process
-//                  processMetric(new EmptyAnnotationValue(), quards);
-//                  EmptyAnnotationValue.clearAnnotationPropertiesSet(); //Post-Process
-      
-//                  // for IncompatiableDatatypeRange
-//                  processMetric(new IncompatibleDatatypeRange(), quards);
-//                  IncompatibleDatatypeRange.clearCache(); //Post-Process
-
-      // for Malformed Datatype Literals
-//        processMetric( new MalformedDatatypeLiterals(), quards);
-
-
-      // for MisplacedClassesOrProperties -- DISABLE B/C TAKES TOO MUCH TIME
-      //  processMetric(request, response, new MisplacedClassesOrProperties(), quards);
-
-      // for MisusedOwlDatatypeOrObjectProperties
-      //  MisusedOwlDatatypeOrObjectProperties.filterAllOwlProperties(listQuad); //Pre-Process
-      //   processMetric(request, response, new MisusedOwlDatatypeOrObjectProperties(), listQuad);
-      //   MisusedOwlDatatypeOrObjectProperties.clearAllOwlPropertiesList(); //Post-Process
-
-      // for OntologyHijacking
-      // processMetric(request, response, new OntologyHijacking(), quards);
-
-//      // for WhitespaceInAnnotation
-//                  WhitespaceInAnnotation.loadAnnotationPropertiesSet(null); //Pre-Process
-//                  processMetric(new WhitespaceInAnnotation(), quards);
-//                  WhitespaceInAnnotation.clearAnnotationPropertiesSet(); //Post-Process
-
-      // for LabelUsingCapitals
-//      LabelsUsingCapitals.loadAnnotationPropertiesSet(null); //Pre-Process
-//      processMetric(new LabelsUsingCapitals(), quards);
-//      LabelsUsingCapitals.clearAnnotationPropertiesSet();
-
-      // for Undefined Classes
-      //  processMetric(request, response, new UndefinedClasses(), quards);
-
-      // for Undefined Properties
-      //    processMetric(request, response, new UndefinedProperties(), quards);
     }
 }

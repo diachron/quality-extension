@@ -50,7 +50,7 @@ public class WhitespaceInAnnotation extends AbstractQualityMetric {
           String line = null;
           BufferedReader in = new BufferedReader(new FileReader(file));
           while ((line = in.readLine()) != null && !line.isEmpty()) {
-            if (new URI(line) != null) {
+            if (new URI(line.trim()) != null) {
               annotationPropertiesSet.add(line);
             }
           }

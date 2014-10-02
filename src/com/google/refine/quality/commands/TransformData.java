@@ -26,25 +26,28 @@ import com.google.refine.process.QuickHistoryEntryProcess;
 import com.google.refine.quality.exceptions.QualityExtensionException;
 import com.google.refine.quality.utilities.Constants;
 import com.google.refine.quality.utilities.JenaModelLoader;
+import com.google.refine.quality.utilities.RefineUtils;
 import com.google.refine.quality.utilities.Utilities;
 import com.google.refine.util.Pool;
 
 public class TransformData extends Command {
 
   private static final Logger LOG = Logger.getLogger(TransformData.class);
-
+  private Project project;
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
+      throws ServletException, IOException {
 
-    Project project = getProject(request);
+    project = getProject(request);
+
     List<Quad> quads = JenaModelLoader.getQuads(Utilities.projectToInputStream(project));
 
     EditOneCellProcess process = null;
     HistoryEntry historyEntry = null;
+    RefineUtils.addColumn(project, request, response, "Column 2", "Column 1", 1);
 
     int rowIndex = 0;
-    int cellIndex = 2;
+    int cellIndex = 1;
     for (Quad qaud : quads) {
 
       StringBuilder value = new StringBuilder();
@@ -55,18 +58,22 @@ public class TransformData extends Command {
       value.append(qaud.getObject());
 
       process = new EditOneCellProcess(project, "Edit single cell", rowIndex++, cellIndex,
-        value.toString());
+          value.toString());
       try {
         historyEntry = project.processManager.queueProcess(process);
+        updateCell(historyEntry, process, response);
       } catch (Exception e) {
         LOG.error(e.getLocalizedMessage());
       }
     }
-    updateCell(historyEntry, process, response);
+    RefineUtils.splitColumn(project, request, response, "Column 2", 3);
+    RefineUtils.renameColumn(project, request, response, "Subject", "Column 2 1");
+    RefineUtils.renameColumn(project, request, response, "Predicate", "Column 2 2");
+    RefineUtils.renameColumn(project, request, response, "Object", "Column 2 3");
   }
 
   private void updateCell(HistoryEntry historyEntry, EditOneCellProcess process,
-    HttpServletResponse response) {
+      HttpServletResponse response) {
     try {
       if (historyEntry != null) {
         JSONWriter writer = new JSONWriter(response.getWriter());
@@ -104,7 +111,7 @@ public class TransformData extends Command {
     Cell newCell;
 
     EditOneCellProcess(Project project, String briefDescription, int rowIndex, int cellIndex,
-      Serializable value) {
+        Serializable value) {
       super(project, briefDescription);
 
       this.rowIndex = rowIndex;
@@ -122,7 +129,7 @@ public class TransformData extends Command {
 
       newCell = new Cell(value, cell != null ? cell.recon : null);
       String description = String.format("Edit single cell on row %s, column %s", (rowIndex + 1),
-        column.getName());
+          column.getName());
       Change change = new CellChange(rowIndex, cellIndex, cell, newCell);
 
       return new HistoryEntry(historyEntryID, _project, description, null, change);
