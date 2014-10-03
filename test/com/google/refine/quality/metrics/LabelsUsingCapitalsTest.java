@@ -4,12 +4,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.google.refine.quality.problems.QualityProblem;
+import com.google.refine.quality.utilities.Constants;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -27,9 +28,7 @@ public class LabelsUsingCapitalsTest {
 
   @BeforeClass
   public static void setUp() throws Exception {
-    // creating an instance using reflection, the same way instances created after receiving the
-    // metric's name to apply to quads.
-    cls = Class.forName("com.google.refine.quality.metrics." + "LabelsUsingCapitals");
+    cls = Class.forName((String.format("%s.%s", Constants.METRICS_PACKAGE, "LabelsUsingCapitals")));
     metric = (AbstractQualityMetric) cls.newInstance();
     metric.getClass().getDeclaredMethod("before", Object[].class).invoke(metric, new Object[]{new String[]{}});
     metric.getClass().getMethod("after",  (Class[]) null).invoke(metric, (Object[]) null);
@@ -77,8 +76,8 @@ public class LabelsUsingCapitalsTest {
   }
   
 
-  @After
-  public void tearDown() throws IllegalAccessException, IllegalArgumentException,
+  @AfterClass
+  public static void tearDown() throws IllegalAccessException, IllegalArgumentException,
   InvocationTargetException, NoSuchMethodException, SecurityException {
     metric.getClass().getMethod("after", (Class[]) null).invoke(metric, (Object[]) null);
   }

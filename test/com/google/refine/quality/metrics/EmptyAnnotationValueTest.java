@@ -20,25 +20,22 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 import com.google.refine.quality.problems.QualityProblem;
 import com.google.refine.quality.utilities.Constants;
 
-public class WhitespaceInAnnotationTest {
-
+public class EmptyAnnotationValueTest {
   private static AbstractQualityMetric metric;
   private static List<Quad> quads = new ArrayList<Quad>();
   private static Class<?> cls;
 
   @BeforeClass
-  public static void setUp() throws Exception {
-    cls = Class.forName((String.format("%s.%s", Constants.METRICS_PACKAGE, "WhitespaceInAnnotation")));
+  public static void setUpBeforeClass() throws Exception {
+    cls = Class.forName(String.format("%s.%s", Constants.METRICS_PACKAGE, "EmptyAnnotationValue"));
 
     Model model = ModelFactory.createDefaultModel();
-
     model.createResource("http://example.org/#spiderman")
-        .addProperty(RDFS.comment, "Name of Spiderman").addProperty(RDF.type, FOAF.Person)
-        .addProperty(RDFS.label, "SpidErman").addProperty(RDFS.label, "Otherlabel  ")
-        .addProperty(RDF.type, FOAF.Person);
+        .addProperty(RDFS.comment, "Name of Spiderman").addProperty(RDF.type, "")
+        .addProperty(RDFS.label, "SpidErman").addProperty(RDFS.label, "")
+        .addProperty(RDFS.comment, "");
     model.createResource("http://example.org/#green-goblin")
-        .addProperty(RDFS.comment, "Name of Green Goblin").addProperty(RDFS.label, "  GreenGoblin")
-        .addProperty(RDFS.label, "Green ");
+        .addProperty(RDFS.comment, "Name of Green Goblin").addProperty(RDFS.label, "");
 
     StmtIterator si = model.listStatements();
     while (si.hasNext()) {
@@ -46,45 +43,51 @@ public class WhitespaceInAnnotationTest {
     }
   }
 
-  @Test
-  public void emptyQuads() throws IllegalAccessException, IllegalArgumentException,
-    InvocationTargetException, NoSuchMethodException, SecurityException, InstantiationException {
-    metric = (AbstractQualityMetric) cls.newInstance();
-    metric.getClass().getDeclaredMethod("before", Object[].class).invoke(metric, new Object[]{new String[]{}});
-
-    metric.compute(new ArrayList<Quad>());
-    List<QualityProblem> problems = metric.getQualityProblems();
-    System.out.println(problems.size());
-    Assert.assertTrue(problems.isEmpty());
-    Assert.assertTrue(problems.size() == 0);
-    Assert.assertEquals(0.0, metric.metricValue(), 0.0);
+  @AfterClass
+  public static void tearDownAfterClass() throws Exception {
   }
 
   @Test
-  public void metric() throws IllegalAccessException, IllegalArgumentException,
-    InvocationTargetException, NoSuchMethodException, SecurityException, InstantiationException {
+  public void metric() throws IllegalArgumentException, SecurityException, IllegalAccessException,
+      InvocationTargetException, NoSuchMethodException, InstantiationException {
     metric = (AbstractQualityMetric) cls.newInstance();
-    metric.getClass().getDeclaredMethod("before", Object[].class).invoke(metric, new Object[]{new String[]{}});
+    metric.getClass().getDeclaredMethod("before", Object[].class)
+        .invoke(metric, new Object[] { new String[] {} });
 
     metric.compute(quads);
     List<QualityProblem> problems = metric.getQualityProblems();
-    System.out.println(problems.size());;
     Assert.assertFalse(problems.isEmpty());
     Assert.assertTrue(problems.size() == 3);
     Assert.assertEquals(0.5, metric.metricValue(), 0.0);
   }
 
   @Test
+  public void emptyQuads() throws IllegalArgumentException, SecurityException,
+      IllegalAccessException, InvocationTargetException, NoSuchMethodException,
+      InstantiationException {
+    metric = (AbstractQualityMetric) cls.newInstance();
+    metric.getClass().getDeclaredMethod("before", Object[].class)
+        .invoke(metric, new Object[] { new String[] {} });
+
+    metric.compute(new ArrayList<Quad>());
+    List<QualityProblem> problems = metric.getQualityProblems();
+    Assert.assertTrue(problems.isEmpty());
+    Assert.assertTrue(problems.size() == 0);
+    Assert.assertEquals(0.0, metric.metricValue(), 0.0);
+  }
+
+  @Test
   public void annotationNotInFile() throws IllegalAccessException, IllegalArgumentException,
-    InvocationTargetException, NoSuchMethodException, SecurityException, InstantiationException {
+      InvocationTargetException, NoSuchMethodException, SecurityException, InstantiationException {
     metric = (AbstractQualityMetric) cls.newInstance();
 
     Model m = ModelFactory.createDefaultModel();
     m.createResource("http://example.org/#spiderman")
         .addProperty(RDFS.comment, "Name of Spiderman").addProperty(RDF.type, FOAF.Person)
         .addProperty(RDFS.seeAlso, "SpidErman");
-    metric.getClass().getDeclaredMethod("before", Object[].class).invoke(metric, new Object[]{new String[]{}});
-  
+    metric.getClass().getDeclaredMethod("before", Object[].class)
+        .invoke(metric, new Object[] { new String[] {} });
+
     ArrayList<Quad> quards = new ArrayList<Quad>();
     StmtIterator s = m.listStatements();
     while (s.hasNext()) {
@@ -93,14 +96,9 @@ public class WhitespaceInAnnotationTest {
     metric.compute(quards);
     List<QualityProblem> problems = metric.getQualityProblems();
     Assert.assertTrue(problems.isEmpty());
-    System.out.println(problems.size());;
+    System.out.println(problems.size());
+    ;
     Assert.assertTrue(problems.size() == 0);
     Assert.assertEquals(0.0, metric.metricValue(), 0.0);
-  }
-  
-  @AfterClass
-  public static void tearDown() throws IllegalAccessException, IllegalArgumentException,
-  InvocationTargetException, NoSuchMethodException, SecurityException {
-    metric.getClass().getMethod("after", (Class[]) null).invoke(metric, (Object[]) null);
   }
 }
