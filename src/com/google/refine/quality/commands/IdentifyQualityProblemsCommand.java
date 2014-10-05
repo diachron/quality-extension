@@ -41,21 +41,17 @@ public class IdentifyQualityProblemsCommand extends Command {
 
       try {
         project = getProject(request);
-        RefineUtils.addColumn(project, request, response, "Problems", "Object", 3);
-     
-//        (Boolean) project.getMetadata().getCustomMetadata("Transformed");
+
+        if (project.getMetadata().getCustomMetadata("Qaulity") == null) {
+          project.getMetadata().setCustomMetadata("Qaulity", new Boolean(true));
+          RefineUtils.addColumn(project, request, response, "Problems", "Object", 3);
+        }
 
         quads = Utilities.getQuadsFromProject(project);
 
         JSONArray metrics = new JSONArray(request.getParameter("metrics"));
         for (int i = 0; i < metrics.length(); i++) {
           String metricName = (String) metrics.get(i);
-
-//          if ((Boolean) project.getMetadata().getCustomMetadata(metricName)) {
-//            // post smth to front end..
-//            continue;
-//          }
-
           Class<?> cls = Class.forName(String.format("%s.%s", Constants.METRICS_PACKAGE, metricName));
           AbstractQualityMetric metric = (AbstractQualityMetric) cls.newInstance();
 
@@ -67,12 +63,14 @@ public class IdentifyQualityProblemsCommand extends Command {
           project.getMetadata().setCustomMetadata(metricName, new Boolean(true));
         }
         
+        // TODO 
+        RefineUtils.splitMultiColumn(project, request, response, "Problems", "Subject");
         RefineUtils.splitColumn(project, request, response, "Problems", 4);
+
         RefineUtils.renameColumn(project, request, response, "Problem Type", "Problems 1");
         RefineUtils.renameColumn(project, request, response, "Problem Description", "Problems 2");
         RefineUtils.renameColumn(project, request, response, "Cleaning Suggestion", "Problems 3");
-        RefineUtils.renameColumn(project, request, response, "GREL Expresiion", "Problems 4");
-
+        RefineUtils.renameColumn(project, request, response, "GREL Expresion", "Problems 4");
 
       } catch (IOException e) {
         LOG.error(e.getLocalizedMessage());

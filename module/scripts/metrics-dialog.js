@@ -66,6 +66,7 @@ AboutDialog.prototype = {
     this.dialogElement = $(DOM.loadHTML("quality-extension", "scripts/dialogs/metrics-dialog.html"));
     this._elmts = DOM.bind(this.dialogElement);
     self.main_ul = this.dialogElement.find('ul#example');
+    self.close = this._elmts.close;
 
     for (var general_metric in this.mertics_init) {
         var sub_metrics = this.mertics_init[general_metric];
@@ -112,6 +113,7 @@ AboutDialog.prototype = {
         }
       });
       transform(metrics);
+      DialogSystem.dismissUntil(self.dialogLevel - 1);
     });
 
   },

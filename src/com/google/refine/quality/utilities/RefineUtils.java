@@ -20,6 +20,7 @@ import com.google.refine.model.Cell;
 import com.google.refine.model.Column;
 import com.google.refine.model.Project;
 import com.google.refine.model.changes.CellChange;
+import com.google.refine.operations.cell.MultiValuedCellSplitOperation;
 import com.google.refine.operations.cell.TextTransformOperation;
 import com.google.refine.operations.column.ColumnAdditionOperation;
 import com.google.refine.operations.column.ColumnRemovalOperation;
@@ -87,6 +88,22 @@ public class RefineUtils extends Command {
     HttpServletResponse response, String columnName) throws IOException, ServletException {
     try {
       AbstractOperation op = new ColumnRemovalOperation(columnName);
+      Process process = op.createProcess(project, new Properties());
+
+      performProcessAndRespond(request, response, project, process);
+    } catch (Exception e) {
+      respondException(response, e);
+    }
+  }
+
+  public static void splitMultiColumn(Project project, HttpServletRequest request,
+      HttpServletResponse response, String columnName,  String keyColumnName) throws IOException,
+      ServletException {
+    try {
+      String separator =  Constants.ROW_SPLITER; //"|&SPLITROW&|",
+      String mode = "plain";
+
+      AbstractOperation op = new MultiValuedCellSplitOperation(columnName, keyColumnName, separator, mode);
       Process process = op.createProcess(project, new Properties());
 
       performProcessAndRespond(request, response, project, process);

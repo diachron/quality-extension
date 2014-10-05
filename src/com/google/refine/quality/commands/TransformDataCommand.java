@@ -27,31 +27,33 @@ public class TransformDataCommand extends Command {
       throws ServletException, IOException {
 
     Project project = getProject(request);
-    List<Quad> quads = JenaModelLoader.getQuads(Utilities.projectToInputStream(project));
 
-    RefineUtils.addColumn(project, request, response, "Column 2", "Column 1", 1);
+    if (project.getMetadata().getCustomMetadata("Transform") == null) {
+      project.getMetadata().setCustomMetadata("Transform", new Boolean(true));
+      
+      List<Quad> quads = JenaModelLoader.getQuads(Utilities.projectToInputStream(project));
+      RefineUtils.addColumn(project, request, response, "Column 2", "Column 1", 1);
 
-    int rowIndex = 0;
-    int cellIndex = 1;
-    for (Quad qaud : quads) {
+      int rowIndex = 0;
+      int cellIndex = 1;
+      for (Quad qaud : quads) {
 
-      StringBuilder value = new StringBuilder();
-      value.append(qaud.getSubject());
-      value.append(Constants.COLUMN_SPLITER);
-      value.append(qaud.getPredicate());
-      value.append(Constants.COLUMN_SPLITER);
-      value.append(qaud.getObject());
+        StringBuilder value = new StringBuilder();
+        value.append(qaud.getSubject());
+        value.append(Constants.COLUMN_SPLITER);
+        value.append(qaud.getPredicate());
+        value.append(Constants.COLUMN_SPLITER);
+        value.append(qaud.getObject());
 
-      RefineUtils.editCell(project, request, response, rowIndex++, cellIndex, value.toString());
-      LOG.info(String.format("Edit single cell at row: %s, col: %s", rowIndex, cellIndex));
+        RefineUtils.editCell(project, request, response, rowIndex++, cellIndex, value.toString());
+        LOG.info(String.format("Edit single cell at row: %s, col: %s", rowIndex, cellIndex));
+      }
+
+      RefineUtils.splitColumn(project, request, response, "Column 2", 3);
+      RefineUtils.renameColumn(project, request, response, "Subject", "Column 2 1");
+      RefineUtils.renameColumn(project, request, response, "Predicate", "Column 2 2");
+      RefineUtils.renameColumn(project, request, response, "Object", "Column 2 3");
+      RefineUtils.removeColumn(project, request, response, "Column 1");
     }
-
-    RefineUtils.splitColumn(project, request, response, "Column 2", 3);
-    RefineUtils.renameColumn(project, request, response, "Subject", "Column 2 1");
-    RefineUtils.renameColumn(project, request, response, "Predicate", "Column 2 2");
-    RefineUtils.renameColumn(project, request, response, "Object", "Column 2 3");
-    RefineUtils.removeColumn(project, request, response, "Column 1");
-
-    project.getMetadata().setCustomMetadata("Transformed", new Boolean(true));
   }
 }
