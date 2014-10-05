@@ -30,8 +30,8 @@ public class EmptyAnnotationValue extends AbstractQualityMetric {
   private static final Logger LOG = Logger.getLogger(EmptyAnnotationValue.class);
   private static final Resource qualityReport = QPROB.EmptyAnnotationValueProblem;
 
-  private long numberOfLiterals = 0;
-  private long numberOfEmptyLiterals = 0;
+  private long literals = 0;
+  private long emptyLiterals = 0;
   private static Set<String> annotationProperties = new HashSet<String>();
 
   /**
@@ -80,10 +80,10 @@ public class EmptyAnnotationValue extends AbstractQualityMetric {
   public void compute(Integer index, Quad quad) {
     Node predicate = quad.getPredicate();
     if (predicate.isURI() && annotationProperties.contains(predicate.getURI())) {
-      numberOfLiterals++;
+      literals++;
 
       if (isEmptyLiteral(index, quad)) {
-        numberOfEmptyLiterals++;
+        emptyLiterals++;
         QualityProblem reportProblems = new QualityProblem(index, quad, qualityReport);
         problemList.add(reportProblems);
         LOG.info(String.format("Empty annotation value in quad %s", quad.toString()));
@@ -112,10 +112,10 @@ public class EmptyAnnotationValue extends AbstractQualityMetric {
    */
   @Override
   public double metricValue() {
-    if (numberOfLiterals <= 0) {
+    if (literals == 0) {
       LOG.warn("Total number of literals are ZERO");
       return 0;
     }
-    return ((double) numberOfEmptyLiterals / (double) numberOfLiterals);
+    return ((double) emptyLiterals / (double) literals);
   }
 }

@@ -1,7 +1,5 @@
 package com.google.refine.quality.metrics;
 
-
-
 import org.apache.log4j.Logger;
 
 import com.google.refine.quality.problems.MalformedDatatypeProblem;
@@ -16,85 +14,54 @@ import com.hp.hpl.jena.sparql.core.Quad;
 /**
  * Detects whether the value of a typed literal is valid with respect to its
  * given xsd datatype.
- * 
- * @author Muhammad Ali Qasmi
- * @date 13th Feb 2014
  */
 public class MalformedDatatypeLiterals extends AbstractQualityMetric {
-        /**
-         * Description of quality report 
-         */
-        protected Resource qualityReport  = QPROB.MalformedDatatypeLiteralsProblem;
-	/**
-	 * logger static object
-	 */
-	private static Logger logger = Logger
-			.getLogger(MalformedDatatypeLiterals.class);
-	/**
-	 * total number of literals
-	 */
-	private double totalLiterals = 0;
-	/**
-	 * total number of malformed literals
-	 */
-	private double malformedLiterals = 0;
-	/**
-	 * This method identify whether a given quad is malformed or not.
-	 * 
-	 * @param quad
-	 *            - to be identified
-	 */
-	@Override
-	public void compute(Integer index, Quad quad) {
-        
-    		logger.trace("compute() --Started--");
-    		// retrieves object from statement
-    		Node object = quad.getObject();
-    		// checks if object is a literal
-    		if (object.isLiteral()) {
-    			// retrieves rdfDataType from literal
-    			RDFDatatype rdfdataType = object.getLiteralDatatype();
-    			// check if rdf data type is a valid data type
-    			if (rdfdataType != null) {
-    				logger.debug("RdfDataTypeLiteral :: " + object.toString());
-    				if (!rdfdataType.isValidLiteral(object.getLiteral())) {
-    					this.malformedLiterals++;
-    					MalformedDatatypeProblem reportProblems = new MalformedDatatypeProblem(index, quad, qualityReport);
-    					reportProblems.setDatatype(rdfdataType.getURI());
-    					this.problemList.add(reportProblems);
-    					logger.debug("MalformedRDFDataTypeLiteral :: "
-    							+ object.toString());
-    				}
-    				this.totalLiterals++;
-    			}
-    			logger.debug("Literal :: " + object.toString());
-    		}
-    		logger.debug("Object :: " + object.toString());
-		logger.trace("compute() --Ended--");
-	}
+  private static final Logger LOG = Logger.getLogger(MalformedDatatypeLiterals.class);
+  private static final Resource qualityReport = QPROB.MalformedDatatypeLiteralsProblem;
 
-	/**
-	 * Returns metric value for object this class
-	 * 
-	 * @return (number of malformed literals) / (total number of literals)
-	 */
-	@Override
-	public double metricValue() {
+  private int literals = 0;
+  private int malformedLiterals = 0;
 
-		logger.trace("metricValue() --Started--");
-		logger.debug("Malformed Literals :: " + this.malformedLiterals);
-		logger.debug("Total Literals :: " + this.totalLiterals);
+  /**
+   * Identifies whether a given quad is malformed.
+   * @param quad A quad to check for the problem.
+   */
+  @Override
+  public void compute(Integer index, Quad quad) {
+    Node object = quad.getObject();
+    if (object.isLiteral()) {
+      detectMalformedDatatype(index, quad);
+      literals++;
+    }
+  }
 
-		// return ZERO if total number of RDF literals are ZERO [WARN]
-		if (0 >= this.totalLiterals) {
-			logger.warn("Total number of RDF data type literals in given document is found to be zero.");
-			return 0.0;
-		}
+  private void detectMalformedDatatype(Integer index, Quad quad) {
+    Node object = quad.getObject();
+    RDFDatatype rdfdataType = object.getLiteralDatatype();
 
-		double metricValue = this.malformedLiterals / this.totalLiterals;
-		logger.debug("Metric Value :: " + metricValue);
-		logger.trace("metricValue() --Ended--");
-		return metricValue;
-	}
-	
+    if (rdfdataType != null) {
+      if (!rdfdataType.isValidLiteral(object.getLiteral())) {
+        malformedLiterals++;
+
+        MalformedDatatypeProblem problem = new MalformedDatatypeProblem(index, quad, qualityReport);
+        problem.setDatatype(rdfdataType.getURI());
+        problemList.add(problem);
+        LOG.info("Malformed literal is found in quad: " + quad.toString());
+      }
+    }
+  }
+
+  /**
+   * Calculates a metric value. Ratio of literals with malformed data types to total
+   * number of literals.
+   * @return Ratio of literals with malformed data types to total number of literals.
+   */
+  @Override
+  public double metricValue() {
+    if (literals == 0) {
+      LOG.warn("Total number of literals in given document is 0.");
+      return 0.0;
+    }
+    return (double) malformedLiterals / (double) literals;
+  }
 }

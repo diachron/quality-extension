@@ -17,6 +17,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 /**
+ * TODO refactor...
  * Responsible for reading vocabulary (Models) from Web.
  * Stores vocabulary in memory and file cache.
  * 
