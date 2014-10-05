@@ -16,6 +16,7 @@ import com.hp.hpl.jena.sparql.core.Quad;
 import com.hp.hpl.jena.vocabulary.RDF;
 
 /**
+ *  * TODO refactor
  * The Ontology Hijacking detects the redefinition by analyzing defined classes or 
  * properties in data set and looks of same definition in its respective vocabulary. 
  * 

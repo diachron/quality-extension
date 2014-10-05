@@ -26,6 +26,7 @@ import com.hp.hpl.jena.sparql.core.Quad;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 /**
+ *  * TODO refactor
  * Detects incompatible data type of literals by comparing its Data Type URI with the
  * Data Type URI specified in the range of the Object's predicate
  * 

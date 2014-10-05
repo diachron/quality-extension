@@ -12,6 +12,7 @@ import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.util.FileManager;
 
+// TODO simplify getResourcePropertyValue method 
 public class QualityReportModelLoader {
   private static final Logger LOG = Logger.getLogger(QualityReportModelLoader.class);
 

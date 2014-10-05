@@ -15,6 +15,7 @@ import com.hp.hpl.jena.sparql.core.Quad;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 /**
+ *  * TODO refactor
  * This metric should find resources that are - defined as a property but also
  * appear on subject or object positions in other triples (except cases like
  * ex:prop rdf:type rdfs:Property, ex:prop rds:subPropetyOf) - defined as a

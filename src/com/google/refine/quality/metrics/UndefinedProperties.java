@@ -14,6 +14,7 @@ import com.google.refine.quality.problems.QualityProblem;
 import com.google.refine.quality.problems.UndefinedClassORPropertyProblem;
 import com.google.refine.quality.utilities.VocabularyReader;
 import com.google.refine.quality.vocabularies.QPROB;
+//  TODO refactor
 
 public class UndefinedProperties extends AbstractQualityMetric {
                 /**

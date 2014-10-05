@@ -8,9 +8,6 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 
 /**
  * Contains information about problematic quads.
- * 
- * @author Muhammad
- * 
  */
 public class QualityProblem {
 

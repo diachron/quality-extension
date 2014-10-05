@@ -30,8 +30,8 @@ public class WhitespaceInAnnotation extends AbstractQualityMetric {
   private final static Logger LOG = Logger.getLogger(LabelsUsingCapitals.class);
   private final Resource qualityReport = QPROB.WhitespaceInAnnotationProblem;
 
-  private long numberOfLiterals = 0;
-  private long numberOfWhitespaceLiterals = 0;
+  private long literals = 0;
+  private long whitespaceLiterals = 0;
   private static Set<String> annotationProperties = new HashSet<String>();
 
   /**
@@ -85,7 +85,7 @@ public class WhitespaceInAnnotation extends AbstractQualityMetric {
   public void compute(Integer index, Quad quad) {
     Node predicate = quad.getPredicate();
     if (predicate.isURI() && annotationProperties.contains(predicate.getURI())) {
-      numberOfLiterals++;
+      literals++;
       detectWhitespaces(index, quad);
     }
   }
@@ -101,9 +101,8 @@ public class WhitespaceInAnnotation extends AbstractQualityMetric {
     Node object = quad.getObject();
     if (object.isLiteral()) {
       String value = object.getLiteralValue().toString();
-
       if (!value.equals(value.trim())) {
-        numberOfWhitespaceLiterals++;
+        whitespaceLiterals++;
         problemList.add(new QualityProblem(index, quad, qualityReport));
         LOG.info(String.format("Whitespce found in annotation: %s", quad.getObject()));
       }
@@ -117,10 +116,10 @@ public class WhitespaceInAnnotation extends AbstractQualityMetric {
    */
   @Override
   public double metricValue() {
-    if (numberOfLiterals <= 0) {
+    if (literals == 0) {
       LOG.warn("Total number of literals is 0.");
       return 0;
     }
-    return ((double) numberOfWhitespaceLiterals / (double) numberOfLiterals);
+    return ((double) whitespaceLiterals / (double) literals);
   }
 }

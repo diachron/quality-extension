@@ -18,7 +18,7 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.sparql.core.Quad;
 
 /**
- * 
+ *  * TODO refactor
  * Detect properties that are defined as a owl:datatype property but is used as
  * object property and properties defined as a owl:object property and used as
  * data type property The metric is computed as a ratio of misused properties
