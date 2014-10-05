@@ -18,9 +18,9 @@ import com.google.refine.quality.utilities.JenaModelLoader;
 import com.google.refine.quality.utilities.RefineUtils;
 import com.google.refine.quality.utilities.Utilities;
 
-public class TransformData extends Command {
+public class TransformDataCommand extends Command {
 
-  private static final Logger LOG = Logger.getLogger(TransformData.class);
+  private static final Logger LOG = Logger.getLogger(TransformDataCommand.class);
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response)

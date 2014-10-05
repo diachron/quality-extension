@@ -47,9 +47,9 @@ function init() {
   /*
    * Commands
    */
-  RefineServlet.registerCommand(module, "assessQuality", new AssessQuality());
-  RefineServlet.registerCommand(module, "identifyQualityProblems", new IdentifyQualityProblems()); 
-  RefineServlet.registerCommand(module, "transformData", new TransformData());
+  RefineServlet.registerCommand(module, "exportProject", new ExportProjectCommand());
+  RefineServlet.registerCommand(module, "identifyQualityProblems", new IdentifyQualityProblemsCommand());
+  RefineServlet.registerCommand(module, "transformData", new TransformDataCommand());
 
   var ClientSideResourceManager = Packages.com.google.refine.ClientSideResourceManager;
   // Script files to inject into /project page

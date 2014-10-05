@@ -24,8 +24,8 @@ import com.google.refine.quality.utilities.Constants;
 import com.google.refine.quality.utilities.RefineUtils;
 import com.google.refine.quality.utilities.Utilities;
 
-public class IdentifyQualityProblems extends Command {
-  private static final Logger LOG = Logger.getLogger(IdentifyQualityProblems.class);
+public class IdentifyQualityProblemsCommand extends Command {
+  private static final Logger LOG = Logger.getLogger(IdentifyQualityProblemsCommand.class);
 
   /** A hashtable accumulates problem messages for row entries */
   private Hashtable<Integer, String> problemMessages = new Hashtable<Integer, String>();

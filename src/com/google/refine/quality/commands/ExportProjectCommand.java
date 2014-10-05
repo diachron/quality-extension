@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.refine.commands.Command;
 
-public class AssessQuality extends Command {
+public class ExportProjectCommand extends Command {
     
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
