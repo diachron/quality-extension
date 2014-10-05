@@ -14,6 +14,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.core.Quad;
 
 /**
+ * TODO refactor
  * This metric reports outliers or conflicts of literal datatypes. Since it is
  * meant to measure the homogeneity and not the validity possible rdfs:range
  * restrictions are not evaluated.
