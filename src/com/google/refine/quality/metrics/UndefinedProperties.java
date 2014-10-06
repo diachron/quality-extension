@@ -43,7 +43,7 @@ public class UndefinedProperties extends AbstractQualityMetric {
 		 *            - to be identified
 		 */
 		@Override
-		public void compute(Integer index, Quad quad) {
+		public void compute(Quad quad) {
 
 			logger.trace("compute() --Started--");
 
@@ -59,8 +59,8 @@ public class UndefinedProperties extends AbstractQualityMetric {
 					if (predicateModel == null) { // check if system is able to
 													// retrieve model
 	                        this.undefinedPropertiesCount++;
-	                        QualityProblem reportProblems = new QualityProblem(index, quad, qualityReport);
-	                        this.problemList.add(reportProblems);
+	                        QualityProblem reportProblems = new QualityProblem(quad, qualityReport);
+	                        problems.add(reportProblems);
 					} else {
 						// search for URI resource from Model
 						if (predicateModel.getResource(predicate.getURI())
@@ -72,9 +72,9 @@ public class UndefinedProperties extends AbstractQualityMetric {
 											RDFS.range))) {
 						        System.out.println("predicate : " + predicate);    
 								this.undefinedPropertiesCount++;
-								UndefinedClassORPropertyProblem reportProblems = new UndefinedClassORPropertyProblem(index, quad, qualityReport);
+								UndefinedClassORPropertyProblem reportProblems = new UndefinedClassORPropertyProblem(quad, qualityReport);
 								reportProblems.setToProperty();
-								this.problemList.add(reportProblems);
+								problems.add(reportProblems);
 							}
 						}
 					}
@@ -96,15 +96,15 @@ public class UndefinedProperties extends AbstractQualityMetric {
 	                        if (objectModel == null) { // check if system is able to
 	                                                    // retrieve model
 	                                this.undefinedPropertiesCount++;
-	                                QualityProblem reportProblems = new QualityProblem(index, quad, qualityReport);
-	                                this.problemList.add(reportProblems);
+	                                QualityProblem reportProblems = new QualityProblem(quad, qualityReport);
+	                                problems.add(reportProblems);
 	                        } else {
 	                             // search for URI resource from Model
 	                                if (!objectModel.getResource(object.getURI())
 	                                                .isURIResource()) {
 	                                    this.undefinedPropertiesCount++;
-	                                    QualityProblem reportProblems = new QualityProblem(index, quad, qualityReport);
-	                                    this.problemList.add(reportProblems);
+	                                    QualityProblem reportProblems = new QualityProblem(quad, qualityReport);
+	                                    problems.add(reportProblems);
 	                                }      
 	                        }      
 	                    }

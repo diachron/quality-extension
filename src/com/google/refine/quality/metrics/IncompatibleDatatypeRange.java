@@ -107,7 +107,7 @@ public class IncompatibleDatatypeRange extends AbstractQualityMetric {
          *            - to be processed
          */
         @Override
-        public void compute(Integer index, Quad quad) {
+        public void compute(Quad quad) {
             logger.trace("compute() --Started--");
             try {
                 // retrieve predicate
@@ -186,9 +186,9 @@ public class IncompatibleDatatypeRange extends AbstractQualityMetric {
                                                 givenObjectDateTypeURI,
                                                 rangeObjectURI)) {
                                             this.incompatiableDataTypeLiterals++;
-                                            DatatypeQualityProblem reportProblems = new DatatypeQualityProblem(index, quad, qualityReport);
+                                            DatatypeQualityProblem reportProblems = new DatatypeQualityProblem(quad, qualityReport);
                                             reportProblems.setDatatypes(rangeObjectURI, givenObjectDateTypeURI);
-                                            this.problemList.add(reportProblems);
+                                            problems.add(reportProblems);
                                         }
                                     } catch (URISyntaxException e) {
                                         logger.error("Malformed URI exception for "

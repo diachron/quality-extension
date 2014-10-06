@@ -37,7 +37,7 @@ public class UndefinedClasses extends AbstractQualityMetric {
    *          - to be identified
    */
   @Override
-  public void compute(Integer index, Quad quad) {
+  public void compute(Quad quad) {
     try {
       Node predicate = quad.getPredicate();
       Node object = quad.getObject();
@@ -65,15 +65,14 @@ public class UndefinedClasses extends AbstractQualityMetric {
           if (objectModel == null) { // check if system is able to
                                      // retrieve model
             undefinedClasses++;
-            QualityProblem reportProblems = new QualityProblem(index, quad, qualityReport);
-            this.problemList.add(reportProblems);
+            QualityProblem reportProblems = new QualityProblem(quad, qualityReport);
+            problems.add(reportProblems);
           } else {
             // search for URI resource from Model
             if (!objectModel.getResource(object.getURI()).isURIResource()) {
               undefinedClasses++;
-              UndefinedClassORPropertyProblem reportProblems = new UndefinedClassORPropertyProblem(
-                  index, quad, qualityReport);
-              this.problemList.add(reportProblems);
+              UndefinedClassORPropertyProblem reportProblems = new UndefinedClassORPropertyProblem(quad, qualityReport);
+              problems.add(reportProblems);
             }
           }
         }

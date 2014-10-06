@@ -64,7 +64,7 @@ public class HomogeneousDatatypes extends AbstractQualityMetric {
          * hash table with required information e.g. rdf type, count.
          */
         @Override
-        public void compute(Integer index, Quad quad) {
+        public void compute(Quad quad) {
             logger.trace("compute() --Started--");
             try {
 

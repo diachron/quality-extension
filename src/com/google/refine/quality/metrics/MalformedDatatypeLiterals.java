@@ -27,15 +27,15 @@ public class MalformedDatatypeLiterals extends AbstractQualityMetric {
    * @param quad A quad to check for the problem.
    */
   @Override
-  public void compute(Integer index, Quad quad) {
+  public void compute(Quad quad) {
     Node object = quad.getObject();
     if (object.isLiteral()) {
-      detectMalformedDatatype(index, quad);
+      detectMalformedDatatype(quad);
       literals++;
     }
   }
 
-  private void detectMalformedDatatype(Integer index, Quad quad) {
+  private void detectMalformedDatatype(Quad quad) {
     Node object = quad.getObject();
     RDFDatatype rdfdataType = object.getLiteralDatatype();
 
@@ -43,9 +43,9 @@ public class MalformedDatatypeLiterals extends AbstractQualityMetric {
       if (!rdfdataType.isValidLiteral(object.getLiteral())) {
         malformedLiterals++;
 
-        MalformedDatatypeProblem problem = new MalformedDatatypeProblem(index, quad, qualityReport);
+        MalformedDatatypeProblem problem = new MalformedDatatypeProblem(quad, qualityReport);
         problem.setDatatype(rdfdataType.getURI());
-        problemList.add(problem);
+        problems.add(problem);
         LOG.info("Malformed literal is found in quad: " + quad.toString());
       }
     }

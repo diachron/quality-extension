@@ -34,18 +34,18 @@ public class QualityProblemTest {
 
   @Test
   public void eqaulsMethodTest() {
-    QualityProblem n1 = new QualityProblem(0, quads.get(0), qualityReport);
-    QualityProblem n2 = new QualityProblem(0, quads.get(1), qualityReport);
-    QualityProblem n3 = new QualityProblem(0, quads.get(0), qualityReport);
+    QualityProblem n1 = new QualityProblem(quads.get(0), qualityReport);
+    QualityProblem n2 = new QualityProblem(quads.get(1), qualityReport);
+    QualityProblem n3 = new QualityProblem(quads.get(0), qualityReport);
     Assert.assertTrue(n1.equals(n3));
     Assert.assertFalse(n2.equals(n3));
   }
 
   @Test
   public void hashCodeTest() {
-    QualityProblem n1 = new QualityProblem(0, quads.get(0), qualityReport);
-    QualityProblem n2 = new QualityProblem(0, quads.get(1), qualityReport);
-    QualityProblem n3 = new QualityProblem(0, quads.get(0), qualityReport);
+    QualityProblem n1 = new QualityProblem(quads.get(0), qualityReport);
+    QualityProblem n2 = new QualityProblem(quads.get(1), qualityReport);
+    QualityProblem n3 = new QualityProblem(quads.get(0), qualityReport);
     HashMap<Integer, QualityProblem> map = new HashMap<Integer, QualityProblem>();
     map.put(n1.hashCode(), n1);
     Assert.assertTrue(map.containsKey(n3.hashCode()));

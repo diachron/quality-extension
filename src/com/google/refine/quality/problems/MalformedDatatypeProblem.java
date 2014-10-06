@@ -10,8 +10,8 @@ public class MalformedDatatypeProblem extends QualityProblem {
 
   private String expectedDatatype;
 
-  public MalformedDatatypeProblem(Integer rowIndex, Quad quad, Resource qualityReport) {
-    super(rowIndex, quad, qualityReport);
+  public MalformedDatatypeProblem(Quad quad, Resource qualityReport) {
+    super(quad, qualityReport);
   }
 
   public void setDatatype(String expected) {

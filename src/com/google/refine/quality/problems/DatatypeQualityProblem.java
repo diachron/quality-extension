@@ -10,8 +10,8 @@ public class DatatypeQualityProblem extends QualityProblem {
   private String expectedDatatype;
   private String currentDatatype;
 
-  public DatatypeQualityProblem(Integer rowIndex, Quad quad, Resource qualityReport) {
-    super(rowIndex, quad, qualityReport);
+  public DatatypeQualityProblem(Quad quad, Resource qualityReport) {
+    super(quad, qualityReport);
   }
 
   public void setDatatypes(URI expected, URI available) {

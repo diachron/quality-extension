@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.google.refine.quality.problems.QualityProblem;
-import com.google.refine.quality.utilities.QualityReportModelLoader;
 import com.google.refine.quality.utilities.VocabularyReader;
 import com.google.refine.quality.vocabularies.QPROB;
 import com.hp.hpl.jena.graph.Node;
@@ -176,7 +175,7 @@ public class MisusedOwlDatatypeOrObjectProperties extends AbstractQualityMetric 
          *            - to be identified
          */
         @Override
-        public void compute(Integer index, Quad quad) {
+        public void compute(Quad quad) {
 
             logger.trace("compute() --Started--");
 
@@ -190,8 +189,8 @@ public class MisusedOwlDatatypeOrObjectProperties extends AbstractQualityMetric 
                     this.totalDatatypeProperties++;
                     if (!object.isLiteral()) {
                         this.misuseDatatypeProperties++;
-                        QualityProblem reportProblems = new QualityProblem(index, quad, datatypeProperty); 
-                        this.problemList.add(reportProblems);
+                        QualityProblem reportProblems = new QualityProblem(quad, datatypeProperty); 
+                        problems.add(reportProblems);
                     }
                 }
                 // owl:ObjectProperty relates some resource another resource
@@ -200,8 +199,8 @@ public class MisusedOwlDatatypeOrObjectProperties extends AbstractQualityMetric 
                     this.totalObjectProperties++;
                     if (!object.isURI()) {
                         this.misuseObjectProperties++;
-                        QualityProblem reportProblems = new QualityProblem(index, quad, objectPropertyProblem);
-                        this.problemList.add(reportProblems);
+                        QualityProblem reportProblems = new QualityProblem(quad, objectPropertyProblem);
+                        problems.add(reportProblems);
                     }
                 }
             } catch (Exception exception) {

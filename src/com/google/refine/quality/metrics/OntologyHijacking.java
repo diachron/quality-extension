@@ -6,7 +6,6 @@ import org.apache.xerces.util.URI;
 import org.apache.xerces.util.URI.MalformedURIException;
 
 import com.google.refine.quality.problems.QualityProblem;
-import com.google.refine.quality.utilities.QualityReportModelLoader;
 import com.google.refine.quality.utilities.VocabularyReader;
 
 import com.hp.hpl.jena.graph.Node;
@@ -93,15 +92,15 @@ public class OntologyHijacking extends AbstractQualityMetric {
          * Detects if filtered triples are already defined in vocabulary
          */
         @Override
-        public void compute(Integer index, Quad quad) {
+        public void compute(Quad quad) {
                 try {
                     if (isDefinedClassOrProperty(quad, "type")){ // quad represent a locally defined statement
                             this.totalLocallyDefinedClassesOrPropertiesCount++; // increments defined class or property count
                             Node subject = quad.getSubject(); // retrieve subject
                             if (isHijacked(subject)){ 
                                     this.hijackedClassesOrPropertiesCount++; // increments redefined class or property count
-                                    QualityProblem reportProblems = new QualityProblem(index, quad, qualityReport);
-                                    this.problemList.add(reportProblems);
+                                    QualityProblem reportProblems = new QualityProblem(quad, qualityReport);
+                                    problems.add(reportProblems);
                             }
                     }
                     else if (isDefinedClassOrProperty(quad, "domain")){ // quad represent a locally defined statement
@@ -109,8 +108,8 @@ public class OntologyHijacking extends AbstractQualityMetric {
                             Node object = quad.getObject(); // retrieve object
                             if (isHijacked(object)){ 
                                     this.hijackedClassesOrPropertiesCount++; // increments redefined class or property count
-                                    QualityProblem reportProblems = new QualityProblem(index, quad, qualityReport);
-                                    this.problemList.add(reportProblems);
+                                    QualityProblem reportProblems = new QualityProblem(quad, qualityReport);
+                                    problems.add(reportProblems);
                             }
                     }
                 }

@@ -11,13 +11,8 @@ import com.hp.hpl.jena.vocabulary.RDFS;
  */
 public class QualityProblem {
 
-  protected Integer rowIndex;
   protected Quad quad;
   protected Resource problemtURI;
-
-  public Integer getRowIndex() {
-    return rowIndex;
-  }
 
   public Quad getQuad() {
     return quad;
@@ -45,8 +40,7 @@ public class QualityProblem {
     return QualityReportModelLoader.getResourcePropertyValue(this.problemtURI, QPROB.qrefineRule);
   }
 
-  public QualityProblem(Integer rowIndex, Quad quad, Resource qualityReport) {
-    this.rowIndex = rowIndex;
+  public QualityProblem(Quad quad, Resource qualityReport) {
     this.quad = quad;
     this.problemtURI = qualityReport;
   }

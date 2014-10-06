@@ -4,7 +4,6 @@ package com.google.refine.quality.metrics;
 import org.apache.log4j.Logger;
 
 import com.google.refine.quality.problems.QualityProblem;
-import com.google.refine.quality.utilities.QualityReportModelLoader;
 import com.google.refine.quality.utilities.VocabularyReader;
 import com.google.refine.quality.vocabularies.QPROB;
 
@@ -64,7 +63,7 @@ public class MisplacedClassesOrProperties extends AbstractQualityMetric {
         @Override
         public void after() {}
         @Override
-        public void compute(Integer index, Quad quad) {
+        public void compute(Quad quad) {
             logger.trace("compute() --Started--");
 
             try {
@@ -91,8 +90,8 @@ public class MisplacedClassesOrProperties extends AbstractQualityMetric {
                                 logger.debug("Misplace Class Found in Subject::"
                                         + subject);
                                 this.misplacedClassesCount++;
-                                QualityProblem reportProblems = new QualityProblem(index, quad, qualityReport);
-                                this.problemList.add(reportProblems);
+                                QualityProblem reportProblems = new QualityProblem(quad, misplacedClass);
+                                problems.add(reportProblems);
                             }
                         }
                     }
@@ -118,8 +117,8 @@ public class MisplacedClassesOrProperties extends AbstractQualityMetric {
                                 logger.debug("Misplace Property Found in Predicate ::"
                                         + predicate);
                                 this.misplacedPropertiesCount++;
-                                QualityProblem reportProblems = new QualityProblem(index, quad, qualityReport);
-                                this.problemList.add(reportProblems);
+                                QualityProblem reportProblems = new QualityProblem(quad, misplacedClass);
+                                problems.add(reportProblems);
                             }
                         }
                     }
@@ -144,8 +143,8 @@ public class MisplacedClassesOrProperties extends AbstractQualityMetric {
                                 logger.debug("Misplace Class Found in Object ::"
                                         + object);
                                 this.misplacedClassesCount++;
-                                QualityProblem reportProblems = new QualityProblem(index, quad, qualityReport);
-                                this.problemList.add(reportProblems);
+                                QualityProblem reportProblems = new QualityProblem(quad, misplacedClass);
+                                problems.add(reportProblems);
                             }
                         }
                     }

@@ -110,17 +110,15 @@ public class IdentifyQualityProblemsCommand extends Command {
   protected void postProblematicQuads(List<QualityProblem> qualityProblems) {
     try {
       project = getProject(request);
-      int cell = Constants.PROBLEM_CELL;
-      
+
       for (QualityProblem qualityProblem : qualityProblems) {
+        int row = quads.indexOf(qualityProblem.getQuad());
         LOG.info(qualityProblem.getProblemDescription() + "  size " + qualityProblems.size() +
-          " at row "+ qualityProblem.getRowIndex());
-        String problemString = composeProblemDescString(qualityProblem);
+          " at row "+ row);
+        String problemString = composeProblemDescString(qualityProblem, row);
         
-        RefineUtils.editCell(project, request, response, qualityProblem.getRowIndex(),
-            cell, problemString);
-        LOG.info(String.format("Edit single cell at row: %s, col: %s",
-          qualityProblem.getRowIndex(), cell));
+        RefineUtils.editCell(project, request, response, row, Constants.PROBLEM_CELL, problemString);
+        LOG.info(String.format("Edit single cell at row: %s, col: %s", row, Constants.PROBLEM_CELL));
       }
     } catch (Exception e) {
       //TODO checked exception?
@@ -150,7 +148,7 @@ public class IdentifyQualityProblemsCommand extends Command {
    * @param row A tow in data where the problem occurred.
    * @return String object containing description of a problem.
    */
-  private String composeProblemDescString(QualityProblem problem) {
+  private String composeProblemDescString(QualityProblem problem, int row) {
     StringBuffer string = new StringBuffer();
 
     string.append(problem.getProblemName());
@@ -160,7 +158,6 @@ public class IdentifyQualityProblemsCommand extends Command {
     string.append(problem.getCleaningSuggestion());
     string.append(Constants.COLUMN_SPLITER);
     string.append(problem.getGrelExpression());
-    int row = problem.getRowIndex();
 
     if (problemMessages.containsKey(row)) {
       if (!problemMessages.get(row).contains(string.toString())) {

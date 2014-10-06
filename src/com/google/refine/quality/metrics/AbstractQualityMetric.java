@@ -5,13 +5,12 @@ import java.util.List;
 
 import com.google.refine.quality.problems.QualityProblem;
 
-import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.core.Quad;
 
 public abstract class AbstractQualityMetric {
 
-  protected Resource qualityReport = null;
-  protected List<QualityProblem> problemList = new ArrayList<QualityProblem>();
+  protected List<QualityProblem> problems = new ArrayList<QualityProblem>();
+//  protected HashMap<Integer, QualityProblem> problems = new HashMap<Integer, QualityProblem>();
 
   /**
    * Returns value of a metric.
@@ -23,16 +22,15 @@ public abstract class AbstractQualityMetric {
    * Computes a metric value.
    * @param quad A quad a metric applied to.
    */
-  public abstract void compute(Integer index, Quad quad);
+  public abstract void compute(Quad quad);
 
   /**
    * Computes a metric's value
-   * @param quad A list of quads a metric applied to.
+   * @param quads A list of quads a metric applied to.
    */
-  public void compute(List<Quad> listQuad) {
-    Integer index = 0;
-    for (Quad quad : listQuad) {
-      this.compute(index++, quad);
+  public void compute(List<Quad> quads) {
+    for (Quad quad : quads) {
+      compute(quad);
     }
   }
 
@@ -41,7 +39,7 @@ public abstract class AbstractQualityMetric {
    * @return A list of problematic quads.
    */
   public List<QualityProblem> getQualityProblems() {
-    return new ArrayList<QualityProblem>(this.problemList);
+    return new ArrayList<QualityProblem>(problems);
   }
   
   //TODO change to abstract later.

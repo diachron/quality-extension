@@ -6,8 +6,8 @@ import com.hp.hpl.jena.sparql.core.Quad;
 public class UndefinedClassORPropertyProblem extends QualityProblem {
   private boolean isClass = true;
 
-  public UndefinedClassORPropertyProblem(Integer rowIndex, Quad quad, Resource qualityReport) {
-    super(rowIndex, quad, qualityReport);
+  public UndefinedClassORPropertyProblem(Quad quad, Resource qualityReport) {
+    super(quad, qualityReport);
   }
 
   public void setToProperty() {

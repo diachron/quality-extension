@@ -82,11 +82,11 @@ public class WhitespaceInAnnotation extends AbstractQualityMetric {
    * @param quad A quad to check.
    */
   @Override
-  public void compute(Integer index, Quad quad) {
+  public void compute(Quad quad) {
     Node predicate = quad.getPredicate();
     if (predicate.isURI() && annotationProperties.contains(predicate.getURI())) {
       literals++;
-      detectWhitespaces(index, quad);
+      detectWhitespaces(quad);
     }
   }
 
@@ -97,13 +97,13 @@ public class WhitespaceInAnnotation extends AbstractQualityMetric {
    * @param quad
    *          A quad to check.
    */
-  private void detectWhitespaces(Integer index, Quad quad) {
+  private void detectWhitespaces(Quad quad) {
     Node object = quad.getObject();
     if (object.isLiteral()) {
       String value = object.getLiteralValue().toString();
       if (!value.equals(value.trim())) {
         whitespaceLiterals++;
-        problemList.add(new QualityProblem(index, quad, qualityReport));
+        problems.add(new QualityProblem(quad, qualityReport));
         LOG.info(String.format("Whitespce found in annotation: %s", quad.getObject()));
       }
     }

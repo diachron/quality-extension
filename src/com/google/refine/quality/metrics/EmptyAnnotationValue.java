@@ -77,21 +77,21 @@ public class EmptyAnnotationValue extends AbstractQualityMetric {
    * it is empty or not.
    */
   @Override
-  public void compute(Integer index, Quad quad) {
+  public void compute(Quad quad) {
     Node predicate = quad.getPredicate();
     if (predicate.isURI() && annotationProperties.contains(predicate.getURI())) {
       literals++;
 
-      if (isEmptyLiteral(index, quad)) {
+      if (isEmptyLiteral(quad)) {
         emptyLiterals++;
-        QualityProblem reportProblems = new QualityProblem(index, quad, qualityReport);
-        problemList.add(reportProblems);
+        QualityProblem reportProblems = new QualityProblem(quad, qualityReport);
+        problems.add(reportProblems);
         LOG.info(String.format("Empty annotation value in quad %s", quad.toString()));
       }
     }
   }
 
-  private boolean isEmptyLiteral(Integer index, Quad quad) {
+  private boolean isEmptyLiteral(Quad quad) {
     Node object = quad.getObject();
     if (object.isBlank()) {
       return true;

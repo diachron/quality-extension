@@ -38,9 +38,9 @@ public class LabelsUsingCapitals extends AbstractQualityMetric {
   private final static Logger LOG = Logger.getLogger(LabelsUsingCapitals.class);
 
   private int literals = 0;
-  private int badCapitalizationLiterals = 0;
+  private int capitalizationLiterals = 0;
 
-  private static final Resource qualityReport = QPROB.LabelsUsingCapitalsProblem;
+  private static Resource qualityReport = QPROB.LabelsUsingCapitalsProblem;
   private static Set<String> annotationProperties = new HashSet<String>();
 
   /**
@@ -90,12 +90,11 @@ public class LabelsUsingCapitals extends AbstractQualityMetric {
    * 
    */
   @Override
-  public void compute(Integer index, Quad quad) {
+  public void compute(Quad quad) {
     Node predicate = quad.getPredicate();
-    LOG.info(Constants.LABEL_PROPERTIES_FILE);
     if (predicate.isURI() && annotationProperties.contains(predicate.getURI())) {
       literals++;
-      assessLiteralValue(index, quad);
+      assessLiteralValue(quad);
     }
   }
 
@@ -106,14 +105,13 @@ public class LabelsUsingCapitals extends AbstractQualityMetric {
    * @param index
    * @param quad
    */
-  private void assessLiteralValue(Integer index, Quad quad) {
+  private void assessLiteralValue(Quad quad) {
     Node object = quad.getObject();
     if (object.isLiteral()) {
       String value = object.getLiteralValue().toString().trim();
-
       if (!value.isEmpty() && value.matches(Constants.CAMEL_CASE_REGEX)) {
-        badCapitalizationLiterals++;
-        problemList.add(new QualityProblem(index, quad, qualityReport));
+        capitalizationLiterals++;
+        problems.add(new QualityProblem(quad, qualityReport));
         LOG.info(String.format("Bad capitalization in the triple: %s", quad.toString()));
       }
     }
@@ -126,10 +124,10 @@ public class LabelsUsingCapitals extends AbstractQualityMetric {
    */
   @Override
   public double metricValue() {
-    if (literals <= 0) {
+    if (literals == 0) {
       LOG.warn("Total number of literals is 0.");
       return 0;
     }
-    return ((double) badCapitalizationLiterals / (double) literals);
+    return ((double) capitalizationLiterals / (double) literals);
   }
 }

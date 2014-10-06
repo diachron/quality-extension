@@ -31,7 +31,6 @@ public class WhitespaceInAnnotationTest {
     cls = Class.forName((String.format("%s.%s", Constants.METRICS_PACKAGE, "WhitespaceInAnnotation")));
 
     Model model = ModelFactory.createDefaultModel();
-
     model.createResource("http://example.org/#spiderman")
         .addProperty(RDFS.comment, "Name of Spiderman").addProperty(RDF.type, FOAF.Person)
         .addProperty(RDFS.label, "SpidErman").addProperty(RDFS.label, "Otherlabel  ")
