@@ -11,14 +11,14 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.apache.xerces.util.URI;
 
-import com.google.refine.quality.exceptions.QualityExtensionException;
-import com.google.refine.quality.problems.QualityProblem;
-import com.google.refine.quality.utilities.Constants;
-import com.google.refine.quality.vocabularies.QPROB;
-
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.core.Quad;
+
+import com.google.refine.quality.exceptions.MetricException;
+import com.google.refine.quality.problems.QualityProblem;
+import com.google.refine.quality.utilities.Constants;
+import com.google.refine.quality.vocabularies.QPROB;
 
 /**
  * LabelsUsingCapitals identifies triples whose property is from a
@@ -41,7 +41,7 @@ public class LabelsUsingCapitals extends AbstractQualityMetric {
   private int capitalizationLiterals = 0;
 
   private static Resource qualityReport = QPROB.LabelsUsingCapitalsProblem;
-  private static Set<String> annotationProperties = new HashSet<String>();
+  private static Set<String> properties = new HashSet<String>();
 
   /**
    * Loads a list of label properties.
@@ -59,18 +59,18 @@ public class LabelsUsingCapitals extends AbstractQualityMetric {
         BufferedReader in = new BufferedReader(new FileReader(file));
         while ((line = in.readLine()) != null && !line.isEmpty()) {
           if (new URI(line.trim()) != null) {
-            annotationProperties.add(line);
+            properties.add(line);
           }
         }
         in.close();
       }
     } catch (FileNotFoundException e) {
       LOG.error(e.getMessage());
-      throw new QualityExtensionException("Label properties file is not found. "
+      throw new MetricException("Label properties file is not found. "
           + e.getLocalizedMessage());
     } catch (IOException e) {
       LOG.error(e.getMessage());
-      throw new QualityExtensionException("Label properties file is not found. "
+      throw new MetricException("Label properties file is not found. "
           + e.getLocalizedMessage());
     }
   }
@@ -80,7 +80,7 @@ public class LabelsUsingCapitals extends AbstractQualityMetric {
    */
   @Override
   public void after() {
-    annotationProperties.clear();
+    properties.clear();
   }
 
   /**
@@ -92,7 +92,7 @@ public class LabelsUsingCapitals extends AbstractQualityMetric {
   @Override
   public void compute(Quad quad) {
     Node predicate = quad.getPredicate();
-    if (predicate.isURI() && annotationProperties.contains(predicate.getURI())) {
+    if (predicate.isURI() && properties.contains(predicate.getURI())) {
       literals++;
       assessLiteralValue(quad);
     }
@@ -112,7 +112,7 @@ public class LabelsUsingCapitals extends AbstractQualityMetric {
       if (!value.isEmpty() && value.matches(Constants.CAMEL_CASE_REGEX)) {
         capitalizationLiterals++;
         problems.add(new QualityProblem(quad, qualityReport));
-        LOG.info(String.format("Bad capitalization in the triple: %s", quad.toString()));
+        LOG.info(String.format("Bad capitalization is found in quad: %s", quad.toString()));
       }
     }
   }

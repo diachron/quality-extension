@@ -10,7 +10,6 @@ import com.hp.hpl.jena.sparql.core.Quad;
 public abstract class AbstractQualityMetric {
 
   protected List<QualityProblem> problems = new ArrayList<QualityProblem>();
-//  protected HashMap<Integer, QualityProblem> problems = new HashMap<Integer, QualityProblem>();
 
   /**
    * Returns value of a metric.
@@ -34,6 +33,10 @@ public abstract class AbstractQualityMetric {
     }
   }
 
+  //TODO change to abstract later.
+  public void before(Object... args) {}
+  public void after() {}
+
   /**
    * Returns a list of problematic quads.
    * @return A list of problematic quads.
@@ -41,8 +44,4 @@ public abstract class AbstractQualityMetric {
   public List<QualityProblem> getQualityProblems() {
     return new ArrayList<QualityProblem>(problems);
   }
-  
-  //TODO change to abstract later.
-  public void before(Object... args) {}
-  public void after() {}
 }
