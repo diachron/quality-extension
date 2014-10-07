@@ -1,7 +1,6 @@
 package com.google.refine.quality.commands;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -21,7 +20,7 @@ import com.google.refine.quality.exceptions.QualityExtensionException;
 import com.google.refine.quality.metrics.AbstractQualityMetric;
 import com.google.refine.quality.problems.QualityProblem;
 import com.google.refine.quality.utilities.Constants;
-import com.google.refine.quality.utilities.RefineUtils;
+import com.google.refine.quality.utilities.RefineCommands;
 import com.google.refine.quality.utilities.Utilities;
 
 public class IdentifyQualityProblemsCommand extends Command {
@@ -42,9 +41,10 @@ public class IdentifyQualityProblemsCommand extends Command {
       try {
         project = getProject(request);
 
-        if (project.getMetadata().getCustomMetadata("Qaulity") == null) {
-          project.getMetadata().setCustomMetadata("Qaulity", new Boolean(true));
-          RefineUtils.addColumn(project, request, response, "Problems", "Object", 3);
+        if (project.getMetadata().getCustomMetadata("Quality") == null) {
+          // TODO put all column splitting and renaming here
+          project.getMetadata().setCustomMetadata("Quality", new Boolean(true));
+          RefineCommands.addColumn(project, request, response, "Problems", "Object", 3);
         }
 
         quads = Utilities.getQuadsFromProject(project);
@@ -55,22 +55,21 @@ public class IdentifyQualityProblemsCommand extends Command {
           Class<?> cls = Class.forName(String.format("%s.%s", Constants.METRICS_PACKAGE, metricName));
           AbstractQualityMetric metric = (AbstractQualityMetric) cls.newInstance();
 
-          Object[] args = { new String[]{} };
-          metric.getClass().getDeclaredMethod("before", Object[].class).invoke(metric, args);
+          metric.before();
           processMetric(metric, quads);
-          metric.getClass().getMethod("after",  (Class[]) null).invoke(metric, (Object[]) null);
+          metric.after();
 
           project.getMetadata().setCustomMetadata(metricName, new Boolean(true));
         }
         
         // TODO 
-        RefineUtils.splitMultiColumn(project, request, response, "Problems", "Subject");
-        RefineUtils.splitColumn(project, request, response, "Problems", 4);
+        RefineCommands.splitMultiColumn(project, request, response, "Problems", "Subject");
+        RefineCommands.splitColumn(project, request, response, "Problems", 4);
 
-        RefineUtils.renameColumn(project, request, response, "Problem Type", "Problems 1");
-        RefineUtils.renameColumn(project, request, response, "Problem Description", "Problems 2");
-        RefineUtils.renameColumn(project, request, response, "Cleaning Suggestion", "Problems 3");
-        RefineUtils.renameColumn(project, request, response, "GREL Expresion", "Problems 4");
+        RefineCommands.renameColumn(project, request, response, "Problem Type", "Problems 1");
+        RefineCommands.renameColumn(project, request, response, "Problem Description", "Problems 2");
+        RefineCommands.renameColumn(project, request, response, "Cleaning Suggestion", "Problems 3");
+        RefineCommands.renameColumn(project, request, response, "GREL Expresion", "Problems 4");
 
       } catch (IOException e) {
         LOG.error(e.getLocalizedMessage());
@@ -91,15 +90,10 @@ public class IdentifyQualityProblemsCommand extends Command {
           + e.getLocalizedMessage());
       } catch (IllegalAccessException e) {
         throw new QualityExtensionException(e.getLocalizedMessage());
-      } catch (NoSuchMethodException e) {
-        throw new QualityExtensionException("Can not find the invoking method. "
-          + e.getLocalizedMessage());
       } catch (SecurityException e) {
         throw new QualityExtensionException(e.getLocalizedMessage());
       } catch (IllegalArgumentException e) {
         throw new QualityExtensionException("Illegal arguments. " + e.getLocalizedMessage());
-      } catch (InvocationTargetException e) {
-        throw new QualityExtensionException("Can not invoke the method. " + e.getLocalizedMessage());
       }
     }
 
@@ -107,7 +101,7 @@ public class IdentifyQualityProblemsCommand extends Command {
    * 
    * @param qualityProblems
    */
-  protected void postProblematicQuads(List<QualityProblem> qualityProblems) {
+  protected void postProblems(List<QualityProblem> qualityProblems) {
     try {
       project = getProject(request);
 
@@ -117,7 +111,7 @@ public class IdentifyQualityProblemsCommand extends Command {
           " at row "+ row);
         String problemString = composeProblemDescString(qualityProblem, row);
         
-        RefineUtils.editCell(project, request, response, row, Constants.PROBLEM_CELL, problemString);
+        RefineCommands.editCell(project, request, response, row, Constants.PROBLEM_CELL, problemString);
         LOG.info(String.format("Edit single cell at row: %s, col: %s", row, Constants.PROBLEM_CELL));
       }
     } catch (Exception e) {
@@ -138,7 +132,7 @@ public class IdentifyQualityProblemsCommand extends Command {
     if (metric.getQualityProblems().isEmpty()){
       LOG.info(String.format("No problem found for %s", metric.getClass()));
     } else {
-      postProblematicQuads(metric.getQualityProblems());
+      postProblems(metric.getQualityProblems());
     }
   }
 

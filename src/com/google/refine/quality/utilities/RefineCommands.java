@@ -30,7 +30,7 @@ import com.google.refine.process.Process;
 import com.google.refine.process.QuickHistoryEntryProcess;
 import com.google.refine.util.Pool;
 
-public class RefineUtils extends Command {
+public class RefineCommands extends Command {
   public static void splitColumn(Project project, HttpServletRequest request,
     HttpServletResponse response, String columnName, int columns) throws IOException,
     ServletException {
@@ -100,7 +100,7 @@ public class RefineUtils extends Command {
       HttpServletResponse response, String columnName,  String keyColumnName) throws IOException,
       ServletException {
     try {
-      String separator =  Constants.ROW_SPLITER; //"|&SPLITROW&|",
+      String separator =  Constants.ROW_SPLITER;
       String mode = "plain";
 
       AbstractOperation op = new MultiValuedCellSplitOperation(columnName, keyColumnName, separator, mode);
