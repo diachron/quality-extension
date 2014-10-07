@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Property;
@@ -20,9 +22,54 @@ import com.hp.hpl.jena.sparql.core.Quad;
 import com.google.refine.model.Cell;
 import com.google.refine.model.Project;
 import com.google.refine.model.Row;
+import com.google.refine.quality.exceptions.MetricException;
+import com.google.refine.quality.exceptions.MetricInitializationException;
+import com.google.refine.quality.metrics.AbstractQualityMetric;
+import com.google.refine.quality.problems.QualityProblem;
 
 
 public final class Utilities {
+
+  /**
+   * The method applies metrics to list of RDF triples fetched from URL.
+   * @param metrics An array of metrics as a JSONArray object.
+   * @param fileURL An URL for file with RDF data.
+   * @return A list of identified quality problems.
+   * @throws MetricException if handed metric can not be initialized.
+   */
+  public static List<QualityProblem> identifyQualityProblems(JSONArray metrics, String fileURL)
+      throws MetricException {
+    // TODO check the url if it exists.
+    List<QualityProblem> probelms = new ArrayList<QualityProblem>();
+    List<Quad> quads = JenaModelLoader.getQuads(fileURL);
+    try {
+      for (int i = 0; i < metrics.length(); i++) {
+        String metricName = (String) metrics.get(i);
+        Class<?> cls;
+        cls = Class.forName(String.format("%s.%s", Constants.METRICS_PACKAGE, metricName));
+        AbstractQualityMetric metric = (AbstractQualityMetric) cls.newInstance();
+
+        metric.before();
+        metric.compute(quads);
+        metric.after();
+        probelms.addAll(metric.getQualityProblems());
+      }
+
+    } catch (ClassNotFoundException e) {
+      throw new MetricInitializationException("A metric class is not found. "
+        + e.getLocalizedMessage());
+    } catch (JSONException e) {
+      throw new MetricInitializationException("Could not find a metric in JSON object. "
+        + e.getLocalizedMessage());
+    } catch (InstantiationException e) {
+      throw new MetricInitializationException("An instance of a metric class can not be initalized. "
+        + e.getLocalizedMessage());
+    } catch (IllegalAccessException e) {
+      throw new MetricInitializationException("A metric class or its nullary constructor is not. "
+        + "accessible. " + e.getLocalizedMessage());
+    }
+    return probelms;
+  }
 
   /**
    * Retrieves data from project and writes it to an InputStream.
@@ -69,26 +116,6 @@ public final class Utilities {
       }
     }
     return quads;
-  }
-
-  /**
-   * Retrieves data from project and writes it to an InputStream.
-   * @param project OpenRefine project.
-   * @return InputStream containing an OpenRefine project.
-   * @throws IOException when project can not be written to an InputStream.
-   */
-  public static InputStream projectTo(Project project) throws IOException {
-    StringBuilder tmp = new StringBuilder();
-    for (int i = 0; i < project.rows.size(); i++) {
-      Cell cell = project.rows.get(i).getCell(0);
-      if (cell == null) {
-        tmp.append("\n");
-      } else {
-        tmp.append(cell.toString());
-        tmp.append("\n");
-      }
-    }
-    return IOUtils.toInputStream(tmp.toString(), "UTF-8");
   }
 
   /**
