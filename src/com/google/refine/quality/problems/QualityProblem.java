@@ -1,6 +1,7 @@
 package com.google.refine.quality.problems;
 
-import com.google.refine.quality.utilities.QualityReportModelLoader;
+import com.google.refine.quality.utilities.Constants;
+import com.google.refine.quality.utilities.VocabularyLoader;
 import com.google.refine.quality.vocabularies.QPROB;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.core.Quad;
@@ -23,21 +24,21 @@ public class QualityProblem {
   }
 
   public String getProblemDescription() {
-    return QualityReportModelLoader.getResourcePropertyValue(this.problemtURI,
-        QPROB.problemDescription);
+    return VocabularyLoader.getResourcePropertyValue(this.problemtURI,
+        QPROB.problemDescription, Constants.QPROB_VOCAB);
   }
 
   public String getCleaningSuggestion() {
-    return QualityReportModelLoader.getResourcePropertyValue(this.problemtURI,
-        QPROB.cleaningSuggestion);
+    return VocabularyLoader.getResourcePropertyValue(this.problemtURI,
+        QPROB.cleaningSuggestion, Constants.QPROB_VOCAB);
   }
 
   public String getProblemName() {
-    return QualityReportModelLoader.getResourcePropertyValue(this.problemtURI, RDFS.label);
+    return VocabularyLoader.getResourcePropertyValue(this.problemtURI, RDFS.label, Constants.QPROB_VOCAB);
   }
 
   public String getGrelExpression() {
-    return QualityReportModelLoader.getResourcePropertyValue(this.problemtURI, QPROB.qrefineRule);
+    return VocabularyLoader.getResourcePropertyValue(this.problemtURI, QPROB.qrefineRule, Constants.QPROB_VOCAB);
   }
 
   public QualityProblem(Quad quad, Resource qualityReport) {
