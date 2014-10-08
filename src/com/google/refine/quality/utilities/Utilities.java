@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -45,8 +46,7 @@ public final class Utilities {
     try {
       for (int i = 0; i < metrics.length(); i++) {
         String metricName = (String) metrics.get(i);
-        Class<?> cls;
-        cls = Class.forName(String.format("%s.%s", Constants.METRICS_PACKAGE, metricName));
+        Class<?> cls = Class.forName(String.format("%s.%s", Constants.METRICS_PACKAGE, metricName));
         AbstractQualityMetric metric = (AbstractQualityMetric) cls.newInstance();
 
         metric.before();
@@ -62,11 +62,11 @@ public final class Utilities {
       throw new MetricInitializationException("Could not find a metric in JSON object. "
         + e.getLocalizedMessage());
     } catch (InstantiationException e) {
-      throw new MetricInitializationException("An instance of a metric class can not be initalized. "
-        + e.getLocalizedMessage());
+      throw new MetricInitializationException("An instance of a metric class can not be"
+        + " initalized. " + e.getLocalizedMessage());
     } catch (IllegalAccessException e) {
-      throw new MetricInitializationException("A metric class or its nullary constructor is not. "
-        + "accessible. " + e.getLocalizedMessage());
+      throw new MetricInitializationException("A metric class or its nullary constructor"
+        + " is not. accessible. " + e.getLocalizedMessage());
     }
     return probelms;
   }
@@ -103,16 +103,50 @@ public final class Utilities {
       Row rowObj = project.rows.get(row);
       if (!rowObj.isEmpty()) {
         // 0 index - stared , 1 -index flagged
-        Resource subject = ResourceFactory.createResource(rowObj.getCell(2).toString());
-        Property predicate = ResourceFactory.createProperty(rowObj.getCell(3).toString());
+        Cell subjectCell = rowObj.getCell(2);
+        Cell predicateCell = rowObj.getCell(3);
+        Cell objectCell = rowObj.getCell(4);
+        if (objectCell != null && predicateCell !=null && subjectCell != null) {
+          Resource subject = ResourceFactory.createResource(subjectCell.toString());
+          Property predicate = ResourceFactory.createProperty(predicateCell.toString());
 
-        String lit = rowObj.getCell(4).toString();
-        Literal object = ResourceFactory.createPlainLiteral(lit);
-        if (!object.isURIResource()) {
-          object = ResourceFactory.createPlainLiteral(lit.substring(1, lit.length() - 1));
+          String lit = objectCell.toString();
+          Literal object = ResourceFactory.createPlainLiteral(lit);
+          if (!object.isURIResource()) {
+            object = ResourceFactory.createPlainLiteral(lit.substring(1, lit.length() - 1));
+          }
+          Statement statement = ResourceFactory.createStatement(subject, predicate, object);
+          quads.add(new Quad(null, statement.asTriple()));
         }
-        Statement statement = ResourceFactory.createStatement(subject, predicate, object);
-        quads.add(new Quad(null, statement.asTriple()));
+      }
+    }
+    return quads;
+  }
+
+  public static HashMap<Integer, Integer> getQuadsAsHashes(Project project) {
+    HashMap<Integer, Integer> quads = new  HashMap<Integer, Integer>();
+    for (int row = 0; row < project.rows.size(); row++) {
+      Row rowObj = project.rows.get(row);
+      if (!rowObj.isEmpty()) {
+        // 0 index - stared , 1 -index flagged
+        Cell subjectCell = rowObj.getCell(2);
+        Cell predicateCell = rowObj.getCell(3);
+        Cell objectCell = rowObj.getCell(4);
+        if (objectCell != null && predicateCell !=null && subjectCell != null) {
+          Resource subject = ResourceFactory.createResource(subjectCell.toString());
+          Property predicate = ResourceFactory.createProperty(predicateCell.toString());
+
+          String lit = objectCell.toString();
+          Literal object = ResourceFactory.createPlainLiteral(lit);
+          if (!object.isURIResource()) {
+            object = ResourceFactory.createPlainLiteral(lit.substring(1, lit.length() - 1));
+          }
+          Statement statement = ResourceFactory.createStatement(subject, predicate, object);
+          quads.put(Math.abs(new Quad(null, statement.asTriple()).hashCode()), row);
+          System.out.println(Math.abs(new Quad(null, statement.asTriple()).hashCode()) + " " + row);
+        } else {
+          quads.put(null, row);
+        }
       }
     }
     return quads;

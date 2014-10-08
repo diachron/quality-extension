@@ -1,23 +1,29 @@
 function identify(metrics) {
+  var self = this;
+  self._dismissBusy = DialogSystem.showBusy('Identifying quality problems...');
   $.post("command/quality-extension/identifyQualityProblems/", {
     "engine" : JSON.stringify(ui.browsingEngine.getJSON()),
     "project" : theProject.id,
     "metrics" : JSON.stringify(metrics)
   }, function(data) {
-     window.location.reload(true);
+    window.location.reload(true);
+    console.log("success");
+    self._dismissBusy();
   });
 }
 
-// fix later
 function transform(metrics) {
   var self = this;
-  self._dismissBusy = DialogSystem.showBusy('Identifying quality problems ...');
+  self._dismissBusy = DialogSystem.showBusy('Tranforming data...');
   $.post("command/quality-extension/transformData/", {
     "engine" : JSON.stringify(ui.browsingEngine.getJSON()),
     "project" : theProject.id
   }, function(data) {
-    // fix later
-    identify(metrics);
+    if (metrics) {
+      identify(metrics);
+    } else {
+      window.location.reload(true);
+    }
     console.log("success");
     self._dismissBusy();
   });

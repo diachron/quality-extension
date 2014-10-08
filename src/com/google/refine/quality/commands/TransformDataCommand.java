@@ -29,7 +29,7 @@ public class TransformDataCommand extends Command {
     Project project = getProject(request);
 
     if (project.getMetadata().getCustomMetadata("Transformed") == null) {
-      project.getMetadata().setCustomMetadata("Transformed", new Boolean(true));
+      project.getMetadata().setCustomMetadata("Transformed", true);
       
       List<Quad> quads = JenaModelLoader.getQuads(Utilities.projectToInputStream(project));
       RefineCommands.addColumn(project, request, response, "Column 2", "Column 1", 1);

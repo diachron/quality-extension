@@ -9,10 +9,10 @@ function AboutDialog() {
         }, {
           "WhitespaceInAnnotation" : "Whitespace in annotation"
         }, {
-          "OntologyHijacking" : "Ontology hijacking"
+          "UndefinedClasses" : "Undefined classes"
         }, {
-          "EmptyAnnotationValue" : "Empty annotation value"
-        } ]
+          "MalformedDatatypeLiterals" : "Malformed datatype literals"
+        }]
       }],
       "Accessibility" : [ {
         "Availability" : [ {
