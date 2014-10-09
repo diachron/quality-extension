@@ -15,7 +15,7 @@ import com.google.refine.commands.Command;
 import com.google.refine.model.Project;
 import com.google.refine.quality.utilities.Constants;
 import com.google.refine.quality.utilities.JenaModelLoader;
-import com.google.refine.quality.utilities.RefineUtils;
+import com.google.refine.quality.utilities.RefineCommands;
 import com.google.refine.quality.utilities.Utilities;
 
 public class TransformDataCommand extends Command {
@@ -28,11 +28,11 @@ public class TransformDataCommand extends Command {
 
     Project project = getProject(request);
 
-    if (project.getMetadata().getCustomMetadata("Transform") == null) {
-      project.getMetadata().setCustomMetadata("Transform", new Boolean(true));
+    if (project.getMetadata().getCustomMetadata("Transformed") == null) {
+      project.getMetadata().setCustomMetadata("Transformed", true);
       
       List<Quad> quads = JenaModelLoader.getQuads(Utilities.projectToInputStream(project));
-      RefineUtils.addColumn(project, request, response, "Column 2", "Column 1", 1);
+      RefineCommands.addColumn(project, request, response, "Column 2", "Column 1", 1);
 
       int rowIndex = 0;
       int cellIndex = 1;
@@ -45,15 +45,15 @@ public class TransformDataCommand extends Command {
         value.append(Constants.COLUMN_SPLITER);
         value.append(qaud.getObject());
 
-        RefineUtils.editCell(project, request, response, rowIndex++, cellIndex, value.toString());
+        RefineCommands.editCell(project, request, response, rowIndex++, cellIndex, value.toString());
         LOG.info(String.format("Edit single cell at row: %s, col: %s", rowIndex, cellIndex));
       }
 
-      RefineUtils.splitColumn(project, request, response, "Column 2", 3);
-      RefineUtils.renameColumn(project, request, response, "Subject", "Column 2 1");
-      RefineUtils.renameColumn(project, request, response, "Predicate", "Column 2 2");
-      RefineUtils.renameColumn(project, request, response, "Object", "Column 2 3");
-      RefineUtils.removeColumn(project, request, response, "Column 1");
+      RefineCommands.splitColumn(project, request, response, "Column 2", 3);
+      RefineCommands.renameColumn(project, request, response, "Subject", "Column 2 1");
+      RefineCommands.renameColumn(project, request, response, "Predicate", "Column 2 2");
+      RefineCommands.renameColumn(project, request, response, "Object", "Column 2 3");
+      RefineCommands.removeColumn(project, request, response, "Column 1");
     }
   }
 }

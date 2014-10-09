@@ -37,4 +37,33 @@ public class JenaModelLoader {
     }
     return quads;
   }
+  
+  
+  /**
+   * Creates a Jena model from an url.
+   * @param url A File URL.
+   * @return Jena model.
+   */
+  public static Model getModel(String url) {
+    Model model = ModelFactory.createDefaultModel();
+    if (url != null && !url.isEmpty()) {
+      model.read(url);
+    }
+    return model;
+  }
+
+  /**
+   * Reads RDF quads from an url.
+   * @param model A Jena model.
+   * @return A list of RDF quads.
+   */
+  public static List<Quad> getQuads(String url) {
+    Model model = getModel(url);
+    List<Quad> quads = new ArrayList<Quad>();
+    StmtIterator si = model.listStatements();
+    while (si.hasNext()) {
+      quads.add(new Quad(null, si.next().asTriple()));
+    }
+    return quads;
+  }
 }

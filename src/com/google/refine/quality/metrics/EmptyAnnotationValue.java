@@ -11,6 +11,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.apache.xerces.util.URI;
 
+import com.google.refine.quality.exceptions.MetricException;
 import com.google.refine.quality.exceptions.QualityExtensionException;
 import com.google.refine.quality.problems.QualityProblem;
 import com.google.refine.quality.utilities.Constants;
@@ -32,7 +33,7 @@ public class EmptyAnnotationValue extends AbstractQualityMetric {
 
   private long literals = 0;
   private long emptyLiterals = 0;
-  private static Set<String> annotationProperties = new HashSet<String>();
+  private static Set<String> properties = new HashSet<String>();
 
   /**
    * Loads a annotation properties.
@@ -50,25 +51,25 @@ public class EmptyAnnotationValue extends AbstractQualityMetric {
         BufferedReader in = new BufferedReader(new FileReader(file));
         while ((line = in.readLine()) != null && !line.isEmpty()) {
           if (new URI(line.trim()) != null) {
-            annotationProperties.add(line);
+            properties.add(line);
           }
         }
         in.close();
       }
     } catch (FileNotFoundException e) {
       LOG.error(e.getMessage());
-      throw new QualityExtensionException("Annotation properties file is not found. "
+      throw new MetricException("Annotation properties file is not found. "
           + e.getLocalizedMessage());
     } catch (IOException e) {
       LOG.error(e.getMessage());
-      throw new QualityExtensionException("Annotation properties file is not found. "
+      throw new MetricException("Annotation properties file is not found. "
           + e.getLocalizedMessage());
     }
   }
 
   @Override
   public void after() {
-    annotationProperties.clear();
+    properties.clear();
   }
 
   /**
@@ -79,14 +80,14 @@ public class EmptyAnnotationValue extends AbstractQualityMetric {
   @Override
   public void compute(Quad quad) {
     Node predicate = quad.getPredicate();
-    if (predicate.isURI() && annotationProperties.contains(predicate.getURI())) {
+    if (predicate.isURI() && properties.contains(predicate.getURI())) {
       literals++;
 
       if (isEmptyLiteral(quad)) {
         emptyLiterals++;
         QualityProblem reportProblems = new QualityProblem(quad, qualityReport);
         problems.add(reportProblems);
-        LOG.info(String.format("Empty annotation value in quad %s", quad.toString()));
+        LOG.info(String.format("Empty annotation is found in quad: %s", quad.toString()));
       }
     }
   }

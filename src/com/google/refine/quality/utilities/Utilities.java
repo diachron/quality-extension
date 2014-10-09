@@ -4,9 +4,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Property;
@@ -20,9 +23,53 @@ import com.hp.hpl.jena.sparql.core.Quad;
 import com.google.refine.model.Cell;
 import com.google.refine.model.Project;
 import com.google.refine.model.Row;
+import com.google.refine.quality.exceptions.MetricException;
+import com.google.refine.quality.exceptions.MetricInitializationException;
+import com.google.refine.quality.metrics.AbstractQualityMetric;
+import com.google.refine.quality.problems.QualityProblem;
 
 
 public final class Utilities {
+
+  /**
+   * The method applies metrics to list of RDF triples fetched from URL.
+   * @param metrics An array of metrics as a JSONArray object.
+   * @param fileURL An URL for file with RDF data.
+   * @return A list of identified quality problems.
+   * @throws MetricException if handed metric can not be initialized.
+   */
+  public static List<QualityProblem> identifyQualityProblems(JSONArray metrics, String fileURL)
+      throws MetricException {
+    // TODO check the url if it exists.
+    List<QualityProblem> probelms = new ArrayList<QualityProblem>();
+    List<Quad> quads = JenaModelLoader.getQuads(fileURL);
+    try {
+      for (int i = 0; i < metrics.length(); i++) {
+        String metricName = (String) metrics.get(i);
+        Class<?> cls = Class.forName(String.format("%s.%s", Constants.METRICS_PACKAGE, metricName));
+        AbstractQualityMetric metric = (AbstractQualityMetric) cls.newInstance();
+
+        metric.before();
+        metric.compute(quads);
+        metric.after();
+        probelms.addAll(metric.getQualityProblems());
+      }
+
+    } catch (ClassNotFoundException e) {
+      throw new MetricInitializationException("A metric class is not found. "
+        + e.getLocalizedMessage());
+    } catch (JSONException e) {
+      throw new MetricInitializationException("Could not find a metric in JSON object. "
+        + e.getLocalizedMessage());
+    } catch (InstantiationException e) {
+      throw new MetricInitializationException("An instance of a metric class can not be"
+        + " initalized. " + e.getLocalizedMessage());
+    } catch (IllegalAccessException e) {
+      throw new MetricInitializationException("A metric class or its nullary constructor"
+        + " is not. accessible. " + e.getLocalizedMessage());
+    }
+    return probelms;
+  }
 
   /**
    * Retrieves data from project and writes it to an InputStream.
@@ -56,39 +103,53 @@ public final class Utilities {
       Row rowObj = project.rows.get(row);
       if (!rowObj.isEmpty()) {
         // 0 index - stared , 1 -index flagged
-        Resource subject = ResourceFactory.createResource(rowObj.getCell(2).toString());
-        Property predicate = ResourceFactory.createProperty(rowObj.getCell(3).toString());
+        Cell subjectCell = rowObj.getCell(2);
+        Cell predicateCell = rowObj.getCell(3);
+        Cell objectCell = rowObj.getCell(4);
+        if (objectCell != null && predicateCell !=null && subjectCell != null) {
+          Resource subject = ResourceFactory.createResource(subjectCell.toString());
+          Property predicate = ResourceFactory.createProperty(predicateCell.toString());
 
-        String lit = rowObj.getCell(4).toString();
-        Literal object = ResourceFactory.createPlainLiteral(lit);
-        if (!object.isURIResource()) {
-          object = ResourceFactory.createPlainLiteral(lit.substring(1, lit.length() - 1));
+          String lit = objectCell.toString();
+          Literal object = ResourceFactory.createPlainLiteral(lit);
+          if (!object.isURIResource()) {
+            object = ResourceFactory.createPlainLiteral(lit.substring(1, lit.length() - 1));
+          }
+          Statement statement = ResourceFactory.createStatement(subject, predicate, object);
+          quads.add(new Quad(null, statement.asTriple()));
         }
-        Statement statement = ResourceFactory.createStatement(subject, predicate, object);
-        quads.add(new Quad(null, statement.asTriple()));
       }
     }
     return quads;
   }
 
-  /**
-   * Retrieves data from project and writes it to an InputStream.
-   * @param project OpenRefine project.
-   * @return InputStream containing an OpenRefine project.
-   * @throws IOException when project can not be written to an InputStream.
-   */
-  public static InputStream projectTo(Project project) throws IOException {
-    StringBuilder tmp = new StringBuilder();
-    for (int i = 0; i < project.rows.size(); i++) {
-      Cell cell = project.rows.get(i).getCell(0);
-      if (cell == null) {
-        tmp.append("\n");
-      } else {
-        tmp.append(cell.toString());
-        tmp.append("\n");
+  public static HashMap<Integer, Integer> getQuadsAsHashes(Project project) {
+    HashMap<Integer, Integer> quads = new  HashMap<Integer, Integer>();
+    for (int row = 0; row < project.rows.size(); row++) {
+      Row rowObj = project.rows.get(row);
+      if (!rowObj.isEmpty()) {
+        // 0 index - stared , 1 -index flagged
+        Cell subjectCell = rowObj.getCell(2);
+        Cell predicateCell = rowObj.getCell(3);
+        Cell objectCell = rowObj.getCell(4);
+        if (objectCell != null && predicateCell !=null && subjectCell != null) {
+          Resource subject = ResourceFactory.createResource(subjectCell.toString());
+          Property predicate = ResourceFactory.createProperty(predicateCell.toString());
+
+          String lit = objectCell.toString();
+          Literal object = ResourceFactory.createPlainLiteral(lit);
+          if (!object.isURIResource()) {
+            object = ResourceFactory.createPlainLiteral(lit.substring(1, lit.length() - 1));
+          }
+          Statement statement = ResourceFactory.createStatement(subject, predicate, object);
+          quads.put(Math.abs(new Quad(null, statement.asTriple()).hashCode()), row);
+          System.out.println(Math.abs(new Quad(null, statement.asTriple()).hashCode()) + " " + row);
+        } else {
+          quads.put(null, row);
+        }
       }
     }
-    return IOUtils.toInputStream(tmp.toString(), "UTF-8");
+    return quads;
   }
 
   /**

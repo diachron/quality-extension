@@ -11,14 +11,14 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.apache.xerces.util.URI;
 
-import com.google.refine.quality.exceptions.QualityExtensionException;
-import com.google.refine.quality.problems.QualityProblem;
-import com.google.refine.quality.utilities.Constants;
-import com.google.refine.quality.vocabularies.QPROB;
-
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.core.Quad;
+
+import com.google.refine.quality.exceptions.MetricException;
+import com.google.refine.quality.problems.QualityProblem;
+import com.google.refine.quality.utilities.Constants;
+import com.google.refine.quality.vocabularies.QPROB;
 
 /**
  * WhitespaceInAnnotation consider the following widely used annotation
@@ -32,7 +32,7 @@ public class WhitespaceInAnnotation extends AbstractQualityMetric {
 
   private long literals = 0;
   private long whitespaceLiterals = 0;
-  private static Set<String> annotationProperties = new HashSet<String>();
+  private static Set<String> properties = new HashSet<String>();
 
   /**
    * Loads a list of annotation properties.
@@ -51,7 +51,7 @@ public class WhitespaceInAnnotation extends AbstractQualityMetric {
           BufferedReader in = new BufferedReader(new FileReader(file));
           while ((line = in.readLine()) != null && !line.isEmpty()) {
             if (new URI(line.trim()) != null) {
-              annotationProperties.add(line);
+              properties.add(line);
             }
           }
           in.close();
@@ -59,11 +59,11 @@ public class WhitespaceInAnnotation extends AbstractQualityMetric {
       }
     } catch (FileNotFoundException e) {
       LOG.error(e.getMessage());
-      throw new QualityExtensionException("Annotation properties file is not found. "
+      throw new MetricException("Annotation properties file is not found. "
           + e.getLocalizedMessage());
     } catch (IOException e) {
       LOG.error(e.getMessage());
-      throw new QualityExtensionException("Annotation properties file is not found. "
+      throw new MetricException("Annotation properties file is not found. "
           + e.getLocalizedMessage());
     }
   }
@@ -73,7 +73,7 @@ public class WhitespaceInAnnotation extends AbstractQualityMetric {
    */
   @Override
   public void after() {
-    annotationProperties.clear();
+    properties.clear();
   }
 
   /**
@@ -84,7 +84,7 @@ public class WhitespaceInAnnotation extends AbstractQualityMetric {
   @Override
   public void compute(Quad quad) {
     Node predicate = quad.getPredicate();
-    if (predicate.isURI() && annotationProperties.contains(predicate.getURI())) {
+    if (predicate.isURI() && properties.contains(predicate.getURI())) {
       literals++;
       detectWhitespaces(quad);
     }
@@ -104,7 +104,7 @@ public class WhitespaceInAnnotation extends AbstractQualityMetric {
       if (!value.equals(value.trim())) {
         whitespaceLiterals++;
         problems.add(new QualityProblem(quad, qualityReport));
-        LOG.info(String.format("Whitespce found in annotation: %s", quad.getObject()));
+        LOG.info(String.format("Whitespce is found in annotation of quad: %s", quad.toString()));
       }
     }
   }

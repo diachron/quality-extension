@@ -3,7 +3,6 @@ package com.google.refine.quality.metrics;
 import org.apache.log4j.Logger;
 
 import com.google.refine.quality.problems.MalformedDatatypeProblem;
-
 import com.google.refine.quality.vocabularies.QPROB;
 
 import com.hp.hpl.jena.datatypes.RDFDatatype;
@@ -46,7 +45,7 @@ public class MalformedDatatypeLiterals extends AbstractQualityMetric {
         MalformedDatatypeProblem problem = new MalformedDatatypeProblem(quad, qualityReport);
         problem.setDatatype(rdfdataType.getURI());
         problems.add(problem);
-        LOG.info("Malformed literal is found in quad: " + quad.toString());
+        LOG.info(String.format("Malformed literal is found in quad: %s", quad.toString()));
       }
     }
   }

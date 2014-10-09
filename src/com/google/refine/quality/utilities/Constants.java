@@ -10,6 +10,8 @@ public class Constants {
       extensionPathHandler() + "resources/AnnotationPropertiesList";
   public final static String LABEL_PROPERTIES_FILE = USER_DIR + File.separator +
       extensionPathHandler() + "resources/LabelPropertiesList";
+  public final static String UNDEFINED_CLASS_PROPERTIES_FILE = USER_DIR + File.separator +
+      extensionPathHandler() + "resources/UndefinedClassPropertiesList";
 
   public static final String QPROB_FILE = USER_DIR + File.separator + extensionPathHandler() +
     "resources/vocabularies/qprob/qprob.rdf";

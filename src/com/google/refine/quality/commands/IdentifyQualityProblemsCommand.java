@@ -1,8 +1,7 @@
 package com.google.refine.quality.commands;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -21,18 +20,17 @@ import com.google.refine.quality.exceptions.QualityExtensionException;
 import com.google.refine.quality.metrics.AbstractQualityMetric;
 import com.google.refine.quality.problems.QualityProblem;
 import com.google.refine.quality.utilities.Constants;
-import com.google.refine.quality.utilities.RefineUtils;
+import com.google.refine.quality.utilities.RefineCommands;
 import com.google.refine.quality.utilities.Utilities;
 
 public class IdentifyQualityProblemsCommand extends Command {
   private static final Logger LOG = Logger.getLogger(IdentifyQualityProblemsCommand.class);
 
-  /** A hashtable accumulates problem messages for row entries */
-  private Hashtable<Integer, String> problemMessages = new Hashtable<Integer, String>();
   private HttpServletResponse response;
   private HttpServletRequest request;
   private Project project;
   private List<Quad> quads;
+  private HashMap<Integer, Integer> refine;
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) {
@@ -41,36 +39,30 @@ public class IdentifyQualityProblemsCommand extends Command {
 
       try {
         project = getProject(request);
-
-        if (project.getMetadata().getCustomMetadata("Qaulity") == null) {
-          project.getMetadata().setCustomMetadata("Qaulity", new Boolean(true));
-          RefineUtils.addColumn(project, request, response, "Problems", "Object", 3);
+        if (project.getMetadata().getCustomMetadata("Quality") == null) {
+          project.getMetadata().setCustomMetadata("Quality", true);
+          RefineCommands.addColumn(project, request, response, "Problem Type", "Object", 3);
+          RefineCommands.addColumn(project, request, response, "Problem Description", "Problem Type", 4);
+          RefineCommands.addColumn(project, request, response, "Cleaning Suggestion", "Problem Description", 5);
+          RefineCommands.addColumn(project, request, response, "GREL Expresion", "Cleaning Suggestion", 6);
         }
-
         quads = Utilities.getQuadsFromProject(project);
 
         JSONArray metrics = new JSONArray(request.getParameter("metrics"));
         for (int i = 0; i < metrics.length(); i++) {
           String metricName = (String) metrics.get(i);
-          Class<?> cls = Class.forName(String.format("%s.%s", Constants.METRICS_PACKAGE, metricName));
-          AbstractQualityMetric metric = (AbstractQualityMetric) cls.newInstance();
 
-          Object[] args = { new String[]{} };
-          metric.getClass().getDeclaredMethod("before", Object[].class).invoke(metric, args);
-          processMetric(metric, quads);
-          metric.getClass().getMethod("after",  (Class[]) null).invoke(metric, (Object[]) null);
+          if (project.getMetadata().getCustomMetadata(metricName) == null) {
+            project.getMetadata().setCustomMetadata(metricName, new Boolean(true));
+            Class<?> cls = Class.forName(String.format("%s.%s", Constants.METRICS_PACKAGE, metricName));
+            AbstractQualityMetric metric = (AbstractQualityMetric) cls.newInstance();
 
-          project.getMetadata().setCustomMetadata(metricName, new Boolean(true));
+            metric.before();
+            metric.compute(quads);
+            postProblems(metric.getQualityProblems());
+            metric.after();
+          }
         }
-        
-        // TODO 
-        RefineUtils.splitMultiColumn(project, request, response, "Problems", "Subject");
-        RefineUtils.splitColumn(project, request, response, "Problems", 4);
-
-        RefineUtils.renameColumn(project, request, response, "Problem Type", "Problems 1");
-        RefineUtils.renameColumn(project, request, response, "Problem Description", "Problems 2");
-        RefineUtils.renameColumn(project, request, response, "Cleaning Suggestion", "Problems 3");
-        RefineUtils.renameColumn(project, request, response, "GREL Expresion", "Problems 4");
 
       } catch (IOException e) {
         LOG.error(e.getLocalizedMessage());
@@ -91,82 +83,64 @@ public class IdentifyQualityProblemsCommand extends Command {
           + e.getLocalizedMessage());
       } catch (IllegalAccessException e) {
         throw new QualityExtensionException(e.getLocalizedMessage());
-      } catch (NoSuchMethodException e) {
-        throw new QualityExtensionException("Can not find the invoking method. "
-          + e.getLocalizedMessage());
       } catch (SecurityException e) {
         throw new QualityExtensionException(e.getLocalizedMessage());
       } catch (IllegalArgumentException e) {
         throw new QualityExtensionException("Illegal arguments. " + e.getLocalizedMessage());
-      } catch (InvocationTargetException e) {
-        throw new QualityExtensionException("Can not invoke the method. " + e.getLocalizedMessage());
       }
     }
 
   /**
-   * 
-   * @param qualityProblems
+   * Add a problem list identified by a single metric into
+   * an OpenRefine project
+   * @param problems A list of identified problems.
    */
-  protected void postProblematicQuads(List<QualityProblem> qualityProblems) {
+  protected void postProblems(List<QualityProblem> problems) {
     try {
-      project = getProject(request);
-
-      for (QualityProblem qualityProblem : qualityProblems) {
-        int row = quads.indexOf(qualityProblem.getQuad());
-        LOG.info(qualityProblem.getProblemDescription() + "  size " + qualityProblems.size() +
-          " at row "+ row);
-        String problemString = composeProblemDescString(qualityProblem, row);
-        
-        RefineUtils.editCell(project, request, response, row, Constants.PROBLEM_CELL, problemString);
-        LOG.info(String.format("Edit single cell at row: %s, col: %s", row, Constants.PROBLEM_CELL));
+      for (QualityProblem qualityProblem : problems) {
+        refine = Utilities.getQuadsAsHashes(project);
+        postProblem(qualityProblem);
       }
-    } catch (Exception e) {
-      //TODO checked exception?
+    } catch (IOException e) {
       LOG.error(e.getLocalizedMessage());
+      throw new QualityExtensionException(e.getLocalizedMessage());
+    } catch (ServletException e) {
+      LOG.error(e.getLocalizedMessage());
+      throw new QualityExtensionException(e.getLocalizedMessage());
     }
   }
 
   /**
-   * Processes retrieved quads for a given quality metric.
-   * @param metric An applied metric.
-   * @param quards A list of quads to process.
+   * Adds a problem description to a row of a problematic quad into
+   * an OpenRefine project.
+   * @param problem A quality problem.
+   * @throws IOException
+   * @throws ServletException
    */
-  protected void processMetric(AbstractQualityMetric metric, List<Quad> quards) {
-    LOG.info(String.format("Processing for %s", metric.getClass()));
+  private void postProblem(QualityProblem problem) throws IOException, ServletException {
+    String[] values = getQualityProblemStrings(problem);
+    int quadHash = Math.abs(problem.getQuad().hashCode());
+    int row = refine.get(quadHash);
+    for (int i = 0; i < values.length; i++) {
+      int cell = Constants.PROBLEM_CELL + i;
+      String oldValue = project.rows.get(row).getCell(cell).toString();
+      RefineCommands.editCell(project, request, response, row, cell, values[i]);
+      LOG.info(String.format("Edit single cell at row: %s, col: %s", row, Constants.PROBLEM_CELL));
 
-    metric.compute(quards);
-    if (metric.getQualityProblems().isEmpty()){
-      LOG.info(String.format("No problem found for %s", metric.getClass()));
-    } else {
-      postProblematicQuads(metric.getQualityProblems());
-    }
-  }
-
-  /**
-   * 
-   * @param problem A data quality problem detected by a metric.
-   * @param row A tow in data where the problem occurred.
-   * @return String object containing description of a problem.
-   */
-  private String composeProblemDescString(QualityProblem problem, int row) {
-    StringBuffer string = new StringBuffer();
-
-    string.append(problem.getProblemName());
-    string.append(Constants.COLUMN_SPLITER);
-    string.append(problem.getProblemDescription());
-    string.append(Constants.COLUMN_SPLITER);
-    string.append(problem.getCleaningSuggestion());
-    string.append(Constants.COLUMN_SPLITER);
-    string.append(problem.getGrelExpression());
-
-    if (problemMessages.containsKey(row)) {
-      if (!problemMessages.get(row).contains(string.toString())) {
-        string.insert(0, problemMessages.get(row) + Constants.ROW_SPLITER);
-        problemMessages.put(row, string.toString());
+      // check if quad had quality problems.
+      if (project.getMetadata().getCustomMetadata(Integer.toString(quadHash)) != null) {
+        String value = project.rows.get(row).getCell(cell).toString() + Constants.ROW_SPLITER + oldValue;
+        RefineCommands.editCell(project, request, response, row, cell, value);
+        LOG.info(String.format("Edit single cell at row: %s, col: %s", row, Constants.PROBLEM_CELL));
+        RefineCommands.splitMultiColumn(project, request, response,
+          project.columnModel.getColumnByCellIndex(cell).getName(), "Subject");
       }
-    } else {
-      problemMessages.put(row, string.toString());
     }
-    return string.toString();
+    project.getMetadata().setCustomMetadata(Integer.toString(quadHash), true);
+  }
+
+  private String[] getQualityProblemStrings(QualityProblem problem) {
+    return new String[]{problem.getProblemName(), problem.getProblemDescription(),
+      problem.getCleaningSuggestion(), problem.getGrelExpression()};
   }
 }
