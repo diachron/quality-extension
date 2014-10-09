@@ -13,6 +13,9 @@ import org.junit.Test;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 import com.google.refine.quality.problems.QualityProblem;
+import com.google.refine.quality.utilities.Constants;
+import com.google.refine.quality.utilities.Utilities;
+import com.google.refine.quality.utilities.VocabularyLoader;
 import com.google.refine.quality.vocabularies.QPROB;
 
 public class UtilitiesTest {
@@ -63,15 +66,23 @@ public class UtilitiesTest {
     JSONArray metrics1 = new JSONArray("[LabelsUsingCapitals]");
     List<QualityProblem> problems = Utilities.identifyQualityProblems(metrics1, url1);
     Assert.assertFalse(problems.isEmpty());
-    Assert.assertEquals(QualityReportModelLoader.getResourcePropertyValue(
-        QPROB.LabelsUsingCapitalsProblem, RDFS.label), problems.get(0).getProblemName());
+    Assert.assertEquals(VocabularyLoader.getResourcePropertyValue(
+        QPROB.LabelsUsingCapitalsProblem, RDFS.label, Constants.QPROB_VOCAB), problems.get(0).getProblemName());
 
     String url2 = "https://raw.githubusercontent.com/diachron/quality/master/src/test/resources/"
         + "testdumps/SampleInput_WhitespaceInAnnotation.ttl";
     JSONArray metrics2 = new JSONArray("[WhitespaceInAnnotation]");
     List<QualityProblem> problems2 = Utilities.identifyQualityProblems(metrics2, url2);
     Assert.assertFalse(problems2.isEmpty());
-    Assert.assertEquals(QualityReportModelLoader.getResourcePropertyValue(
-        QPROB.WhitespaceInAnnotationProblem, RDFS.label), problems2.get(0).getProblemName());
+    Assert.assertEquals(VocabularyLoader.getResourcePropertyValue(
+        QPROB.WhitespaceInAnnotationProblem, RDFS.label, Constants.QPROB_VOCAB), problems2.get(0).getProblemName());
   }
+  
+  @Test
+  public void testVocabularyLoader() {
+    Assert.assertEquals(VocabularyLoader.getResourcePropertyValue(
+        QPROB.WhitespaceInAnnotationProblem, RDFS.label, Constants.QPROB_VOCAB), "Whitespace in Annotation");
+  }
+  
+ 
 }
