@@ -12,10 +12,12 @@ public class Constants {
       extensionPathHandler() + "resources/LabelPropertiesList";
   public final static String UNDEFINED_CLASS_PROPERTIES_FILE = USER_DIR + File.separator +
       extensionPathHandler() + "resources/UndefinedClassPropertiesList";
+  public final static String UNDEFINED_PROPERTIES_FILE = USER_DIR + File.separator +
+      extensionPathHandler() + "resources/UndefinedPropertiesList";
 
   public static final String QPROB_FILE = USER_DIR + File.separator + extensionPathHandler() +
     "resources/vocabularies/qprob/qprob.rdf";
-  
+
   public static final String QR_FILE = USER_DIR + File.separator + extensionPathHandler() +
 		    "resources/vocabularies/qr/qr.rdf";
 
@@ -26,10 +28,9 @@ public class Constants {
   public static final String ROW_SPLITER = "|&SPLITROW&|";
   public static final String METRICS_PACKAGE = "com.google.refine.quality.metrics";
   public static final int PROBLEM_CELL = 5;
-  
+
   public static final String QR_VOCAB = "QR";
   public static final String QPROB_VOCAB = "QPROB";
-  
   
   private static String extensionPathHandler() {
     return USER_DIR.contains("extensions/quality-extension") ? "" : "extensions/quality-extension"
