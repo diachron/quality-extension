@@ -12,7 +12,6 @@ import org.apache.log4j.Logger;
 import org.apache.xerces.util.URI;
 
 import com.google.refine.quality.exceptions.MetricException;
-import com.google.refine.quality.exceptions.QualityExtensionException;
 import com.google.refine.quality.problems.QualityProblem;
 import com.google.refine.quality.utilities.Constants;
 import com.google.refine.quality.vocabularies.QPROB;
@@ -73,9 +72,8 @@ public class EmptyAnnotationValue extends AbstractQualityMetric {
   }
 
   /**
-   * Checks whether given quad has predicate with URI found in annotation
-   * properties set if true then checks the object's value in that quad; whether
-   * it is empty or not.
+   *The method checks if an object's value is empty.
+   * @param quad A quad to check for quality problems.
    */
   @Override
   public void compute(Quad quad) {
@@ -108,8 +106,7 @@ public class EmptyAnnotationValue extends AbstractQualityMetric {
   /**
    * Calculates a metric value. Ratio of empty annotation literals to total
    * number of literals.
-   * 
-   * @return Ratio of empty annotation literals to total number of literals.
+   * @return Ratio of empty annotation literals to the total number of literals.
    */
   @Override
   public double metricValue() {
@@ -117,6 +114,6 @@ public class EmptyAnnotationValue extends AbstractQualityMetric {
       LOG.warn("Total number of literals are ZERO");
       return 0;
     }
-    return ((double) emptyLiterals / (double) literals);
+    return (double) emptyLiterals / (double) literals;
   }
 }

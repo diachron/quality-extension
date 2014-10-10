@@ -28,11 +28,6 @@ public class EmptyAnnotationValueTest {
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
     cls = Class.forName(String.format("%s.%s", Constants.METRICS_PACKAGE, "EmptyAnnotationValue"));
-    final String url = "https://raw.githubusercontent.com/diachron/quality/master/src/test/resources/testdumps/SampleInput.ttl";
-    final Model modelq = ModelFactory.createDefaultModel();
-    modelq.read(url);
-    modelq.write(System.out);
-    
     Model model = ModelFactory.createDefaultModel();
     model.createResource("http://example.org/#spiderman")
         .addProperty(RDFS.comment, "Name of Spiderman").addProperty(RDF.type, "")

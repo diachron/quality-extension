@@ -5,16 +5,9 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
-
-
-
-
-
-
 import org.apache.log4j.Logger;
 
 import com.google.refine.quality.problems.DatatypeQualityProblem;
-import com.google.refine.quality.utilities.QualityReportModelLoader;
 import com.google.refine.quality.utilities.VocabularyReader;
 import com.google.refine.quality.vocabularies.QPROB;
 import com.hp.hpl.jena.graph.Node;
@@ -186,9 +179,8 @@ public class IncompatibleDatatypeRange extends AbstractQualityMetric {
                                                 givenObjectDateTypeURI,
                                                 rangeObjectURI)) {
                                             this.incompatiableDataTypeLiterals++;
-                                            DatatypeQualityProblem reportProblems = new DatatypeQualityProblem(quad, qualityReport);
-                                            reportProblems.setDatatypes(rangeObjectURI, givenObjectDateTypeURI);
-                                            problems.add(reportProblems);
+                                            problems.add(new DatatypeQualityProblem(quad, qualityReport, 
+                                                rangeObjectURI, givenObjectDateTypeURI));
                                         }
                                     } catch (URISyntaxException e) {
                                         logger.error("Malformed URI exception for "

@@ -18,7 +18,8 @@ import com.hp.hpl.jena.sparql.core.Quad;
 
 import com.google.refine.quality.exceptions.MetricException;
 import com.google.refine.quality.problems.QualityProblem;
-import com.google.refine.quality.problems.UndefinedClassORPropertyProblem;
+import com.google.refine.quality.problems.UndefinedClassProblem;
+import com.google.refine.quality.problems.UndefinedPropertyProblem;
 import com.google.refine.quality.utilities.Constants;
 import com.google.refine.quality.utilities.VocabularyReader;
 import com.google.refine.quality.vocabularies.QPROB;
@@ -83,7 +84,7 @@ public class UndefinedClasses extends AbstractQualityMetric {
   /**
    * The method identifies whether a component (subject, predicate or object)
    * of the given quad references an undefined class.
-   * @param quad A quad to identified.
+   * @param quad A quad to check for quality problems.
    */
   @Override
   public void compute(Quad quad) {
@@ -95,11 +96,11 @@ public class UndefinedClasses extends AbstractQualityMetric {
       Model objectModel = VocabularyReader.read(object.getURI());
       if (objectModel == null) {
         undefinedClasses++;
-        problems.add(new QualityProblem(quad, qualityReport));
+        problems.add(new UndefinedClassProblem(quad, qualityReport));
         LOG.info(String.format("Undefined class is found in quad: %s", quad.toString()));
       } else if (!objectModel.getResource(object.getURI()).isURIResource()) {
         undefinedClasses++;
-        problems.add(new UndefinedClassORPropertyProblem(quad, qualityReport));
+        problems.add(new UndefinedClassProblem(quad, qualityReport));
         LOG.info(String.format("Undefined class is found in quad: %s", quad.toString()));
       }
     }
@@ -107,7 +108,7 @@ public class UndefinedClasses extends AbstractQualityMetric {
 
   /**
    * This method returns metric value for the object of this class.
-   * @return The ratio of undefined classes to all classes.
+   * @return The ratio of undefined classes to the total number of classes.
    */
   @Override
   public double metricValue() {

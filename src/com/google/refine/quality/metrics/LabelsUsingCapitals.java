@@ -35,7 +35,7 @@ import com.google.refine.quality.vocabularies.QPROB;
  */
 
 public class LabelsUsingCapitals extends AbstractQualityMetric {
-  private final static Logger LOG = Logger.getLogger(LabelsUsingCapitals.class);
+  private static final Logger LOG = Logger.getLogger(LabelsUsingCapitals.class);
 
   private int literals = 0;
   private int capitalizationLiterals = 0;
@@ -84,10 +84,8 @@ public class LabelsUsingCapitals extends AbstractQualityMetric {
   }
 
   /**
-   * Checks whether given quad has predicate with URI found in annotation
-   * properties set if true then checks the object's value in that quad; whether
-   * it is bad capitalization or not.
-   * 
+   * The method checks an object's value for bad capitalization.
+   * @param quad A quad to check for quality problems.
    */
   @Override
   public void compute(Quad quad) {
@@ -120,7 +118,7 @@ public class LabelsUsingCapitals extends AbstractQualityMetric {
   /**
    * Calculates a metric value. Ratio of bad capitalization literals to total
    * number of literals.
-   * @return Ratio of bad capitalization literals to total number of literals.
+   * @return Ratio of bad capitalization literals to the total number of literals.
    */
   @Override
   public double metricValue() {
@@ -128,6 +126,6 @@ public class LabelsUsingCapitals extends AbstractQualityMetric {
       LOG.warn("Total number of literals is 0.");
       return 0;
     }
-    return ((double) capitalizationLiterals / (double) literals);
+    return (double) capitalizationLiterals / (double) literals;
   }
 }

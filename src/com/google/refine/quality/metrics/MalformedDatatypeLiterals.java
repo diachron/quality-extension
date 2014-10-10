@@ -23,7 +23,7 @@ public class MalformedDatatypeLiterals extends AbstractQualityMetric {
 
   /**
    * Identifies whether a given quad is malformed.
-   * @param quad A quad to check for the problem.
+   * @param quad A quad to check for quality problems.
    */
   @Override
   public void compute(Quad quad) {

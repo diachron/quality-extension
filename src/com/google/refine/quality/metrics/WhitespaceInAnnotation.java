@@ -27,7 +27,7 @@ import com.google.refine.quality.vocabularies.QPROB;
  * object value has leading or ending white space in string.
  */
 public class WhitespaceInAnnotation extends AbstractQualityMetric {
-  private final static Logger LOG = Logger.getLogger(LabelsUsingCapitals.class);
+  private static final Logger LOG = Logger.getLogger(LabelsUsingCapitals.class);
   private final Resource qualityReport = QPROB.WhitespaceInAnnotationProblem;
 
   private long literals = 0;
@@ -78,8 +78,7 @@ public class WhitespaceInAnnotation extends AbstractQualityMetric {
 
   /**
    * Check an object of a quad for whitespace.
-   * @param index
-   * @param quad A quad to check.
+   * @param quad A quad to check for quality problems.
    */
   @Override
   public void compute(Quad quad) {
@@ -92,10 +91,7 @@ public class WhitespaceInAnnotation extends AbstractQualityMetric {
 
   /**
    * Check whether annotation in a quad has whitespace.
-   * 
-   * @param index
-   * @param quad
-   *          A quad to check.
+   * @param quad A quad to check for quality problems.
    */
   private void detectWhitespaces(Quad quad) {
     Node object = quad.getObject();
@@ -112,7 +108,7 @@ public class WhitespaceInAnnotation extends AbstractQualityMetric {
   /**
    * Calculates a metric value. Ratio of literals with whitespace to total
    * number of literals.
-   * @return Ratio of literals with whitespace to total number of literals.
+   * @return Ratio of literals with whitespace to the total number of literals.
    */
   @Override
   public double metricValue() {
