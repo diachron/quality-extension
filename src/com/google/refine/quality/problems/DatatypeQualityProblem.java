@@ -7,16 +7,14 @@ import com.hp.hpl.jena.sparql.core.Quad;
 
 public class DatatypeQualityProblem extends QualityProblem {
 
-  private String expectedDatatype;
-  private String currentDatatype;
+  private final String expectedDatatype;
+  private final String currentDatatype;
 
-  public DatatypeQualityProblem(Quad quad, Resource qualityReport) {
+  public DatatypeQualityProblem(Quad quad, Resource qualityReport, URI expectedDatatype,
+      URI currentDatatype) {
     super(quad, qualityReport);
-  }
-
-  public void setDatatypes(URI expected, URI available) {
-    expectedDatatype = expected.getFragment();
-    currentDatatype = available.getFragment();
+    this.expectedDatatype = expectedDatatype.getFragment();
+    this.currentDatatype = currentDatatype.getFragment();
   }
 
   @Override

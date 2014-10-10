@@ -12,8 +12,13 @@ import com.hp.hpl.jena.vocabulary.RDFS;
  */
 public class QualityProblem {
 
-  protected Quad quad;
-  protected Resource problemtURI;
+  protected final Quad quad;
+  protected final Resource problemtURI;
+
+  public QualityProblem(Quad quad, Resource qualityReport) {
+    this.quad = quad;
+    this.problemtURI = qualityReport;
+  }
 
   public Quad getQuad() {
     return quad;
@@ -24,40 +29,38 @@ public class QualityProblem {
   }
 
   public String getProblemDescription() {
-    return VocabularyLoader.getResourcePropertyValue(this.problemtURI,
-        QPROB.problemDescription, Constants.QPROB_VOCAB);
+    return VocabularyLoader.getResourcePropertyValue(this.problemtURI, QPROB.problemDescription,
+        Constants.QPROB_VOCAB);
   }
 
   public String getCleaningSuggestion() {
-    return VocabularyLoader.getResourcePropertyValue(this.problemtURI,
-        QPROB.cleaningSuggestion, Constants.QPROB_VOCAB);
+    return VocabularyLoader.getResourcePropertyValue(this.problemtURI, QPROB.cleaningSuggestion,
+        Constants.QPROB_VOCAB);
   }
 
   public String getProblemName() {
-    return VocabularyLoader.getResourcePropertyValue(this.problemtURI, RDFS.label, Constants.QPROB_VOCAB);
+    return VocabularyLoader.getResourcePropertyValue(this.problemtURI, RDFS.label,
+        Constants.QPROB_VOCAB);
   }
 
   public String getGrelExpression() {
-    return VocabularyLoader.getResourcePropertyValue(this.problemtURI, QPROB.qrefineRule, Constants.QPROB_VOCAB);
-  }
-
-  public QualityProblem(Quad quad, Resource qualityReport) {
-    this.quad = quad;
-    this.problemtURI = qualityReport;
+    return VocabularyLoader.getResourcePropertyValue(this.problemtURI, QPROB.qrefineRule,
+        Constants.QPROB_VOCAB);
   }
 
   @Override
-  public boolean equals(Object other){
-      if(this == other) return true;
-      if(other == null || (this.getClass() != other.getClass())){
-          return false;
-      }
-      QualityProblem obj = (QualityProblem) other;
-      return ((this.quad != null && this.quad.equals(obj.quad)) &&
-             (this.problemtURI != null && this.problemtURI.equals(obj.problemtURI)));
+  public boolean equals(Object other) {
+    if (this == other)
+      return true;
+    if (other == null || (this.getClass() != other.getClass())) {
+      return false;
+    }
+    QualityProblem obj = (QualityProblem) other;
+    return ((this.quad != null && this.quad.equals(obj.quad)) && (this.problemtURI != null
+      && this.problemtURI.equals(obj.problemtURI)));
   }
 
-   @Override
+  @Override
   public int hashCode() {
     int hash = 17;
     hash = 31 * hash + quad.hashCode();
