@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.sparql.core.Quad;
 
 import com.google.refine.commands.Command;
@@ -31,29 +32,49 @@ public class TransformDataCommand extends Command {
     if (project.getMetadata().getCustomMetadata("Transformed") == null) {
       project.getMetadata().setCustomMetadata("Transformed", true);
       
-      List<Quad> quads = JenaModelLoader.getQuads(Utilities.projectToInputStream(project));
+      Model model = JenaModelLoader.getModel(Utilities.projectToInputStream(project));
+      writePrefixesToMetadata(model, project);
+      List<Quad> quads = JenaModelLoader.getQuads(model);
+      
       RefineCommands.addColumn(project, request, response, "Column 2", "Column 1", 1);
 
-      int rowIndex = 0;
-      int cellIndex = 1;
-      for (Quad qaud : quads) {
-
-        StringBuilder value = new StringBuilder();
-        value.append(qaud.getSubject());
-        value.append(Constants.COLUMN_SPLITER);
-        value.append(qaud.getPredicate());
-        value.append(Constants.COLUMN_SPLITER);
-        value.append(qaud.getObject());
-
-        RefineCommands.editCell(project, request, response, rowIndex++, cellIndex, value.toString());
-        LOG.info(String.format("Edit single cell at row: %s, col: %s", rowIndex, cellIndex));
+      int row = 0;
+      int cell = 1;
+      for (Quad quad : quads) {
+        RefineCommands.editCell(project, request, response, row++, cell, createTripleString(quad));
+        LOG.info(String.format("Edit single cell at row: %s, col: %s", row, cell));
       }
 
       RefineCommands.splitColumn(project, request, response, "Column 2", 3);
-      RefineCommands.renameColumn(project, request, response, "Subject", "Column 2 1");
-      RefineCommands.renameColumn(project, request, response, "Predicate", "Column 2 2");
-      RefineCommands.renameColumn(project, request, response, "Object", "Column 2 3");
-      RefineCommands.removeColumn(project, request, response, "Column 1");
+      renameColumns(project, request, response);
     }
+  }
+
+  /**
+   * Writes a serialized prefixes map to an OpenRefine's metadata.
+   * @param model A Jena model.
+   * @param project An OpenRefine project.
+   */
+  private void writePrefixesToMetadata(Model model, Project project) {
+    String prefixes = Utilities.convertMapToString(model.getNsPrefixMap());
+    project.getMetadata().setCustomMetadata("prefixes", prefixes);
+  }
+
+  private void renameColumns(Project project, HttpServletRequest request,
+      HttpServletResponse response) throws IOException, ServletException {
+    RefineCommands.renameColumn(project, request, response, "Subject", "Column 2 1");
+    RefineCommands.renameColumn(project, request, response, "Predicate", "Column 2 2");
+    RefineCommands.renameColumn(project, request, response, "Object", "Column 2 3");
+    RefineCommands.removeColumn(project, request, response, "Column 1");
+  }
+
+  private String createTripleString(Quad quad) {
+    StringBuilder value = new StringBuilder();
+    value.append(quad.getSubject());
+    value.append(Constants.COLUMN_SPLITER);
+    value.append(quad.getPredicate());
+    value.append(Constants.COLUMN_SPLITER);
+    value.append(quad.getObject());
+    return value.toString();
   }
 }

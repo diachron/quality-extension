@@ -39,12 +39,10 @@ public class IdentifyQualityProblemsCommand extends Command {
 
       try {
         project = getProject(request);
+
         if (project.getMetadata().getCustomMetadata("Quality") == null) {
           project.getMetadata().setCustomMetadata("Quality", true);
-          RefineCommands.addColumn(project, request, response, "Problem Type", "Object", 3);
-          RefineCommands.addColumn(project, request, response, "Problem Description", "Problem Type", 4);
-          RefineCommands.addColumn(project, request, response, "Cleaning Suggestion", "Problem Description", 5);
-          RefineCommands.addColumn(project, request, response, "GREL Expresion", "Cleaning Suggestion", 6);
+          addProblemDescriptionColumns();
         }
         quads = Utilities.getQuadsFromProject(project);
 
@@ -59,8 +57,9 @@ public class IdentifyQualityProblemsCommand extends Command {
 
             metric.before();
             metric.compute(quads);
-            postProblems(metric.getQualityProblems());
             metric.after();
+
+            postProblems(metric.getQualityProblems());
           }
         }
 
@@ -121,26 +120,59 @@ public class IdentifyQualityProblemsCommand extends Command {
     String[] values = getQualityProblemStrings(problem);
     int quadHash = Math.abs(problem.getQuad().hashCode());
     int row = refine.get(quadHash);
+
     for (int i = 0; i < values.length; i++) {
       int cell = Constants.PROBLEM_CELL + i;
-      String oldValue = project.rows.get(row).getCell(cell).toString();
+      String oldProblemValue = project.rows.get(row).getCell(cell).toString();
+
       RefineCommands.editCell(project, request, response, row, cell, values[i]);
       LOG.info(String.format("Edit single cell at row: %s, col: %s", row, Constants.PROBLEM_CELL));
 
-      // check if quad had quality problems.
       if (project.getMetadata().getCustomMetadata(Integer.toString(quadHash)) != null) {
-        String value = project.rows.get(row).getCell(cell).toString() + Constants.ROW_SPLITER + oldValue;
-        RefineCommands.editCell(project, request, response, row, cell, value);
-        LOG.info(String.format("Edit single cell at row: %s, col: %s", row, Constants.PROBLEM_CELL));
-        RefineCommands.splitMultiColumn(project, request, response,
-          project.columnModel.getColumnByCellIndex(cell).getName(), "Subject");
+        editOldProblemCellValue(row, cell, quadHash, oldProblemValue);
       }
     }
     project.getMetadata().setCustomMetadata(Integer.toString(quadHash), true);
   }
 
+  /**
+   * Edits a problem cell value in a row of a quad which had any other problems.
+   * @param row A row index of a quad with a quality problem.
+   * @param cell A cell index in the row of the quad with a quality problem.
+   * @param quadHash A quad hash code.
+   * @param oldProblemValue A value of the previous quality problem the quad had.
+   * @throws IOException
+   * @throws ServletException
+   */
+  private void editOldProblemCellValue(int row, int cell, int quadHash, String oldProblemValue)
+      throws IOException, ServletException {
+    String value = project.rows.get(row).getCell(cell).toString() + Constants.ROW_SPLITER
+      + oldProblemValue;
+    RefineCommands.editCell(project, request, response, row, cell, value);
+    LOG.info(String.format("Edit single cell at row: %s, col: %s", row, Constants.PROBLEM_CELL));
+    RefineCommands.splitMultiColumn(project, request, response,
+        project.columnModel.getColumnByCellIndex(cell).getName(), "Subject");
+  }
+
+  /**
+   * Creates an array of string describing a quality problem.
+   * @param problem A quality problem.
+   * @return An array of strings containing description of a quality problem.
+   */
   private String[] getQualityProblemStrings(QualityProblem problem) {
     return new String[]{problem.getProblemName(), problem.getProblemDescription(),
-      problem.getCleaningSuggestion(), problem.getGrelExpression()};
+        problem.getCleaningSuggestion(), problem.getGrelExpression()};
+  }
+
+  /**
+   * Adds a quality problem related columns to an OpenRefine project.
+   * @throws IOException
+   * @throws ServletException
+   */
+  private void addProblemDescriptionColumns() throws IOException, ServletException {
+    RefineCommands.addColumn(project, request, response, "Problem Type", "Object", 3);
+    RefineCommands.addColumn(project, request, response, "Problem Description", "Problem Type", 4);
+    RefineCommands.addColumn(project, request, response, "Cleaning Suggestion", "Problem Description", 5);
+    RefineCommands.addColumn(project, request, response, "GREL Expresion", "Cleaning Suggestion", 6);
   }
 }
