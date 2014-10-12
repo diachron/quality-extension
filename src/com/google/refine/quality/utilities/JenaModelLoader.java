@@ -16,7 +16,6 @@ public class JenaModelLoader {
    * @param in InputStream object.
    * @return Jena model.
    */
-  //TODO add support for different rdf serializations.
   public static Model getModel(InputStream in) {
     Model model = ModelFactory.createDefaultModel();
     model.read(in, null, "TURTLE");
@@ -24,12 +23,11 @@ public class JenaModelLoader {
   }
 
   /**
-   * Reads RDF quads from an InputStream.
-   * @param in InputStream object.
+   * Reads RDF quads from a jena model.
+   * @param model A jena model.
    * @return A list of RDF quads.
    */
-  public static List<Quad> getQuads(InputStream in) {
-    Model model = getModel(in);
+  public static List<Quad> getQuads(Model model) {
     List<Quad> quads = new ArrayList<Quad>();
     StmtIterator si = model.listStatements();
     while (si.hasNext()) {

@@ -1,17 +1,20 @@
 package com.google.refine.quality.utilities;
 
+import java.beans.XMLDecoder;
+import java.beans.XMLEncoder;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
-import org.json.JSONArray;
-import org.json.JSONException;
 
-import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -23,57 +26,12 @@ import com.hp.hpl.jena.sparql.core.Quad;
 import com.google.refine.model.Cell;
 import com.google.refine.model.Project;
 import com.google.refine.model.Row;
-import com.google.refine.quality.exceptions.MetricException;
-import com.google.refine.quality.exceptions.MetricInitializationException;
-import com.google.refine.quality.metrics.AbstractQualityMetric;
-import com.google.refine.quality.problems.QualityProblem;
-
 
 public final class Utilities {
 
   /**
-   * The method applies metrics to list of RDF triples fetched from URL.
-   * @param metrics An array of metrics as a JSONArray object.
-   * @param fileURL An URL for file with RDF data.
-   * @return A list of identified quality problems.
-   * @throws MetricException if handed metric can not be initialized.
-   */
-  public static List<QualityProblem> identifyQualityProblems(JSONArray metrics, String fileURL)
-      throws MetricException {
-    // TODO check the url if it exists.
-    List<QualityProblem> probelms = new ArrayList<QualityProblem>();
-    List<Quad> quads = JenaModelLoader.getQuads(fileURL);
-    try {
-      for (int i = 0; i < metrics.length(); i++) {
-        String metricName = (String) metrics.get(i);
-        Class<?> cls = Class.forName(String.format("%s.%s", Constants.METRICS_PACKAGE, metricName));
-        AbstractQualityMetric metric = (AbstractQualityMetric) cls.newInstance();
-
-        metric.before();
-        metric.compute(quads);
-        metric.after();
-        probelms.addAll(metric.getQualityProblems());
-      }
-
-    } catch (ClassNotFoundException e) {
-      throw new MetricInitializationException("A metric class is not found. "
-        + e.getLocalizedMessage());
-    } catch (JSONException e) {
-      throw new MetricInitializationException("Could not find a metric in JSON object. "
-        + e.getLocalizedMessage());
-    } catch (InstantiationException e) {
-      throw new MetricInitializationException("An instance of a metric class can not be"
-        + " initalized. " + e.getLocalizedMessage());
-    } catch (IllegalAccessException e) {
-      throw new MetricInitializationException("A metric class or its nullary constructor"
-        + " is not. accessible. " + e.getLocalizedMessage());
-    }
-    return probelms;
-  }
-
-  /**
    * Retrieves data from project and writes it to an InputStream.
-   * @param project OpenRefine project.
+   * @param project An OpenRefine project.
    * @return InputStream containing an OpenRefine project.
    * @throws IOException when project can not be written to an InputStream.
    */
@@ -92,9 +50,30 @@ public final class Utilities {
   }
 
   /**
-   * Retrieves data from project as a list of quads. Data accessed at first tree columns of the
-   * OpenRefine project.
-   * @param project OpenRefine project.
+   * Extracts quads and rows from a project. Stores in a hash map <quad-hash, row>.
+   * @param project An OpenRefine project.
+   * @return A hash map containing quads hashes and rows.
+   */
+  public static HashMap<Integer, Integer> getQuadsAsHashes(Project project) {
+    HashMap<Integer, Integer> quads = new HashMap<Integer, Integer>();
+    for (int row = 0; row < project.rows.size(); row++) {
+      Row rowObj = project.rows.get(row);
+      if (!rowObj.isEmpty()) {
+        Statement statement = createStatementFromRowCells(rowObj);
+        if (statement != null) {
+          quads.put(Math.abs(new Quad(null, statement.asTriple()).hashCode()), row); 
+        }
+      } else {
+        quads.put(null, row);
+      }
+    }
+    return quads;
+  }
+
+  /**
+   * Retrieves data from project as a list of quads. Data accessed at first tree
+   * columns of the OpenRefine project.
+   * @param project An OpenRefine project.
    * @return A list of quads.
    */
   public static List<Quad> getQuadsFromProject(Project project) {
@@ -102,59 +81,88 @@ public final class Utilities {
     for (int row = 0; row < project.rows.size(); row++) {
       Row rowObj = project.rows.get(row);
       if (!rowObj.isEmpty()) {
-        // 0 index - stared , 1 -index flagged
-        Cell subjectCell = rowObj.getCell(2);
-        Cell predicateCell = rowObj.getCell(3);
-        Cell objectCell = rowObj.getCell(4);
-        if (objectCell != null && predicateCell !=null && subjectCell != null) {
-          Resource subject = ResourceFactory.createResource(subjectCell.toString());
-          Property predicate = ResourceFactory.createProperty(predicateCell.toString());
-
-          String lit = objectCell.toString();
-          Literal object = ResourceFactory.createPlainLiteral(lit);
-          if (!object.isURIResource()) {
-            object = ResourceFactory.createPlainLiteral(lit.substring(1, lit.length() - 1));
-          }
-          Statement statement = ResourceFactory.createStatement(subject, predicate, object);
-          quads.add(new Quad(null, statement.asTriple()));
-        }
-      }
-    }
-    return quads;
-  }
-
-  public static HashMap<Integer, Integer> getQuadsAsHashes(Project project) {
-    HashMap<Integer, Integer> quads = new  HashMap<Integer, Integer>();
-    for (int row = 0; row < project.rows.size(); row++) {
-      Row rowObj = project.rows.get(row);
-      if (!rowObj.isEmpty()) {
-        // 0 index - stared , 1 -index flagged
-        Cell subjectCell = rowObj.getCell(2);
-        Cell predicateCell = rowObj.getCell(3);
-        Cell objectCell = rowObj.getCell(4);
-        if (objectCell != null && predicateCell !=null && subjectCell != null) {
-          Resource subject = ResourceFactory.createResource(subjectCell.toString());
-          Property predicate = ResourceFactory.createProperty(predicateCell.toString());
-
-          String lit = objectCell.toString();
-          Literal object = ResourceFactory.createPlainLiteral(lit);
-          if (!object.isURIResource()) {
-            object = ResourceFactory.createPlainLiteral(lit.substring(1, lit.length() - 1));
-          }
-          Statement statement = ResourceFactory.createStatement(subject, predicate, object);
-          quads.put(Math.abs(new Quad(null, statement.asTriple()).hashCode()), row);
-          System.out.println(Math.abs(new Quad(null, statement.asTriple()).hashCode()) + " " + row);
-        } else {
-          quads.put(null, row);
-        }
+        quads.add(new Quad(null, createStatementFromRowCells(rowObj).asTriple()));
       }
     }
     return quads;
   }
 
   /**
+   * Creates a statement by parsing cells of a certain row.
+   * @param row A row containing cells.
+   * @return A statement object/
+   */
+  private static Statement createStatementFromRowCells(Row row) {
+    Statement statement = null;
+    // 0 index - stared , 1 -index flagged
+    Cell subjectCell = row.getCell(2);
+    Cell predicateCell = row.getCell(3);
+    Cell objectCell = row.getCell(4);
+    if (objectCell != null && predicateCell != null && subjectCell != null) {
+      statement = createStatement(subjectCell.toString(), predicateCell.toString(),
+          objectCell.toString());
+    }
+    return statement;
+  }
+
+  /**
+   * Creates a statement object from a quad.
+   * @param quad A Jena quad object.
+   * @return A Jena statement obejct.
+   */
+  public static Statement createStatement(String subject, String predicate, String object) {
+    RDFNode objectNode = null;
+
+    if (Utilities.isUrl(object)) {
+      objectNode = ResourceFactory.createResource(object);
+    } else {
+      objectNode = ResourceFactory.createPlainLiteral(object.substring(1, object.length() - 1));
+    }
+    return ResourceFactory.createStatement(ResourceFactory.createResource(subject),
+        ResourceFactory.createProperty(predicate), objectNode);
+  }
+
+  /**
+   * Checks if a string is a valid URL.
+   * @param str A string to check.
+   * @return true if the string is a valid URL.
+   */
+  public static boolean isUrl(String str) {
+    if (str == null) {
+      return false;
+    }
+    String regex = "\\(?\\b(http://|www[.])[-A-Za-z0-9+&amp;@#/%?=~_()|!:,.;]*[-A-Za-z0-9+&amp;@#/%=~_()|]";
+    Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+    return pattern.matcher(str).find();
+  }
+
+  /**
+   * Serializes a map.
+   * @param map A map to serialize.
+   * @return A string containing XML representation of the map.
+   */
+  public static String convertMapToString(@SuppressWarnings("rawtypes") Map map) {
+    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    XMLEncoder xmlEncoder = new XMLEncoder(bos);
+    xmlEncoder.writeObject(map);
+    xmlEncoder.flush();
+    return bos.toString();
+  }
+
+  /**
+   * Deserializes a map.
+   * @param map A string to deserialize from.
+   * @return A map.
+   */
+  @SuppressWarnings("rawtypes")
+  public static Map creteMapFromString(String map) {
+    XMLDecoder xmlDecoder = new XMLDecoder(new ByteArrayInputStream(map.getBytes()));
+    return (Map) xmlDecoder.readObject();
+  }
+
+  /**
    * Prints a quad to stream in readable format.
-   * @param quad RDF quad.
+   * @param quad A RDF quad.
    * @param printStream
    */
   public static void printQuad(Quad quad, PrintStream printStream) {
@@ -167,7 +175,7 @@ public final class Utilities {
 
   /**
    * Prints a quad to a standard output stream in readable format.
-   * @param quad RDF quad.
+   * @param quad A RDF quad.
    */
   public static void printQuad(Quad quad) {
     printQuad(quad, System.out);
@@ -175,14 +183,14 @@ public final class Utilities {
 
   /**
    * Prints s statement in a readable format.
-   * @param statement RDF statement.
-   * @param printStream Stream to print.
+   * @param statement A statement.
+   * @param printStream A stream to print to.
    */
   public static void printStatement(Statement statement, PrintStream printStream) {
     if (statement != null) {
-      Resource  subject   = statement.getSubject();
-      Property  predicate = statement.getPredicate();
-      RDFNode   object    = statement.getObject();
+      Resource subject = statement.getSubject();
+      Property predicate = statement.getPredicate();
+      RDFNode object = statement.getObject();
 
       printStream.print(subject.toString());
       printStream.print(String.format(" %s ", predicate.toString()));
@@ -198,7 +206,7 @@ public final class Utilities {
 
   /**
    * Prints a statement to a standard output stream in a readable format.
-   * @param statement RDF statement.
+   * @param statement A RDF statement.
    */
   public static void printStatment(Statement statement) {
     printStatement(statement, System.out);
@@ -209,12 +217,12 @@ public final class Utilities {
    * @param stmtIterator
    * @param printStream
    */
-  public static void printStatements(StmtIterator stmtIterator, PrintStream printStream){
+  public static void printStatements(StmtIterator stmtIterator, PrintStream printStream) {
     if (stmtIterator != null) {
-      if (null == printStream) { 
+      if (null == printStream) {
         printStream = System.out;
       }
-      while (stmtIterator.hasNext()){
+      while (stmtIterator.hasNext()) {
         printStatement(stmtIterator.nextStatement(), printStream);
       }
     }

@@ -17,6 +17,7 @@ ExtensionBar.addExtensionMenu({
     "id" : "diachron/export",
     label : "Export",
     click : function() {
+      exportProject();
     }
   } ]
 });
