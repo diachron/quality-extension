@@ -17,9 +17,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.core.Quad;
 
 import com.google.refine.quality.exceptions.MetricException;
-import com.google.refine.quality.problems.QualityProblem;
 import com.google.refine.quality.problems.UndefinedClassProblem;
-import com.google.refine.quality.problems.UndefinedPropertyProblem;
 import com.google.refine.quality.utilities.Constants;
 import com.google.refine.quality.utilities.VocabularyReader;
 import com.google.refine.quality.vocabularies.QPROB;

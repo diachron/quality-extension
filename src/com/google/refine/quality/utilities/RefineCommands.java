@@ -121,10 +121,6 @@ public class RefineCommands extends Command {
 
       HistoryEntry historyEntry = project.processManager.queueProcess(process);
       if (historyEntry != null) {
-        /*
-         * If the operation has been done, return the new cell's data so the
-         * client side can update the cell's rendering right away.
-         */
         JSONWriter writer = new JSONWriter(response.getWriter());
 
         Pool pool = new Pool();
