@@ -28,7 +28,8 @@ public class MetricProcessing {
    * @throws InstantiationException 
    */
   public static List<QualityProblem> identifyQualityProblems(JSONArray metrics, String fileURL)
-      throws MetricException, JSONException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+      throws MetricException, JSONException, ClassNotFoundException, InstantiationException,
+      IllegalAccessException {
 
     // check if the file exists and than load model from the url
     // other approach is to get the file from and pass it as an input stream to
@@ -47,8 +48,6 @@ public class MetricProcessing {
       metric.after();
       probelms.addAll(metric.getQualityProblems());
     }
-
     return probelms;
   }
-
 }

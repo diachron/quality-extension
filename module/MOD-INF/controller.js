@@ -60,6 +60,7 @@ function init() {
        "scripts/commands.js",
        "scripts/collapsible.js",
        "scripts/metrics-dialog.js",
+       "scripts/download.js",
        "scripts/menu.js",
        ]
   );

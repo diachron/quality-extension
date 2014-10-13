@@ -28,53 +28,30 @@ import com.google.refine.quality.utilities.Utilities;
 public class ExportProjectCommand extends Command {
 
   @Override
-  public void doGet(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {}
-
-  @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
+    
     Project project = getProject(request);
-    List<Quad> quads = Utilities.getQuadsFromProject(project);
+    if (project.getMetadata().getCustomMetadata("Transformed") != null) {
 
-    try {
-      // JSONArray serializations = new
-      // JSONArray(request.getParameter("serializations"));
-      JSONArray serializations = new JSONArray();
-      serializations.put("TURTLE");
-//      serializations.put("NT");
-//      serializations.put("RDF/XML");
-
-      for (int i = 0; i < serializations.length(); i++) {
-        Model model = createModel(quads, project);
-
-        File file = File.createTempFile("file", ".ttl");
-        OutputStream fileOutputStream = new FileOutputStream(file);
-        model.write(fileOutputStream, (String) serializations.get(i));
-
-        response.setContentType("application/octet-stream");
-        response.setHeader("Content-disposition","attachment; filename=file.pdf");
-
-        OutputStream out = response.getOutputStream();
-        FileInputStream in = new FileInputStream(file);
-        byte[] buffer = new byte[4096];
-        int length;
-        while ((length = in.read(buffer)) > 0){
-          out.write(buffer, 0, length);
+      List<Quad> quads = Utilities.getQuadsFromProject(project);
+      try {
+        JSONArray serializations = new JSONArray(request.getParameter("serializations"));
+        for (int i = 0; i < serializations.length(); i++) {
+          Model model = createModel(quads, project);
+          File file = writeModelToFile(model, (String) serializations.get(i));
+          respondWithFile(response, file);
         }
-        in.close();
-        out.flush();
-      }
-    } catch (JSONException e) {
-      e.printStackTrace();
-    }
+      } catch (JSONException e) {
+        e.printStackTrace();
+      }}
   }
 
   /**
    * Creates a Jena model, from a list of quads.
    * @param quads A list of quads.
    * @param project An OpenRefine project.
-   * @return A Jena model obejct.
+   * @return A Jena model object.
    */
   private Model createModel(List<Quad> quads, Project project) {
     Model model = ModelFactory.createDefaultModel();
@@ -82,20 +59,37 @@ public class ExportProjectCommand extends Command {
     model.setNsPrefixes(readPrefixesMapFromMetadata(prefixes));
 
     for (Quad quad : quads) {
-      model.add(Utilities.createStatement(quad.getSubject().toString(),
-        quad.getPredicate().toString(), quad.getObject().toString()));
+      model.add(Utilities.createStatement(quad.getSubject().toString(), quad.getPredicate()
+        .toString(), quad.getObject().toString()));
     }
     return model;
   }
 
-  /**
-   * Reads prefixes from an OpenRefine project's metadata.
-   * @param map A string representation of a prefixes map.
-   * @return A prefixes map.
-   */
+  private void respondWithFile(HttpServletResponse response, File file) throws IOException {
+    response.setContentType("application/octet-stream");
+    response.setHeader("Content-disposition", "attachment; filename=" + file.getName());
+
+    OutputStream out = response.getOutputStream();
+    FileInputStream in = new FileInputStream(file);
+    byte[] buffer = new byte[4096];
+    int length;
+    while ((length = in.read(buffer)) > 0) {
+      out.write(buffer, 0, length);
+    }
+    in.close();
+    out.flush();
+  }
+
+  private File writeModelToFile(Model model, String serialization) throws IOException {
+    File file = File.createTempFile("file", ".ttl");
+    OutputStream fileOutputStream = new FileOutputStream(file);
+    model.write(fileOutputStream, serialization);
+    return file;
+  }
+
   @SuppressWarnings("unchecked")
-  private static Map<String, String> readPrefixesMapFromMetadata(String map) {
-    XMLDecoder xmlDecoder = new XMLDecoder(new ByteArrayInputStream(map.getBytes()));
+  private static Map<String, String> readPrefixesMapFromMetadata(String serializedMap) {
+    XMLDecoder xmlDecoder = new XMLDecoder(new ByteArrayInputStream(serializedMap.getBytes()));
     return (Map<String, String>) xmlDecoder.readObject();
   }
 }
