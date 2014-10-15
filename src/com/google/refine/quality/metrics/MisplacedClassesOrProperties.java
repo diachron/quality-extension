@@ -76,7 +76,7 @@ public class MisplacedClassesOrProperties extends AbstractQualityMetric {
                     this.totalClassesCount++;
                     // load model
                     Model subjectModel = VocabularyReader.read(subject.getURI());
-                    if (subjectModel != null) { // check if system is able to
+                    if (!subjectModel.isEmpty()) { // check if system is able to
                                                 // retrieve model
                         // search for URI resource from Model
                         if (subjectModel.getResource(subject.getURI())
@@ -102,7 +102,7 @@ public class MisplacedClassesOrProperties extends AbstractQualityMetric {
                     // load model
                     Model predicateModel = VocabularyReader
                             .read(predicate.getURI());
-                    if (predicateModel != null) { // check if system is able to
+                    if (!predicateModel.isEmpty()) { // check if system is able to
                                                     // retrieve model
                         // search for URI resource from Model
                         if (predicateModel.getResource(predicate.getURI())
@@ -129,7 +129,7 @@ public class MisplacedClassesOrProperties extends AbstractQualityMetric {
                     this.totalClassesCount++;
                     // load model
                     Model objectModel = VocabularyReader.read(object.getURI());
-                    if (objectModel != null) { // check if system is able to
+                    if (!objectModel.isEmpty()) { // check if system is able to
                                                 // retrieve model
                         // search for URI resource from Model
                         if (objectModel.getResource(object.getURI())

@@ -100,5 +100,7 @@ public class UtilitiesTest {
     Assert.assertTrue(Utilities.isUrl("http://hello.com"));
     Assert.assertTrue(Utilities.isUrl("http://hello.com?"));
     Assert.assertTrue(Utilities.isUrl("http://hello.com/hello#hello"));
+    Assert.assertTrue(Utilities.isUrl(RDFS.label.toString()));
+
   }
 }

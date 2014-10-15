@@ -102,7 +102,7 @@ public class MisusedOwlDatatypeOrObjectProperties extends AbstractQualityMetric 
                                                                     // in list
 
                         Model tmpModel = VocabularyReader.read(predicate.getURI());
-                        if (tmpModel != null) {
+                        if (tmpModel.isEmpty()) {
                             StmtIterator stmtIt = tmpModel.listStatements();
                             while (stmtIt.hasNext()) {
                                 Statement statement = stmtIt.next();

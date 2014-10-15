@@ -136,7 +136,7 @@ public class IncompatibleDatatypeRange extends AbstractQualityMetric {
                                                                                         // from
                                                                                         // the
                                                                                         // URI
-                                tmpProperty = (tmpModel != null) ? (tmpModel
+                                tmpProperty = (!tmpModel.isEmpty()) ? (tmpModel
                                         .getResource(predicate.getURI()))
                                         .getProperty(RDFS.range) : null;
                             }

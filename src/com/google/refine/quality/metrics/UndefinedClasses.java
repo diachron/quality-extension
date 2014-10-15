@@ -91,12 +91,12 @@ public class UndefinedClasses extends AbstractQualityMetric {
     if (properties.contains(quad.getPredicate().getURI()) && object.isURI()) {
       classes++;
 
-      Model objectModel = VocabularyReader.read(object.getURI());
-      if (objectModel == null) {
+      Model model = VocabularyReader.read(object.getURI());
+      if (model.isEmpty()) {
         undefinedClasses++;
         problems.add(new UndefinedClassProblem(quad, qualityReport));
         LOG.info(String.format("Undefined class is found in quad: %s", quad.toString()));
-      } else if (!objectModel.getResource(object.getURI()).isURIResource()) {
+      } else if (!model.getResource(object.getURI()).isURIResource()) {
         undefinedClasses++;
         problems.add(new UndefinedClassProblem(quad, qualityReport));
         LOG.info(String.format("Undefined class is found in quad: %s", quad.toString()));

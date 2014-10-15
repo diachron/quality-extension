@@ -39,7 +39,7 @@ public class UndefinedProperties extends AbstractQualityMetric {
   @Override
   public void before(Object... args) {
     String path = (args == null || args.length == 0) ? Constants.UNDEFINED_PROPERTIES_FILE
-        : (String) args[0];
+      : (String) args[0];
     File file = null;
     try {
       if (!path.isEmpty()) {
@@ -84,7 +84,7 @@ public class UndefinedProperties extends AbstractQualityMetric {
     if (quad.getPredicate().isURI()) {
       properties++;
       Model model = VocabularyReader.read(predicateURI);
-      if (model == null) {
+      if (model.isEmpty()) {
         undefinedProperties++;
         problems.add(new QualityProblem(quad, qualityReport));
         LOG.info(String.format("Undefined property is found: %s", predicateURI));
@@ -93,24 +93,26 @@ public class UndefinedProperties extends AbstractQualityMetric {
       }
     }
 
-    checkPropertyInObject(predicateURI, quad);
+    if (propertiesSet.contains(predicateURI)) {
+      checkPropertyInObject(quad);
+    }
   }
 
   private void checkDomainAndRange(Model model, String uri, Quad quad) {
     if (!(model.getResource(uri).hasProperty(RDFS.domain) && model.getResource(uri)
-        .hasProperty(RDFS.range))) {
+      .hasProperty(RDFS.range))) {
       undefinedProperties++;
       problems.add(new UndefinedPropertyProblem(quad, qualityReport));
       LOG.info(String.format("Property has not a domain and range: %s", uri));
     }
   }
 
-  private void checkPropertyInObject(String url, Quad quad) {
+  private void checkPropertyInObject(Quad quad) {
     String objectURI = quad.getObject().getURI();
-    if (propertiesSet.contains(url) && quad.getObject().isURI()) {
+    if (quad.getObject().isURI()) {
       properties++;
       Model model = VocabularyReader.read(objectURI);
-      if (model == null) {
+      if (model.isEmpty()) {
         undefinedProperties++;
         problems.add(new QualityProblem(quad, qualityReport));
         LOG.info(String.format("Object contains an undefined property: %s", objectURI));

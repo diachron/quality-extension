@@ -38,41 +38,6 @@ public class OntologyHijacking extends AbstractQualityMetric {
   public void after() {};
 
   /**
-   * Check if the given quad has predicate of URI with given fragment
-   * 
-   * @param predicate
-   * @param fragment
-   * @return true if predicate is URI with given fragment
-   */
-  protected boolean isDefinedClassOrProperty(Quad quad, String fragment) {
-    try {
-      if (quad.getPredicate().isURI()) {
-        URI tmpURI = new URI(quad.getPredicate().getURI());
-        return (tmpURI.getFragment() != null &&
-            tmpURI.getFragment().toLowerCase().equals(fragment)) ? true : false;
-      }
-    } catch (MalformedURIException e) {
-      LOG.error(e.getMessage());
-    }
-    return false;
-  }
-
-  /**
-   * Detects if given node is defined in vocabulary or not
-   * @param node
-   * @return true - if given node is found in the vocabulary with property of RDF.type
-   */
-  protected boolean isHijacked(Node node) {
-    Model model = VocabularyReader.read(node.getURI());
-    if (model != null && model.getResource(node.getURI()).isURIResource()) {
-      if (model.getResource(node.getURI()).hasProperty(RDF.type)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  /**
    * 
    */
   @Override
@@ -94,6 +59,41 @@ public class OntologyHijacking extends AbstractQualityMetric {
         problems.add(new QualityProblem(quad, qualityReport));
       }
     }
+  }
+
+  /**
+   * Check if the given quad has predicate of URI with given fragment
+   * 
+   * @param predicate
+   * @param fragment
+   * @return true if predicate is URI with given fragment
+   */
+  protected boolean isDefinedClassOrProperty(Quad quad, String fragment) {
+    try {
+      if (quad.getPredicate().isURI()) {
+        URI tmpURI = new URI(quad.getPredicate().getURI());
+        return (tmpURI.getFragment() != null &&
+            tmpURI.getFragment().toLowerCase().equals(fragment)) ? true : false;
+      }
+    } catch (MalformedURIException e) {
+      LOG.error(e.getMessage());
+    }
+    return false;
+  }
+
+  /**
+   * Detects if given node is defined in vocabulary.
+   * @param node
+   * @return true - if given node is found in the vocabulary with property of RDF.type
+   */
+  protected boolean isHijacked(Node node) {
+    Model model = VocabularyReader.read(node.getURI());
+    if (!model.isEmpty() && model.getResource(node.getURI()).isURIResource()) {
+      if (model.getResource(node.getURI()).hasProperty(RDF.type)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
