@@ -124,9 +124,8 @@ public class IdentifyQualityProblemsCommand extends Command {
     for (int i = 0; i < values.length; i++) {
       int cell = Constants.PROBLEM_CELL + i;
       String oldProblemValue = project.rows.get(row).getCell(cell).toString();
-
       RefineCommands.editCell(project, request, response, row, cell, values[i]);
-      LOG.info(String.format("Edit single cell at row: %s, col: %s", row, Constants.PROBLEM_CELL));
+      LOG.info(String.format("Edit single cell at row: %s, col: %s", row, cell));
 
       if (project.getMetadata().getCustomMetadata(Integer.toString(quadHash)) != null) {
         editOldProblemCellValue(row, cell, quadHash, oldProblemValue);
@@ -149,7 +148,7 @@ public class IdentifyQualityProblemsCommand extends Command {
     String value = project.rows.get(row).getCell(cell).toString() + Constants.ROW_SPLITER
       + oldProblemValue;
     RefineCommands.editCell(project, request, response, row, cell, value);
-    LOG.info(String.format("Edit single cell at row: %s, col: %s", row, Constants.PROBLEM_CELL));
+    LOG.info(String.format("Edit single cell at row: %s, col: %s", row, cell));
     RefineCommands.splitMultiColumn(project, request, response,
         project.columnModel.getColumnByCellIndex(cell).getName(), "Subject");
   }
@@ -164,11 +163,6 @@ public class IdentifyQualityProblemsCommand extends Command {
         problem.getCleaningSuggestion(), problem.getGrelExpression()};
   }
 
-  /**
-   * Adds a quality problem related columns to an OpenRefine project.
-   * @throws IOException
-   * @throws ServletException
-   */
   private void addProblemDescriptionColumns() throws IOException, ServletException {
     RefineCommands.addColumn(project, request, response, "Problem Type", "Object", 3);
     RefineCommands.addColumn(project, request, response, "Problem Description", "Problem Type", 4);

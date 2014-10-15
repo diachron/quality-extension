@@ -24,43 +24,11 @@ import com.google.refine.operations.cell.MultiValuedCellSplitOperation;
 import com.google.refine.operations.cell.TextTransformOperation;
 import com.google.refine.operations.column.ColumnAdditionOperation;
 import com.google.refine.operations.column.ColumnRemovalOperation;
-import com.google.refine.operations.column.ColumnRenameOperation;
-import com.google.refine.operations.column.ColumnSplitOperation;
 import com.google.refine.process.Process;
 import com.google.refine.process.QuickHistoryEntryProcess;
 import com.google.refine.util.Pool;
 
 public class RefineCommands extends Command {
-  public static void splitColumn(Project project, HttpServletRequest request,
-    HttpServletResponse response, String columnName, int columns) throws IOException,
-    ServletException {
-    try {
-      JSONObject engineConfig = new JSONObject();
-      engineConfig.put("facets", new JSONArray());
-      engineConfig.put("mode", "separator");
-
-      AbstractOperation op = new ColumnSplitOperation(engineConfig, columnName, false, true,
-          Constants.COLUMN_SPLITER, false, columns);
-      Process process = op.createProcess(project, new Properties());
-
-      performProcessAndRespond(request, response, project, process);
-    } catch (Exception e) {
-      respondException(response, e);
-    }
-  }
-
-  public static void renameColumn(Project project, HttpServletRequest request,
-    HttpServletResponse response, String newColumnName, String oldColumnName) throws IOException,
-    ServletException {
-    try {
-      AbstractOperation op = new ColumnRenameOperation(oldColumnName, newColumnName);
-      Process process = op.createProcess(project, new Properties());
-      performProcessAndRespond(request, response, project, process);
-    } catch (Exception e) {
-      e.printStackTrace();
-      respondException(response, e);
-    }
-  }
 
   public static void addColumn(Project project, HttpServletRequest request,
     HttpServletResponse response, String newColumnName, String baseColumnName,

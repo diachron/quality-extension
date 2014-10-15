@@ -14,13 +14,11 @@ import com.hp.hpl.jena.sparql.core.Quad;
 
 import com.google.refine.commands.Command;
 import com.google.refine.model.Project;
-import com.google.refine.quality.utilities.Constants;
 import com.google.refine.quality.utilities.JenaModelLoader;
 import com.google.refine.quality.utilities.RefineCommands;
 import com.google.refine.quality.utilities.Utilities;
 
 public class TransformDataCommand extends Command {
-
   private static final Logger LOG = Logger.getLogger(TransformDataCommand.class);
 
   @Override
@@ -30,23 +28,22 @@ public class TransformDataCommand extends Command {
     Project project = getProject(request);
 
     if (project.getMetadata().getCustomMetadata("Transformed") == null) {
-      project.getMetadata().setCustomMetadata("Transformed", true);
-      
+      addTripleColumns(project, request, response);
+
       Model model = JenaModelLoader.getModel(Utilities.projectToInputStream(project));
       writePrefixesToMetadata(model, project);
       List<Quad> quads = JenaModelLoader.getQuads(model);
-      
-      RefineCommands.addColumn(project, request, response, "Column 2", "Column 1", 1);
 
-      int row = 0;
-      int cell = 1;
       for (Quad quad : quads) {
-        RefineCommands.editCell(project, request, response, row++, cell, createTripleString(quad));
-        LOG.info(String.format("Edit single cell at row: %s, col: %s", row, cell));
+        String[] elements = getQuadComponents(quad);
+        for (int i = 0; i < elements.length; i++) {
+          int cell = 1 + i;
+          RefineCommands.editCell(project, request, response, quads.indexOf(quad), cell, elements[i]);
+          LOG.info(String.format("Edit single cell at row: %s, col: %s",  quads.indexOf(quad), cell));
+        }
       }
-
-      RefineCommands.splitColumn(project, request, response, "Column 2", 3);
-      renameColumns(project, request, response);
+      RefineCommands.removeColumn(project, request, response, "Column 1");
+      project.getMetadata().setCustomMetadata("Transformed", true);
     }
   }
 
@@ -60,21 +57,15 @@ public class TransformDataCommand extends Command {
     project.getMetadata().setCustomMetadata("prefixes", prefixes);
   }
 
-  private void renameColumns(Project project, HttpServletRequest request,
+  private void addTripleColumns(Project project, HttpServletRequest request,
       HttpServletResponse response) throws IOException, ServletException {
-    RefineCommands.renameColumn(project, request, response, "Subject", "Column 2 1");
-    RefineCommands.renameColumn(project, request, response, "Predicate", "Column 2 2");
-    RefineCommands.renameColumn(project, request, response, "Object", "Column 2 3");
-    RefineCommands.removeColumn(project, request, response, "Column 1");
+    RefineCommands.addColumn(project, request, response, "Subject", "Column 1", 1);
+    RefineCommands.addColumn(project, request, response, "Predicate", "Subject", 2);
+    RefineCommands.addColumn(project, request, response, "Object", "Predicate", 3);
   }
 
-  private String createTripleString(Quad quad) {
-    StringBuilder value = new StringBuilder();
-    value.append(quad.getSubject());
-    value.append(Constants.COLUMN_SPLITER);
-    value.append(quad.getPredicate());
-    value.append(Constants.COLUMN_SPLITER);
-    value.append(quad.getObject());
-    return value.toString();
+  private String[] getQuadComponents(Quad quad) {
+    return new String[] { quad.getSubject().toString(), quad.getPredicate().toString(),
+      quad.getObject().toString() };
   }
 }

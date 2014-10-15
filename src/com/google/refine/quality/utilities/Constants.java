@@ -7,19 +7,22 @@ public class Constants {
   private static final String USER_DIR = System.getProperty("user.dir");
   
   public static final String ANNOTATION_PROPERTIES_FILE =  USER_DIR + File.separator +
-      extensionPathHandler() + "resources/AnnotationPropertiesList";
+    extensionPathHandler() + "resources/AnnotationPropertiesList";
   public final static String LABEL_PROPERTIES_FILE = USER_DIR + File.separator +
-      extensionPathHandler() + "resources/LabelPropertiesList";
+    extensionPathHandler() + "resources/LabelPropertiesList";
   public final static String UNDEFINED_CLASS_PROPERTIES_FILE = USER_DIR + File.separator +
-      extensionPathHandler() + "resources/UndefinedClassPropertiesList";
+    extensionPathHandler() + "resources/UndefinedClassPropertiesList";
   public final static String UNDEFINED_PROPERTIES_FILE = USER_DIR + File.separator +
-      extensionPathHandler() + "resources/UndefinedPropertiesList";
+    extensionPathHandler() + "resources/UndefinedPropertiesList";
 
   public static final String QPROB_FILE = USER_DIR + File.separator + extensionPathHandler() +
     "resources/vocabularies/qprob/qprob.rdf";
 
   public static final String QR_FILE = USER_DIR + File.separator + extensionPathHandler() +
-		    "resources/vocabularies/qr/qr.rdf";
+    "resources/vocabularies/qr/qr.rdf";
+
+  public static String LOADED_MODELS = USER_DIR + File.separator + extensionPathHandler()
+    + "resources/models";
 
   public static final String CAMEL_CASE_REGEX = "[A-Z]([A-Z0-9]*[a-z][a-z0-9]*[A-Z]|[a-z0-9]*[A-Z]"
     + "[A-Z0-9]*[a-z])[A-Za-z0-9]*";
@@ -27,7 +30,7 @@ public class Constants {
   public static final String COLUMN_SPLITER = "|&SPLITCOLUMN&|";
   public static final String ROW_SPLITER = "|&SPLITROW&|";
   public static final String METRICS_PACKAGE = "com.google.refine.quality.metrics";
-  public static final int PROBLEM_CELL = 5;
+  public static final int PROBLEM_CELL = 4;
 
   public static final String QR_VOCAB = "QR";
   public static final String QPROB_VOCAB = "QPROB";

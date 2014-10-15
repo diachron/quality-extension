@@ -58,7 +58,7 @@ public final class Utilities {
     HashMap<Integer, Integer> quads = new HashMap<Integer, Integer>();
     for (int row = 0; row < project.rows.size(); row++) {
       Row rowObj = project.rows.get(row);
-      if (!rowObj.isEmpty()) {
+      if (!rowObj.isEmpty() && rowObj != null) {
         Statement statement = createStatementFromRowCells(rowObj);
         if (statement != null) {
           quads.put(Math.abs(new Quad(null, statement.asTriple()).hashCode()), row); 
@@ -80,8 +80,11 @@ public final class Utilities {
     List<Quad> quads = new ArrayList<Quad>();
     for (int row = 0; row < project.rows.size(); row++) {
       Row rowObj = project.rows.get(row);
-      if (!rowObj.isEmpty()) {
-        quads.add(new Quad(null, createStatementFromRowCells(rowObj).asTriple()));
+      if (!rowObj.isEmpty() && rowObj != null) {
+        Statement stat = createStatementFromRowCells(rowObj);
+        if (stat != null) {
+          quads.add(new Quad(null, createStatementFromRowCells(rowObj).asTriple()));
+        }
       }
     }
     return quads;
@@ -94,14 +97,15 @@ public final class Utilities {
    */
   private static Statement createStatementFromRowCells(Row row) {
     Statement statement = null;
-    // 0 index - stared , 1 -index flagged
-    Cell subjectCell = row.getCell(2);
-    Cell predicateCell = row.getCell(3);
-    Cell objectCell = row.getCell(4);
+    // 0 index - stared
+    Cell subjectCell = row.getCell(1);
+    Cell predicateCell = row.getCell(2);
+    Cell objectCell = row.getCell(3);
     if (objectCell != null && predicateCell != null && subjectCell != null) {
       statement = createStatement(subjectCell.toString(), predicateCell.toString(),
           objectCell.toString());
     }
+    // TODO return not null!!!
     return statement;
   }
 
