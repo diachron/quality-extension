@@ -15,7 +15,7 @@ ExtensionBar.addExtensionMenu({
     }
   }, {}, {
     "id" : "diachron/export",
-    label : "Export",
+    label : "Export as RDF",
     click : function() {
       new DownloadDialog().show();
     }

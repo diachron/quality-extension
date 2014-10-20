@@ -2,7 +2,7 @@ function AboutDialog() {
   var self = this;
   this.mertics_init = {
       "Working metrics" : [ {
-        "Workign" : [ {
+        "Checked" : [ {
           "EmptyAnnotationValue" : "Empty annotation value"
         }, {
           "LabelsUsingCapitals" : "Label using capitals"

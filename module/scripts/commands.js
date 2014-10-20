@@ -21,6 +21,7 @@ function transform(metrics) {
   }, function(data) {
     if (metrics) {
       identify(metrics);
+      window.location.reload(true);
     } else {
       window.location.reload(true);
     }
