@@ -21,7 +21,6 @@ function transform(metrics) {
   }, function(data) {
     if (metrics) {
       identify(metrics);
-      window.location.reload(true);
     } else {
       window.location.reload(true);
     }
@@ -36,7 +35,7 @@ function exportProject(serializations) {
   }
   var self = this;
   self._dismissBusy = DialogSystem.showBusy('Exporting data...');
-  $.post("command/quality-extension/exportProject/", {
+  $.get("command/quality-extension/exportProject/", {
     "engine" : JSON.stringify(ui.browsingEngine.getJSON()),
     "project" : theProject.id,
     "serializations" : JSON.stringify(serializations)

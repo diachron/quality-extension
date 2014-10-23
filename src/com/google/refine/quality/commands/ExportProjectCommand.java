@@ -28,7 +28,7 @@ import com.google.refine.quality.utilities.Utilities;
 public class ExportProjectCommand extends Command {
 
   @Override
-  public void doPost(HttpServletRequest request, HttpServletResponse response)
+  public void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
     
     Project project = getProject(request);
@@ -44,7 +44,8 @@ public class ExportProjectCommand extends Command {
         }
       } catch (JSONException e) {
         e.printStackTrace();
-      }}
+      }
+    }
   }
 
   /**
@@ -66,7 +67,7 @@ public class ExportProjectCommand extends Command {
   }
 
   private void respondWithFile(HttpServletResponse response, File file) throws IOException {
-    response.setContentType("application/octet-stream");
+//    response.setContentType("application/octet-stream");
     response.setHeader("Content-disposition", "attachment; filename=" + file.getName());
 
     OutputStream out = response.getOutputStream();
