@@ -9,9 +9,15 @@ function AboutDialog() {
         }, {
           "WhitespaceInAnnotation" : "Whitespace in annotation"
         }, {
+          "UndefinedProperties" : "Undefined properties"
+        }, {
           "UndefinedClasses" : "Undefined classes"
         }, {
           "MalformedDatatypeLiterals" : "Malformed datatype literals"
+        }, {
+          "IncompatibleDatatypeRange" : "Incompatible datatype range"
+        }, {
+          "OntologyHijacking" : "Ontology hijacking"
         }]
       }],
       "Accessibility" : [ {
