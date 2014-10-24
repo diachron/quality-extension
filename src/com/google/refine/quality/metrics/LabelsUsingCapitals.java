@@ -98,10 +98,6 @@ public class LabelsUsingCapitals extends AbstractQualityMetric {
 
   /**
    * Checks a literal value for bad capitalization.
-   * 
-   * @param object
-   * @param index
-   * @param quad
    */
   private void assessLiteralValue(Quad quad) {
     Node object = quad.getObject();

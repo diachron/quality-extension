@@ -15,7 +15,6 @@ import com.hp.hpl.jena.sparql.core.Quad;
 import com.hp.hpl.jena.vocabulary.RDF;
 
 /**
- * TODO
  * The Ontology Hijacking detects the redefinition by analyzing defined classes
  * or properties in data set and looks of same definition in its respective
  * vocabulary.
@@ -30,12 +29,6 @@ public class OntologyHijacking extends AbstractQualityMetric {
 
   private long propertiesAndClasses = 0;
   private long hijacked = 0;
-
-  @Override
-  public void before(Object... args) {};
-
-  @Override
-  public void after() {};
 
   /**
    * 
@@ -64,16 +57,13 @@ public class OntologyHijacking extends AbstractQualityMetric {
   /**
    * Check if the given quad has predicate of URI with given fragment
    * 
-   * @param predicate
-   * @param fragment
-   * @return true if predicate is URI with given fragment
    */
   protected boolean isDefinedClassOrProperty(Quad quad, String fragment) {
     try {
       if (quad.getPredicate().isURI()) {
         URI tmpURI = new URI(quad.getPredicate().getURI());
         return (tmpURI.getFragment() != null &&
-            tmpURI.getFragment().toLowerCase().equals(fragment)) ? true : false;
+          tmpURI.getFragment().toLowerCase().equals(fragment)) ? true : false;
       }
     } catch (MalformedURIException e) {
       LOG.error(e.getMessage());
@@ -109,4 +99,10 @@ public class OntologyHijacking extends AbstractQualityMetric {
     }
     return (double) hijacked / (double) propertiesAndClasses;
   }
+
+  @Override
+  public void before(Object... args) {};
+
+  @Override
+  public void after() {};
 }

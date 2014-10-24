@@ -29,186 +29,104 @@ import com.hp.hpl.jena.sparql.core.Quad;
  * @date 12th May 2014
  */
 public class HomogeneousDatatypes extends AbstractQualityMetric {
-        /**
-         * Description of quality report 
-         */
-        protected Resource qualityReport  = QPROB.HomogeneousDatatypesProblem;
-        /**
-         * logger static object
-         */
-        static Logger logger = Logger.getLogger(HomogeneousDatatypes.class);
-        /**
-         * threshold value to declare whether a property is heterogeneous or not.
-         */
-        protected static Long THRESHOLD = new Long(99);
-        /**
-         * number of properties with heterogeneous data type
-         */
-        protected long propertiesWithHeterogeneousDatatype = 0;
-        /**
-         * total number of properties
-         */
-        protected long totalProperties = 0;
-        /**
-         * list of problematic nodes
-         */
-        protected List<Node> problemList = new ArrayList<Node>();
-        /**
-         * data structure store node w.r.t. it rdf data type and also maintain it
-         * the total number of hits (counts) for the given property in a collection
-         * of quads.
-         */
-        protected Hashtable<Node, Hashtable<RDFDatatype, Long>> propertiesDatatypeMatrix = new Hashtable<Node, Hashtable<RDFDatatype, Long>>();
-        /**
-         * This method extracts properties from a given quad and stores it into the
-         * hash table with required information e.g. rdf type, count.
-         */
-        @Override
-        public void compute(Quad quad) {
-            logger.trace("compute() --Started--");
-            try {
+  private static final Logger LOG = Logger.getLogger(HomogeneousDatatypes.class);
+  private static final Resource qualityReport  = QPROB.HomogeneousDatatypesProblem;
 
-                Node predicate = quad.getPredicate(); // retrieve predicate
-                Node object = quad.getObject(); // retrieve object
-                if (object.isLiteral()) {
+  private static final int THRESHOLD = 99;
+  private long propertiesWithHeterogeneousDatatype = 0;
+  private long properties = 0;
 
-                    this.totalProperties++;
+  private List<Node> problems= new ArrayList<Node>();
+  private Hashtable<Node, Hashtable<RDFDatatype, Long>> propertiesDatatypeMatrix =
+    new Hashtable<Node, Hashtable<RDFDatatype, Long>>();
+  /**
+   * This method extracts properties from a given quad and stores it into the
+   * hash table with required information e.g. rdf type, count.
+   */
+  @Override
+  public void compute(Quad quad) {
+    Node predicate = quad.getPredicate();
+    Node object = quad.getObject();
+    if (object.isLiteral()) {
+      properties++;
+      RDFDatatype rdfdataType = object.getLiteralDatatype();
+      if (rdfdataType != null) {
+        if (propertiesDatatypeMatrix.containsKey(predicate)) {
+          Hashtable<RDFDatatype, Long> tmpObjectTypes = propertiesDatatypeMatrix.get(predicate);
+          if (tmpObjectTypes != null) {
 
-                    // retrieves rdfDataType from literal
-                    RDFDatatype rdfdataType = object.getLiteralDatatype();
-
-                    // check if rdf data type is a valid data type
-                    if (rdfdataType != null) {
-
-                        if (propertiesDatatypeMatrix.containsKey(predicate)) { // matrix
-                                                                                // contains
-                                                                                // given
-                                                                                // object
-                            Hashtable<RDFDatatype, Long> tmpObjectTypes = propertiesDatatypeMatrix
-                                    .get(predicate);
-                            if (tmpObjectTypes != null) { // given datatype
-                                                            // association already
-                                                            // exists
-
-                                Long tmpCount = new Long(0); // datatype count
-                                                                // initial value
-                                                                // ZERO
-
-                                if (tmpObjectTypes.containsKey(rdfdataType)) {
-                                    tmpCount = tmpObjectTypes.get(rdfdataType);
-                                    tmpCount++;
-
-                                    tmpObjectTypes.remove(rdfdataType);
-                                    tmpObjectTypes.put(rdfdataType, tmpCount);
-                                } else {
-                                    tmpCount++;
-                                    tmpObjectTypes.put(rdfdataType, tmpCount);
-                                }
-                                propertiesDatatypeMatrix.remove(predicate);
-                                propertiesDatatypeMatrix.put(predicate,
-                                        tmpObjectTypes);
-                            } else { // given datatype association does NOT exists
-
-                                tmpObjectTypes = new Hashtable<RDFDatatype, Long>();
-                                tmpObjectTypes.put(rdfdataType, new Long(1));
-
-                                propertiesDatatypeMatrix.remove(predicate);
-                                propertiesDatatypeMatrix.put(predicate,
-                                        tmpObjectTypes);
-                            }
-                        } else {// matrix does not contain given object
-                            Hashtable<RDFDatatype, Long> tmpObjectTypes = new Hashtable<RDFDatatype, Long>();
-                            tmpObjectTypes.put(rdfdataType, new Long(1));
-                            propertiesDatatypeMatrix.put(predicate, tmpObjectTypes);
-                        }
-                    }
-                }
-            } catch (Exception exception) {
-                logger.debug(exception);
-                logger.error(exception.getMessage());
-            }
-            logger.trace("compute() --Ended--");
-        }
-        /**
-         * This method identifies whether a given property is heterogeneous or not.
-         * 
-         * @param givenTable
-         *            - property (its rdf type and its count)
-         * @param threshold
-         *            - to declare a property as heterogeneous
-         * @return true - if heterogeneous
-         */
-        protected boolean isHeterogeneousDataType(
-                Hashtable<RDFDatatype, Long> givenTable, Long threshold) {
-
-            Long tmpMax = new Long(0); // for count of Max dataType
-            Long tmpTotal = new Long(0); // for count of total
-
-            Enumeration<RDFDatatype> enumKey = givenTable.keys();
-
-            while (enumKey.hasMoreElements()) {
-                RDFDatatype key = enumKey.nextElement();
-                Long value = givenTable.get(key);
-                tmpMax = (value > tmpMax) ? value : tmpMax; // get Max Datatype
-                tmpTotal += value; // count total
-            }
-
-            return (((tmpMax / tmpTotal) * 100) >= threshold) ? true : false;
-        }
-
-        /**
-         * This method counts number of heterogeneous data type properties
-         * 
-         * @return
-         */
-        protected long countHeterogeneousDataTypePropeties() {
             long tmpCount = 0;
-            Enumeration<Node> enumKey = propertiesDatatypeMatrix.keys();
-            while (enumKey.hasMoreElements()) {
-                Node key = enumKey.nextElement();
-                if (!isHeterogeneousDataType(propertiesDatatypeMatrix.get(key),
-                        HomogeneousDatatypes.THRESHOLD)) {
-                    tmpCount++;
-                    this.problemList.add(key);
-                }
+
+            if (tmpObjectTypes.containsKey(rdfdataType)) {
+              tmpCount = tmpObjectTypes.get(rdfdataType) + 1;
+
+              tmpObjectTypes.remove(rdfdataType);
+              tmpObjectTypes.put(rdfdataType, tmpCount);
+            } else {
+              tmpObjectTypes.put(rdfdataType, ++tmpCount);
             }
-            return tmpCount;
+            propertiesDatatypeMatrix.remove(predicate);
+            propertiesDatatypeMatrix.put(predicate, tmpObjectTypes);
+          } else {
+
+            tmpObjectTypes = new Hashtable<RDFDatatype, Long>();
+            tmpObjectTypes.put(rdfdataType, 1L);
+
+            propertiesDatatypeMatrix.remove(predicate);
+            propertiesDatatypeMatrix.put(predicate, tmpObjectTypes);
+          }
+        } else {
+          Hashtable<RDFDatatype, Long> tmpObjectTypes = new Hashtable<RDFDatatype, Long>();
+          tmpObjectTypes.put(rdfdataType, new Long(1));
+          propertiesDatatypeMatrix.put(predicate, tmpObjectTypes);
         }
+      }
+    }
+  }
+  /**
+   * This method identifies whether a given property is heterogeneous or not.
+   * @param givenTable property (its rdf type and its count)
+   * @param threshold to declare a property as heterogeneous
+   * @return true - if heterogeneous
+   */
+  private boolean isHeterogeneousDataType(Hashtable<RDFDatatype, Long> givenTable, int threshold) {
+    long max = 0;
+    long total = 0;
+    Enumeration<RDFDatatype> enumKey = givenTable.keys();
 
-        /**
-         * Returns metric value for the object of this class
-         * 
-         * @return (number of heterogeneous properties ) / (total number of
-         *         properties)
-         */
-        @Override
-        public double metricValue() {
+    while (enumKey.hasMoreElements()) {
+      RDFDatatype key = enumKey.nextElement();
+      long value = givenTable.get(key);
+      max = (value > max) ? value : max;
+      total += value;
+    }
+    return (((max / total) * 100) >= threshold) ? true : false;
+  }
 
-            logger.trace("metricValue() --Started--");
+  /**
+   * This method counts number of heterogeneous data type properties
+   * @return
+   */
+  protected long countHeterogeneousDataTypePropeties() {
+    long count = 0;
+    Enumeration<Node> enumKey = propertiesDatatypeMatrix.keys();
+    while (enumKey.hasMoreElements()) {
+      Node key = enumKey.nextElement();
+      if (!isHeterogeneousDataType(propertiesDatatypeMatrix.get(key), THRESHOLD)) {
+        count++;
+        problems.add(key);
+      }
+    }
+    return count;
+  }
 
-            this.propertiesWithHeterogeneousDatatype = countHeterogeneousDataTypePropeties();
-
-            // return ZERO if total number of properties are ZERO [WARN]
-            if (totalProperties <= 0) {
-                logger.warn("Total number of properties in given document is found to be zero.");
-                return 0.0;
-            }
-
-            double metricValue = (double) propertiesWithHeterogeneousDatatype
-                    / totalProperties;
-
-            logger.trace("metricValue() --Ended--");
-
-            return metricValue;
-        }
-        
-        /**
-         * Returns list of problematic quads
-         * 
-         * @return list of problematic quads
-         */
-        public List<Node> getQualityProblemsNodes() {
-            return this.problemList;
-        }
-
+  @Override
+  public double metricValue() {
+    propertiesWithHeterogeneousDatatype = countHeterogeneousDataTypePropeties();
+    if (properties == 0) {
+      LOG.warn("Total number of properties is zero.");
+      return 0.0;
+    }
+    return (double) propertiesWithHeterogeneousDatatype / (double) properties;
+  }
 }
