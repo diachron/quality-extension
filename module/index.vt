@@ -1,11 +1,27 @@
-#*
- * Access this page at the URL /extension/sample/
- *#
 <html>
-  <head>
-    <title>Quality extension</title>
-  </head>
-  <body>
-    <h1> About </h1>
-  </body>
+    <head>
+        <title>Cleaning service</title>
+    </head>
+    <body>
+        <div id="header">
+            <h1>Cleaning service</h1>
+        </div>
+        <div id="center">
+            <form action="demo_form.asp" method="get">
+                Dataset: <input type="text" name="dataset"><br>
+                <ul>
+                    <li>
+                        <input type="checkbox" name="metrics" value="Accuracy" id="accuracy">Accuracy
+                            <ul>
+                                <li><input type="checkbox" name="accuracySubMet" value="IncompatibleDatatypeRange"
+                                 id="accuracySubMet1">Incompatible Datatype Range</li>
+                                <li><input type="checkbox" name="accuracySubMet" value="MalformedDatatypeLiterals"
+                                 id="accuracySubMet2">Malformed Datatype Literals</li>
+                            </ul>
+                        </li>
+                    </ul>
+                <input type="submit" value="Submit">
+            </form>
+        </div>
+    </body>
 </html>

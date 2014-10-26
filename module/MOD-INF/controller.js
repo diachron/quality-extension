@@ -33,6 +33,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 var html = "text/html";
 var encoding = "UTF-8";
+var ClientSideResourceManager = Packages.com.google.refine.ClientSideResourceManager;
 
 importPackage(com.google.refine.quality.commands);
 /*
@@ -51,7 +52,6 @@ function init() {
   RefineServlet.registerCommand(module, "identifyQualityProblems", new IdentifyQualityProblemsCommand());
   RefineServlet.registerCommand(module, "transformData", new TransformDataCommand());
 
-  var ClientSideResourceManager = Packages.com.google.refine.ClientSideResourceManager;
   // Script files to inject into /project page
   ClientSideResourceManager.addPaths(
       "project/scripts",
@@ -81,7 +81,11 @@ function init() {
  */
 function process(path, request, response) {
   // Analyze path and handle this request yourself.
+
   if (path == "/" || path == "") {
+    var context = {};
+
+    send(request, response, "index.vt", context);
   }
 }
 
