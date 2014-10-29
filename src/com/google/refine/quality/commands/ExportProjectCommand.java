@@ -20,7 +20,6 @@ import org.json.JSONException;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.sparql.core.Quad;
-
 import com.google.refine.commands.Command;
 import com.google.refine.model.Project;
 import com.google.refine.quality.utilities.Utilities;
@@ -90,6 +89,7 @@ public class ExportProjectCommand extends Command {
 
   @SuppressWarnings("unchecked")
   private static Map<String, String> readPrefixesMapFromMetadata(String serializedMap) {
+    @SuppressWarnings("resource")
     XMLDecoder xmlDecoder = new XMLDecoder(new ByteArrayInputStream(serializedMap.getBytes()));
     return (Map<String, String>) xmlDecoder.readObject();
   }

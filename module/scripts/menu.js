@@ -19,5 +19,11 @@ ExtensionBar.addExtensionMenu({
     click : function() {
       new DownloadDialog().show();
     }
+  }, {
+    "id" : "diachron/history",
+    label : "Cleaning report",
+    click : function() {
+      getHistory();
+    }
   } ]
 });

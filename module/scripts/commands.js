@@ -45,3 +45,16 @@ function exportProject(serializations) {
     self._dismissBusy();
   });
 }
+
+function getHistory() {
+  var self = this;
+  self._dismissBusy = DialogSystem.showBusy('Getting modificateions report...');
+  $.get("command/quality-extension/getHistory/", {
+    "engine" : JSON.stringify(ui.browsingEngine.getJSON()),
+    "project" : theProject.id,
+  }, function(data) {
+    window.location.reload(true);
+    console.log("success");
+    self._dismissBusy();
+  });
+}
