@@ -1,47 +1,17 @@
-/*
-
-Copyright 2010, Google Inc.
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
- * Redistributions of source code must retain the above copyright
-notice, this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above
-copyright notice, this list of conditions and the following disclaimer
-in the documentation and/or other materials provided with the
-distribution.
- * Neither the name of Google Inc. nor the names of its
-contributors may be used to endorse or promote products derived from
-this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,           
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY           
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
- */
+importPackage(com.google.refine.quality.commands);
+importPackage(com.google.refine.quality.webservices);
 
 var html = "text/html";
 var encoding = "UTF-8";
 var ClientSideResourceManager = Packages.com.google.refine.ClientSideResourceManager;
+var QualityReport = new com.google.refine.quality.webservices.QualityReport;
+var MetricProcessing = new com.google.refine.quality.webservices.MetricProcessing;
 
-importPackage(com.google.refine.quality.commands);
 /*
  * Function invoked to initialize the extension.
  */
 function init() {
   // Packages.java.lang.System.err.println("Initializing sample extension");
-  // Packages.java.lang.System.err.println(module.getMountPoint());
   
   var RefineServlet = Packages.com.google.refine.RefineServlet;
   
@@ -51,6 +21,7 @@ function init() {
   RefineServlet.registerCommand(module, "exportProject", new ExportProjectCommand());
   RefineServlet.registerCommand(module, "identifyQualityProblems", new IdentifyQualityProblemsCommand());
   RefineServlet.registerCommand(module, "transformData", new TransformDataCommand());
+  RefineServlet.registerCommand(module, "getHistory", new HistoryCommand());
 
   // Script files to inject into /project page
   ClientSideResourceManager.addPaths(
@@ -80,13 +51,29 @@ function init() {
  * Function invoked to handle each request in a custom way.
  */
 function process(path, request, response) {
-  // Analyze path and handle this request yourself.
+  var loggerFactory = Packages.org.slf4j.LoggerFactory;
+  var logger = loggerFactory.getLogger("quality-extension");
+  logger.info(path);
 
-  if (path == "/" || path == "") {
-    var context = {};
-
-    send(request, response, "index.vt", context);
+   if (path === 'clean') {
+    var html = MetricProcessing.testMetrics(request, response);
+    logger.info(html);
+    // TODO
+    // handle json or html, what function returns
+     butterfly.sendString(request, response, html ,"UTF-8", "text/html");
+    // in case of error butterfly.sendError(request, response, 404, "unknownservice");
+  } else if (path === 'cleaning_suggestions') {
+    var json = QualityReport.testMetrics(request, response);
+    logger.info(json);
+    // TODO
+    // handle json or html, what function returns
+     butterfly.sendString(request, response, json ,"UTF-8", "text/javascript");
+    // in case of error butterfly.sendError(request, response, 404, "unknownservice");
   }
+
+   if (path == "/" || path == "") {
+     send(request, response, "index.vt", {});
+   };
 }
 
 function send(request, response, template, context) {

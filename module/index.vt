@@ -7,7 +7,7 @@
             <h1>Cleaning service</h1>
         </div>
         <div id="center">
-            <form action="demo_form.asp" method="get">
+            <form action="clean" method="get">
                 Dataset: <input type="text" name="dataset"><br>
                 <ul>
                     <li>

@@ -11,7 +11,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.hp.hpl.jena.vocabulary.RDFS;
-
 import com.google.refine.quality.exceptions.MetricException;
 import com.google.refine.quality.problems.QualityProblem;
 import com.google.refine.quality.utilities.Constants;

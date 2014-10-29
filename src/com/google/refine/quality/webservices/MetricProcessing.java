@@ -3,11 +3,13 @@ package com.google.refine.quality.webservices;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 
 import com.hp.hpl.jena.sparql.core.Quad;
-
 import com.google.refine.quality.exceptions.MetricException;
 import com.google.refine.quality.metrics.AbstractQualityMetric;
 import com.google.refine.quality.problems.QualityProblem;
@@ -49,5 +51,11 @@ public class MetricProcessing {
       probelms.addAll(metric.getQualityProblems());
     }
     return probelms;
+  }
+
+  // an example function invoked in controller.js
+  public static String testMetrics(HttpServletRequest request, HttpServletResponse response) {
+//    return request.getParameter(name); metrics for instance..
+    return "<html></html>";
   }
 }
