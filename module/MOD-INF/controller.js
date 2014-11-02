@@ -6,24 +6,17 @@ var encoding = "UTF-8";
 var ClientSideResourceManager = Packages.com.google.refine.ClientSideResourceManager;
 var QualityReport = new com.google.refine.quality.webservices.QualityReport;
 var MetricProcessing = new com.google.refine.quality.webservices.MetricProcessing;
+var create = new com.google.refine.quality.commands.CreateProjectCommand;
 
-/*
- * Function invoked to initialize the extension.
- */
 function init() {
-  // Packages.java.lang.System.err.println("Initializing sample extension");
   
   var RefineServlet = Packages.com.google.refine.RefineServlet;
   
-  /*
-   * Commands
-   */
   RefineServlet.registerCommand(module, "exportProject", new ExportProjectCommand());
   RefineServlet.registerCommand(module, "identifyQualityProblems", new IdentifyQualityProblemsCommand());
   RefineServlet.registerCommand(module, "transformData", new TransformDataCommand());
   RefineServlet.registerCommand(module, "getHistory", new HistoryCommand());
 
-  // Script files to inject into /project page
   ClientSideResourceManager.addPaths(
       "project/scripts",
       module,
@@ -36,7 +29,6 @@ function init() {
        ]
   );
 
-  // Style files to inject into /project page
   ClientSideResourceManager.addPaths(
     "project/styles",
     module,
@@ -55,11 +47,12 @@ function process(path, request, response) {
   var logger = loggerFactory.getLogger("quality-extension");
   logger.info(path);
 
-   if (path === 'clean') {
-    var html = MetricProcessing.testMetrics(request, response);
-    logger.info(html);
-    // TODO
-    // handle json or html, what function returns
+  if (path === 'open_in_refine') {
+    create.createProjectInOpenRefine(request, response);
+  } else if (path === 'clean') {
+    send(request, response, "webservice.vt", {});
+//    var html = MetricProcessing.testMetrics(request, response);
+//    logger.info(html);
      butterfly.sendString(request, response, html ,"UTF-8", "text/html");
     // in case of error butterfly.sendError(request, response, 404, "unknownservice");
   } else if (path === 'cleaning_suggestions') {

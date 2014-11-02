@@ -1,0 +1,26 @@
+<html>
+    <head>
+        <title>Cleaning service</title>
+    </head>
+    <body>
+        <div id="header">
+            <h1>Cleaning service</h1>
+        </div>
+        <div id="center">
+            <form action="cleaning_suggestions" method="POST" enctype="multipart/form-data">
+                <ul>
+                    <li>
+                        <input type="checkbox" name="metrics" value="Accuracy" id="accuracy">Accuracy
+                            <ul>
+                                <li><input type="checkbox" name="accuracySubMet" value="IncompatibleDatatypeRange"
+                                 id="accuracySubMet1">Incompatible Datatype Range</li>
+                                <li><input type="checkbox" name="accuracySubMet" value="MalformedDatatypeLiterals"
+                                 id="accuracySubMet2">Malformed Datatype Literals</li>
+                            </ul>
+                        </li>
+                    </ul>
+                <input type="submit" value="do smth">
+            </form>
+        </div>
+    </body>
+</html>
