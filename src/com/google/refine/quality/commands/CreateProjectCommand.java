@@ -42,6 +42,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,12 +53,11 @@ import com.google.refine.commands.HttpUtilities;
 import com.google.refine.importing.ImportingJob;
 import com.google.refine.importing.ImportingManager;
 import com.google.refine.importing.ImportingUtilities;
-import com.google.refine.util.JSONUtilities;
 import com.google.refine.util.ParsingUtilities;
 
 public class CreateProjectCommand extends Command {
 
-  final static Logger logger = LoggerFactory.getLogger("create-project_command");
+  private final static Logger LOG = LoggerFactory.getLogger(CreateProjectCommand.class);
 
   public void createProjectInOpenRefine(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
@@ -68,28 +68,16 @@ public class CreateProjectCommand extends Command {
       ImportingJob job = ImportingManager.createJob();
       JSONObject config = job.getOrCreateDefaultConfig();
       ImportingUtilities.loadDataAndPrepareJob(request, response, parameters, job, config);
-
-      // default TODO move to front end
+     
+      // TODO
+      String projectName = "project";
       String format = "text/line-based";
-      String projectName = "project-name1";
-      JSONObject optionObj = new JSONObject();
-      optionObj.append("limit", -1);
-      optionObj.append("includeFileSources", false);
-      optionObj.append("storeBlankRows", true);
-      optionObj.append("encoding", "");
-      optionObj.append("ignoreLines", -1);
-      optionObj.append("linesPerRow", 1);
-      optionObj.append("storeBlankCellsAsNulls", true);
-      optionObj.append("skipDataLines", -1);
-      adjustLegacyOptions(format, parameters, optionObj);
-
-      if (projectName != null && !projectName.isEmpty()) {
-        JSONUtilities.safePut(optionObj, "projectName", projectName);
-      }
 
       List<Exception> exceptions = new LinkedList<Exception>();
 
-      long projectId = ImportingUtilities.createProject(job, format, optionObj, exceptions, true);
+      long projectId = ImportingUtilities.createProject(job, format, getDefaultOptions(projectName),
+        exceptions, true);
+      LOG.info(String.format("Project has been created. Id: %s", projectId));
 
       HttpUtilities.redirect(response, "/project?project=" + projectId);
     } catch (Exception e) {
@@ -99,41 +87,17 @@ public class CreateProjectCommand extends Command {
     }
   }
 
-  static private void adjustLegacyOptions(String format, Properties parameters, JSONObject optionObj) {
-    if (",".equals(parameters.getProperty("separator"))) {
-      JSONUtilities.safePut(optionObj, "separator", ",");
-    } else if ("\\t".equals(parameters.getProperty("separator"))) {
-      JSONUtilities.safePut(optionObj, "separator", "\t");
-    }
-
-    adjustLegacyIntegerOption(format, parameters, optionObj, "ignore", "ignoreLines");
-    adjustLegacyIntegerOption(format, parameters, optionObj, "header-lines", "headerLines");
-    adjustLegacyIntegerOption(format, parameters, optionObj, "skip", "skipDataLines");
-    adjustLegacyIntegerOption(format, parameters, optionObj, "limit", "limit");
-
-    adjustLegacyBooleanOption(format, parameters, optionObj, "guess-value-type",
-        "guessCellValueTypes", false);
-    adjustLegacyBooleanOption(format, parameters, optionObj, "ignore-quotes", "processQuotes", true);
-  }
-
-  static private void adjustLegacyIntegerOption(String format, Properties parameters,
-      JSONObject optionObj, String legacyName, String newName) {
-
-    String s = parameters.getProperty(legacyName);
-    if (s != null && !s.isEmpty()) {
-      try {
-        JSONUtilities.safePut(optionObj, newName, Integer.parseInt(s));
-      } catch (NumberFormatException e) {
-      }
-    }
-  }
-
-  static private void adjustLegacyBooleanOption(String format, Properties parameters,
-      JSONObject optionObj, String legacyName, String newName, boolean invert) {
-
-    String s = parameters.getProperty(legacyName);
-    if (s != null && !s.isEmpty()) {
-      JSONUtilities.safePut(optionObj, newName, Boolean.parseBoolean(s));
-    }
+  private JSONObject getDefaultOptions(String projectName) throws JSONException {
+    JSONObject optionObj = new JSONObject();
+    optionObj.append("limit", -1);
+    optionObj.append("includeFileSources", false);
+    optionObj.append("storeBlankRows", true);
+    optionObj.append("encoding", "");
+    optionObj.append("ignoreLines", -1);
+    optionObj.append("linesPerRow", 1);
+    optionObj.append("storeBlankCellsAsNulls", true);
+    optionObj.append("skipDataLines", -1);
+    optionObj.append("projectName", projectName);
+    return optionObj;
   }
 }

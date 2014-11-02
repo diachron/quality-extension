@@ -1,19 +1,31 @@
-<html>
-    <head>
-        <title>Cleaning service</title>
-    </head>
-    <body>
-        <div id="header">
-            <h1>Cleaning service</h1>
-        </div>
-        <div id="center">
-            <form action="open_in_refine" method="POST" enctype="multipart/form-data">
-                Dataset: <input type="text" name="download"><br>
-                <input type="submit" value="To OpenRefine">
-            </form>
-        </div>
-      <a href="clean">
-   <input type="button" value="To web service" />
-</a>
-    </body>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Diachron</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap-theme.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  </head>
+  <body>
+  <div class="container">
+    <div class="page-header">
+      <h1>Diachron</h1>
+    </div>
+
+    <div>
+      <form action="open_in_refine" method="POST" enctype="multipart/form-data" id="uriHtml5Form" class="form-horizontal">
+        <label for="url_input">URL dataset</label>
+        <input id="url_input" class="form-control" type="url" name="download"><br>
+
+        <input type="submit" class="btn btn-primary btn-lg" value="To OpenRefine" /> 
+        <a href="clean">
+          <input type="button" class="btn btn-primary btn-lg" value="To Web Service" />
+        </a>
+      </form>
+    </div>
+  </div>
+  </body>
 </html>
