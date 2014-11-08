@@ -1,6 +1,7 @@
 package com.google.refine.quality.commands;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -11,7 +12,6 @@ import org.apache.log4j.Logger;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.sparql.core.Quad;
-
 import com.google.refine.commands.Command;
 import com.google.refine.model.Project;
 import com.google.refine.quality.utilities.JenaModelLoader;
@@ -29,6 +29,7 @@ public class TransformDataCommand extends Command {
 
     if (project.getMetadata().getCustomMetadata("Transformed") == null) {
       addTripleColumns(project, request, response);
+      project.getMetadata().setCustomMetadata("metrics", new ArrayList<String>());
 
       Model model = JenaModelLoader.getModel(Utilities.projectToInputStream(project));
       writePrefixesToMetadata(model, project);
@@ -43,6 +44,7 @@ public class TransformDataCommand extends Command {
         }
       }
       RefineCommands.removeColumn(project, request, response, "Column 1");
+      project.getMetadata().setCustomMetadata("triples", project.rows.size());
       project.getMetadata().setCustomMetadata("Transformed", true);
     }
   }

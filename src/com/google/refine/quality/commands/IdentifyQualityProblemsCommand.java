@@ -1,6 +1,7 @@
 package com.google.refine.quality.commands;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -13,7 +14,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import com.hp.hpl.jena.sparql.core.Quad;
-
 import com.google.refine.commands.Command;
 import com.google.refine.model.Project;
 import com.google.refine.quality.exceptions.QualityExtensionException;
@@ -50,16 +50,19 @@ public class IdentifyQualityProblemsCommand extends Command {
         for (int i = 0; i < metrics.length(); i++) {
           String metricName = (String) metrics.get(i);
 
-          if (project.getMetadata().getCustomMetadata(metricName) == null) {
-            project.getMetadata().setCustomMetadata(metricName, new Boolean(true));
+          @SuppressWarnings("unchecked")
+          ArrayList<String> metricsList = (ArrayList<String>) project.getMetadata().getCustomMetadata("metrics");
+          if (!metricsList.contains(metricName)) {
+            metricsList.add(metricName);
+            project.getMetadata().setCustomMetadata("metrics", metricsList);
             Class<?> cls = Class.forName(String.format("%s.%s", Constants.METRICS_PACKAGE, metricName));
             AbstractQualityMetric metric = (AbstractQualityMetric) cls.newInstance();
 
             metric.before();
             metric.compute(quads);
             metric.after();
-
             postProblems(metric.getQualityProblems());
+            project.getMetadata().setCustomMetadata(metricName, metric.getQualityProblems().size());
           }
         }
 

@@ -38,6 +38,7 @@ public class ExportProjectCommand extends Command {
         JSONArray serializations = new JSONArray(request.getParameter("serializations"));
         for (int i = 0; i < serializations.length(); i++) {
           Model model = createModel(quads, project);
+          model.write(System.out, "Turtle");
           File file = writeModelToFile(model, (String) serializations.get(i));
           respondWithFile(response, file);
         }
@@ -66,8 +67,18 @@ public class ExportProjectCommand extends Command {
   }
 
   private void respondWithFile(HttpServletResponse response, File file) throws IOException {
+    
+//    if (mimetype == null) {
+//      mimetype = "application/octet-stream";
+//  }
+//  response.setContentType(mimetype);
+//  response.setContentLength((int)file.length());
+//  String fileName = (new File(filePath)).getName();
+//  
+//  // sets HTTP header
+//  response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
 //    response.setContentType("application/octet-stream");
-    response.setHeader("Content-disposition", "attachment; filename=" + file.getName());
+    response.setHeader("Content-disposition", "attachment; filename=\"" + file.getName()+ "\"");
 
     OutputStream out = response.getOutputStream();
     FileInputStream in = new FileInputStream(file);
@@ -89,7 +100,6 @@ public class ExportProjectCommand extends Command {
 
   @SuppressWarnings("unchecked")
   private static Map<String, String> readPrefixesMapFromMetadata(String serializedMap) {
-    @SuppressWarnings("resource")
     XMLDecoder xmlDecoder = new XMLDecoder(new ByteArrayInputStream(serializedMap.getBytes()));
     return (Map<String, String>) xmlDecoder.readObject();
   }
