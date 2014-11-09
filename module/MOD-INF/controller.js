@@ -24,7 +24,8 @@ function init() {
        "scripts/commands.js",
        "scripts/collapsible.js",
        "scripts/metrics-dialog.js",
-       "scripts/download.js",
+       "scripts/download-selection.js",
+       "scripts/download-dialog.js",
        "scripts/menu.js",
        ]
   );

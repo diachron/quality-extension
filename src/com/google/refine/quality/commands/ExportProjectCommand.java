@@ -2,13 +2,13 @@ package com.google.refine.quality.commands;
 
 import java.beans.XMLDecoder;
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -16,32 +16,47 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONWriter;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.sparql.core.Quad;
+import com.google.refine.Jsonizable;
 import com.google.refine.commands.Command;
 import com.google.refine.model.Project;
 import com.google.refine.quality.utilities.Utilities;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.sparql.core.Quad;
 
 public class ExportProjectCommand extends Command {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
-    
+
     Project project = getProject(request);
     if (project.getMetadata().getCustomMetadata("Transformed") != null) {
 
+      final Map<String, String> table = new HashMap<String, String>();
       List<Quad> quads = Utilities.getQuadsFromProject(project);
       try {
         JSONArray serializations = new JSONArray(request.getParameter("serializations"));
         for (int i = 0; i < serializations.length(); i++) {
           Model model = createModel(quads, project);
-          model.write(System.out, "Turtle");
-          File file = writeModelToFile(model, (String) serializations.get(i));
-          respondWithFile(response, file);
+          String serial = (String) serializations.get(i);
+
+          Writer writer = new StringWriter();
+          model.write(writer, serial);
+          table.put(serial, writer.toString());
         }
+
+        respondJSON(response, new Jsonizable() {
+          @Override
+          public void write(JSONWriter writer, Properties options) throws JSONException {
+            writer.object();
+            writer.key("data"); writer.value(table);
+            writer.endObject();
+          }
+        });
+
       } catch (JSONException e) {
         e.printStackTrace();
       }
@@ -61,41 +76,9 @@ public class ExportProjectCommand extends Command {
 
     for (Quad quad : quads) {
       model.add(Utilities.createStatement(quad.getSubject().toString(), quad.getPredicate()
-        .toString(), quad.getObject().toString()));
+          .toString(), quad.getObject().toString()));
     }
     return model;
-  }
-
-  private void respondWithFile(HttpServletResponse response, File file) throws IOException {
-    
-//    if (mimetype == null) {
-//      mimetype = "application/octet-stream";
-//  }
-//  response.setContentType(mimetype);
-//  response.setContentLength((int)file.length());
-//  String fileName = (new File(filePath)).getName();
-//  
-//  // sets HTTP header
-//  response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
-//    response.setContentType("application/octet-stream");
-    response.setHeader("Content-disposition", "attachment; filename=\"" + file.getName()+ "\"");
-
-    OutputStream out = response.getOutputStream();
-    FileInputStream in = new FileInputStream(file);
-    byte[] buffer = new byte[4096];
-    int length;
-    while ((length = in.read(buffer)) > 0) {
-      out.write(buffer, 0, length);
-    }
-    in.close();
-    out.flush();
-  }
-
-  private File writeModelToFile(Model model, String serialization) throws IOException {
-    File file = File.createTempFile("file", ".ttl");
-    OutputStream fileOutputStream = new FileOutputStream(file);
-    model.write(fileOutputStream, serialization);
-    return file;
   }
 
   @SuppressWarnings("unchecked")

@@ -40,8 +40,8 @@ function exportProject(serializations) {
     "project" : theProject.id,
     "serializations" : JSON.stringify(serializations)
   }, function(data) {
-    $('<div style="height:100px;width:200px;font-size:13px;"></div>').html(data).dialog();
-    console.log("success");
+
+   new Download(data).show();
     self._dismissBusy();
   });
 }

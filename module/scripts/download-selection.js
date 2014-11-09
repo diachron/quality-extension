@@ -1,15 +1,14 @@
 function DownloadDialog() {
   var self = this;
-  // value goes to html 
+  // keys goes to html 
   this.serializations = {
-           "Turtle": "Turtle",
-           "JSON-LD": "JSON-LD",
-           "N-TRIPLES": "N-TRIPLES",
-           "RDF/XML": "RDF/XML",
-           "N3": "N3",
-           "JSON-LD": "JSON-LD",
-           "RDF/XML-ABBREV": "RDF/XML-ABBREV",
-           "RDF/JSON": "RDF/JSON",
+           "Turtle": "ttl",
+           "RDF/XML": "rdf",
+           "N-TRIPLES": "ntriple",
+           "N3": "n3",
+//           "RDF/XML-ABBREV": "",
+//           "JSON-LD": "JSON-LD",
+//           "RDF/JSON": "RDF/JSON",
    };
 }
 
@@ -23,8 +22,7 @@ DownloadDialog.prototype = {
     self.close = this._elmts.close;
 
     for (var ser in this.serializations) {
-      var value = this.serializations[ser];
-      var item = $('<li><input type="checkbox" name="'+ser +'"/>' + value + '</li>');
+      var item = $('<li><input type="checkbox" name="'+ser +'"/>' + ser + '</li>');
       self.main_ul.append(item);
     }
 
