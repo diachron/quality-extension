@@ -6,7 +6,6 @@ function Stat(data) {
 Stat.prototype = {
 
   init : function() {
-
     this.dialogElement = $(DOM.loadHTML("quality-extension", "scripts/dialogs/stat.html"));
     this._elmts = DOM.bind(this.dialogElement);
     self.dialog = this.dialogElement;

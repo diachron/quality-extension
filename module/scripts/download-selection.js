@@ -22,7 +22,7 @@ DownloadDialog.prototype = {
     self.close = this._elmts.close;
 
     for (var ser in this.serializations) {
-      var item = $('<li><input type="checkbox" name="'+ser +'"/>' + ser + '</li>');
+      var item = $('<li><input type="checkbox" name="' + ser + '"/>' + ser + '</li>');
       self.main_ul.append(item);
     }
 

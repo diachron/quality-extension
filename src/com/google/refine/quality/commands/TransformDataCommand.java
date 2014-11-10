@@ -44,9 +44,9 @@ public class TransformDataCommand extends Command {
         }
       }
       RefineCommands.removeColumn(project, request, response, "Column 1");
-      project.getMetadata().setCustomMetadata("triples", project.rows.size());
       project.getMetadata().setCustomMetadata("Transformed", true);
       Utilities.removeEmptyRows(project);
+      project.getMetadata().setCustomMetadata("triples", project.rows.size());
     }
   }
 

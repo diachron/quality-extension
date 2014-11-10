@@ -6,7 +6,6 @@ function Download(data) {
 Download.prototype = {
 
   init : function() {
-
     this.dialogElement = $(DOM.loadHTML("quality-extension", "scripts/dialogs/download-dialog.html"));
     this._elmts = DOM.bind(this.dialogElement);
     self.dialog = this.dialogElement;

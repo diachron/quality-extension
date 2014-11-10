@@ -46,7 +46,6 @@ function exportProject(serializations) {
 }
 
 function getHistory() {
-  var self = this;
   $.get("command/quality-extension/getHistory/", {
     "engine" : JSON.stringify(ui.browsingEngine.getJSON()),
     "project" : theProject.id,
