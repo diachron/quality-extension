@@ -165,6 +165,23 @@ public final class Utilities {
   }
 
   /**
+   * Removes empty rows from OpenRefine project.
+   * @param project An OpenRefine project.
+   */
+  public static void removeEmptyRows(Project project) {
+    List<Row> rowsIndexes = new ArrayList<Row>();
+    for (Row row : project.rows) {
+      boolean rowIsBlank = row.isCellBlank(1) && row.isCellBlank(2) && row.isCellBlank(3);
+      if (rowIsBlank || row.isEmpty()) {
+        rowsIndexes.add(row);
+      }
+    }
+    for (Row row : rowsIndexes) {
+      project.rows.remove(row);
+    }
+  }
+
+  /**
    * Prints a quad to stream in readable format.
    * @param quad A RDF quad.
    * @param printStream
