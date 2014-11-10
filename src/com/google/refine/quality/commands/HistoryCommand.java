@@ -1,33 +1,51 @@
 package com.google.refine.quality.commands;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONException;
+import org.json.JSONWriter;
 
+import com.google.refine.Jsonizable;
 import com.google.refine.commands.Command;
 import com.google.refine.model.Project;
 
 public class HistoryCommand extends Command {
+
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
 
     Project project = getProject(request);
-    int number = Integer.parseInt((String) project.getMetadata().getCustomMetadata("triples"));
-    List<String> metrics = (List<String>) project.getMetadata().getCustomMetadata("metrics");
 
-    
+    final int number = (Integer) project.getMetadata().getCustomMetadata("triples");
+    final ArrayList<String> metrics = (ArrayList<String>) project.getMetadata().getCustomMetadata("metrics");
+    final Map<String, Integer> table = new HashMap<String, Integer>();
+
+    for (String metric : metrics) {
+      table.put(metric, (Integer) project.getMetadata().getCustomMetadata(metric));
+    }
+
     try {
-      respondJSON(response, project.history);
+      respondJSON(response, new Jsonizable() {
+        @Override
+        public void write(JSONWriter writer, Properties options) throws JSONException {
+          writer.object();
+          writer.key("problems_count"); writer.value(table);
+          writer.key("metrics"); writer.value(metrics);
+          writer.key("number_triples"); writer.value(number);
+          writer.endObject();
+        }
+      });
     } catch (JSONException e) {
-      respondException(response, e);
+      e.printStackTrace();
     }
   }
 }
-
-

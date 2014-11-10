@@ -26,6 +26,7 @@ function init() {
        "scripts/metrics-dialog.js",
        "scripts/download-selection.js",
        "scripts/download-dialog.js",
+       "scripts/stat.js",
        "scripts/menu.js",
        ]
   );
