@@ -38,9 +38,9 @@ public class HistoryCommand extends Command {
         @Override
         public void write(JSONWriter writer, Properties options) throws JSONException {
           writer.object();
-          writer.key("problems_count"); writer.value(table);
-          writer.key("metrics"); writer.value(metrics);
-          writer.key("number_triples"); writer.value(number);
+          writer.key("problems_count").value(table);
+          writer.key("metrics").value(metrics);
+          writer.key("number_triples").value(number);
           writer.endObject();
         }
       });

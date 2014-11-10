@@ -52,7 +52,7 @@ public class ExportProjectCommand extends Command {
           @Override
           public void write(JSONWriter writer, Properties options) throws JSONException {
             writer.object();
-            writer.key("data"); writer.value(table);
+            writer.key("data").value(table);
             writer.endObject();
           }
         });
