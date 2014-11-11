@@ -26,7 +26,9 @@ public class HistoryCommand extends Command {
     Project project = getProject(request);
 
     final int number = (Integer) project.getMetadata().getCustomMetadata("triples");
-    final ArrayList<String> metrics = (ArrayList<String>) project.getMetadata().getCustomMetadata("metrics");
+    @SuppressWarnings("unchecked")
+    final ArrayList<String> metrics = (ArrayList<String>) project.getMetadata()
+      .getCustomMetadata("metrics");
     final Map<String, Integer> table = new HashMap<String, Integer>();
 
     for (String metric : metrics) {

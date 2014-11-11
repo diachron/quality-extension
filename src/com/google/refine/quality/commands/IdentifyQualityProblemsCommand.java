@@ -14,6 +14,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import com.hp.hpl.jena.sparql.core.Quad;
+import com.google.refine.ProjectManager;
 import com.google.refine.commands.Command;
 import com.google.refine.model.Project;
 import com.google.refine.quality.exceptions.QualityExtensionException;
@@ -46,12 +47,13 @@ public class IdentifyQualityProblemsCommand extends Command {
         }
         quads = Utilities.getQuadsFromProject(project);
 
+        @SuppressWarnings("unchecked")
+        ArrayList<String> metricsList = (ArrayList<String>) project.getMetadata().getCustomMetadata("metrics");
+
         JSONArray metrics = new JSONArray(request.getParameter("metrics"));
         for (int i = 0; i < metrics.length(); i++) {
           String metricName = (String) metrics.get(i);
 
-          @SuppressWarnings("unchecked")
-          ArrayList<String> metricsList = (ArrayList<String>) project.getMetadata().getCustomMetadata("metrics");
           if (!metricsList.contains(metricName)) {
             metricsList.add(metricName);
             project.getMetadata().setCustomMetadata("metrics", metricsList);
