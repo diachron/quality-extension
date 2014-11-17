@@ -27,11 +27,11 @@ public class IncompatibleDatatypeRangeTest {
     cls = Class.forName((String.format("%s.%s", Constants.METRICS_PACKAGE,
         "IncompatibleDatatypeRange")));
     metric = (AbstractQualityMetric) cls.newInstance();
-
-    Model model = ModelFactory.createDefaultModel();
-    // TODO temporal resource source.
-    model.read("https://raw.githubusercontent.com/diachron/quality/master/src/test/resources/"
-        + "testdumps/chembl-rdf-void_2.ttl");
+//
+//    Model model = ModelFactory.createDefaultModel();
+//    // TODO temporal resource source.
+//    model.read("https://raw.githubusercontent.com/diachron/quality/master/src/test/resources/"
+//        + "testdumps/chembl-rdf-void_2.ttl");
     // model.createResource("http://example.org/#obj1")
     // // .addLiteral(FOAF.knows,
     // ResourceFactory.createTypedLiteral("2012-03-11", XSDDatatype.XSDdate))
@@ -44,10 +44,10 @@ public class IncompatibleDatatypeRangeTest {
     // .addLiteral(FOAF.birthday,
     // ResourceFactory.createTypedLiteral("2012-03-10", XSDDatatype.XSDstring));
     //
-    StmtIterator si = model.listStatements();
-    while (si.hasNext()) {
-      quads.add(new Quad(null, si.next().asTriple()));
-    }
+//    StmtIterator si = model.listStatements();
+//    while (si.hasNext()) {
+//      quads.add(new Quad(null, si.next().asTriple()));
+//    }
   }
 
    @Test
@@ -62,7 +62,7 @@ public class IncompatibleDatatypeRangeTest {
     Assert.assertEquals(0.0, metric.metricValue(), 0.0);
   }
 
-  @Test
+//  @Test
   public void metric() throws IllegalAccessException, IllegalArgumentException,
       InvocationTargetException, NoSuchMethodException, SecurityException, InstantiationException {
     metric = (AbstractQualityMetric) cls.newInstance();
