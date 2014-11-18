@@ -5,7 +5,7 @@ ExtensionBar.addExtensionMenu({
     "id" : "diachron/improve",
     label : "Identify Quality Problems",
     click : function() {
-      new AboutDialog().show();
+      new MetricDialog().show();
     }
   }, {
     "id" : "diachron/transform",

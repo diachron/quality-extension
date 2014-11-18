@@ -1,4 +1,4 @@
-function AboutDialog() {
+function MetricDialog() {
   var self = this;
   this.mertics_init = {
       "Working metrics" : [ {
@@ -61,7 +61,7 @@ function AboutDialog() {
   };
 }
 
-AboutDialog.prototype = {
+MetricDialog.prototype = {
 
   init : function() {
 

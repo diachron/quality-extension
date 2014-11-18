@@ -22,11 +22,11 @@ function init() {
       module,
       [
        "scripts/commands.js",
-       "scripts/collapsible.js",
-       "scripts/metrics-dialog.js",
-       "scripts/download-selection.js",
-       "scripts/download-dialog.js",
-       "scripts/stat.js",
+       "scripts/utils/collapsible.js",
+       "scripts/metrics/metrics-dialog.js",
+       "scripts/download/download-selection.js",
+       "scripts/download/download-dialog.js",
+       "scripts/statistics/statistics.js",
        "scripts/menu.js",
        ]
   );
