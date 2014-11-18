@@ -1,6 +1,13 @@
 <html>
     <head>
-        <title>Cleaning service</title>
+     <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Cleaning service</title>
+
+    <link rel="stylesheet" href="styles/bootstrap.css">
+    <link rel="stylesheet" href="styles/bootstrap-theme.css">
+    <script src="scripts/bootstrap.js"></script>
     </head>
     <body>
         <div id="header">
