@@ -45,18 +45,21 @@ function init() {
  * Function invoked to handle each request in a custom way.
  */
 function process(path, request, response) {
-  var logger = Packages.org.slf4j.LoggerFactory.getLogger("quality-extension");
+  var logger = Packages.org.slf4j.LoggerFactory.getLogger("quality-extension-controller");
   logger.info(path);
 
   if (path === 'open_in_refine') {
     CreateProject.createProjectInOpenRefine(request, response);
+
   } else if (path === 'clean') {
+    var dataurl =  request.getParameter("download");
+    logger.info(dataurl);
+    // pass dataurl in a context or use request..
     send(request, response, "webservice.vt", {});
   } else if (path === 'cleaning_suggestions') {
     var json = QualityReport.testMetrics(request, response);
     logger.info(json);
-    // TODO
-    // handle json or html, what function returns
+    // TODO handle json or html, what function returns
      butterfly.sendString(request, response, json ,"UTF-8", "text/javascript");
     // in case of error butterfly.sendError(request, response, 404, "unknownservice");
   }

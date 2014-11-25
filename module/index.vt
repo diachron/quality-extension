@@ -5,9 +5,25 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Diachron</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap-theme.min.css">
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" href="styles/bootstrap.css">
+    <link rel="stylesheet" href="styles/bootstrap-theme.css">
+    <script src="scripts/bootstrap.js"></script>
+    
+    <script type="text/javascript">
+      function openRefine() {
+        form.action = "open_in_refine"
+        form.method = "post"
+        form.submit();
+      }
+      
+      function webService() {
+        form.action = "clean"
+        form.method = "get"
+        form.submit();
+      }
+    </script>
+
   </head>
   <body>
   <div class="container">
@@ -16,14 +32,12 @@
     </div>
 
     <div>
-      <form action="open_in_refine" method="POST" enctype="multipart/form-data" id="uriHtml5Form" class="form-horizontal">
-        <label for="url_input">URL dataset</label>
+     <form name="form" enctype="multipart/form-data" id="dataset" class="form-horizontal">
+        <label for="url_input">Dataset</label>
         <input id="url_input" class="form-control" type="url" name="download"><br>
 
-        <input type="submit" class="btn btn-primary btn-lg" value="To OpenRefine" /> 
-        <a href="clean">
-          <input type="button" class="btn btn-primary btn-lg" value="To Web Service" />
-        </a>
+        <input type="button" onclick="openRefine()" class="btn btn-primary btn-lg" value="OpenRefine" /> 
+        <input type="button" onclick="webService()" class="btn btn-primary btn-lg" value="Web Service" />
       </form>
     </div>
   </div>
