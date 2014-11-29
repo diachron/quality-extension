@@ -14,7 +14,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import com.hp.hpl.jena.sparql.core.Quad;
-import com.google.refine.ProjectManager;
 import com.google.refine.commands.Command;
 import com.google.refine.model.Project;
 import com.google.refine.quality.exceptions.QualityExtensionException;
