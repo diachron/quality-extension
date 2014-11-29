@@ -2,6 +2,7 @@ package com.google.refine.quality.webservices;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -20,6 +21,7 @@ import org.apache.http.entity.mime.MultipartEntity;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import com.google.refine.browsing.Engine;
 import com.google.refine.browsing.Engine.Mode;
 import com.google.refine.quality.exceptions.MetricException;
 import com.google.refine.quality.metrics.AbstractQualityMetric;
@@ -38,32 +40,6 @@ import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class QualityReport {
-
-  public void createQualityReport(URL outputPath, URL inputDataset, List<QualityProblem> problems) {
-    Model model = ModelFactory.createDefaultModel();
-    Resource report = model.createResource(generateURI());
-    report.addProperty(QR.computedOn, model.createResource(inputDataset.toString()));
-    for (QualityProblem qualityProblem : problems) {
-      Resource qprob = model.createResource(qualityProblem.getProblemURI());
-      qprob.addProperty(RDFS.label, qualityProblem.getProblemName());
-      qprob.addProperty(QPROB.problemDescription, qualityProblem.getProblemDescription());
-      qprob.addProperty(QPROB.cleaningSuggestion, qualityProblem.getCleaningSuggestion());
-      qprob.addProperty(QPROB.qrefineRule, qualityProblem.getCleaningSuggestion());
-      Resource poblemTriple = model
-          .createResource(generateURI())
-          .addProperty(RDF.type, RDF.Statement)
-          .addProperty(RDF.subject,
-              model.createResource(qualityProblem.getQuad().getSubject().toString()))
-          .addProperty(
-              RDF.predicate,
-              model.createResource(qualityProblem.getQuad().getPredicate().toString())
-                  .addProperty(RDF.object,
-                      model.createResource(qualityProblem.getQuad().getObject().toString())));
-      report.addProperty(QR.problematicThing, poblemTriple);
-      report.addProperty(QR.hasProblem, qprob);
-    }
-
-  }
 
   private static Resource generateURI() {
     String uri = "urn:" + UUID.randomUUID().toString();
@@ -102,9 +78,8 @@ public class QualityReport {
     
     List<QualityProblem> qualityProblems = identifyQualityProblems(model, metrics);
     
-    generateQualityReport("", model.listStatements().toList().size(), qualityProblems);
-    
-    return "";	  
+    return generateQualityReport("", model.listStatements().toList().size(), qualityProblems);
+    	  
   }
   private static String generateQualityReport(String dataModelUrl, int totalTriples, 
       List<QualityProblem> qualityProblems) {
@@ -136,7 +111,11 @@ public class QualityReport {
     }
     
     updateStats(model, qualityStats, problemCount);
-    return "";
+    
+    StringWriter writer = new StringWriter();
+    model.write(writer, "JSON-LD");
+    
+    return writer.toString();
   }
   private static void updateStats(Model model, Resource stats, Hashtable<Resource, Integer> problemCount) {
     

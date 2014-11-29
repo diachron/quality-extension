@@ -53,7 +53,7 @@ function process(path, request, response) {
   } else if (path === 'clean') {
     send(request, response, "webservice.vt", {});
   } else if (path === 'cleaning_suggestions') {
-    var json = QualityReport.testMetrics(request, response);
+    var json = QualityReport.generateQualityReport(request, response);
     logger.info(json);
     // TODO
     // handle json or html, what function returns
