@@ -9,12 +9,13 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import com.hp.hpl.jena.sparql.core.Quad;
 import com.google.refine.quality.exceptions.MetricException;
 import com.google.refine.quality.metrics.AbstractQualityMetric;
 import com.google.refine.quality.problems.QualityProblem;
 import com.google.refine.quality.utilities.Constants;
 import com.google.refine.quality.utilities.JenaModelLoader;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.sparql.core.Quad;
 
 public class MetricProcessing {
 
@@ -52,10 +53,30 @@ public class MetricProcessing {
     }
     return probelms;
   }
+  
+  /**
+   * The method applies metrics to list of RDF triples fetched from URL.
+   * @param metrics An array list of metrics.
+   * @param model A RDF data model.
+   * @return A list of identified quality problems.
+   * @throws ClassNotFoundException 
+   * @throws IllegalAccessException 
+   * @throws InstantiationException 
+   */ 
+  public static List<QualityProblem> identifyQualityProblems(Model model, List<String> metrics)
+      throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+    List<QualityProblem> probelms = new ArrayList<QualityProblem>();
+    List<Quad> quads = JenaModelLoader.getQuads(model);
 
-  // an example function invoked in controller.js
-  public static String testMetrics(HttpServletRequest request, HttpServletResponse response) {
-//    return request.getParameter(name); metrics for instance..
-    return "<html></html>";
+    for (String metricName : metrics) {
+      Class<?> cls = Class.forName(String.format("%s.%s", Constants.METRICS_PACKAGE, metricName));
+      AbstractQualityMetric metric = (AbstractQualityMetric) cls.newInstance();
+      metric.before();
+      metric.compute(quads);
+      metric.after();
+
+      probelms.addAll(metric.getQualityProblems());
+    }
+    return probelms;
   }
 }

@@ -51,17 +51,15 @@ function process(path, request, response) {
   if (path === 'open_in_refine') {
     CreateProject.createProjectInOpenRefine(request, response);
 
-  } else if (path === 'clean') {
+  } else if (path === 'ws') {
     var dataurl =  request.getParameter("download");
     logger.info(dataurl);
     // pass dataurl in a context or use request..
     send(request, response, "webservice.vt", {});
-  } else if (path === 'cleaning_suggestions') {
-    var json = QualityReport.testMetrics(request, response);
-    logger.info(json);
-    // TODO handle json or html, what function returns
-     butterfly.sendString(request, response, json ,"UTF-8", "text/javascript");
-    // in case of error butterfly.sendError(request, response, 404, "unknownservice");
+  } else if (path === 'clean') {
+    DiachronWebService.clean(request, response);
+  } else if (path === 'get_cleaning_suggestions') {
+    DiachronWebService.getCleaningSuggestions(request, response);
   }
 
    if (path == "/" || path == "") {
