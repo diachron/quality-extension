@@ -3,9 +3,6 @@ package com.google.refine.quality.webservices;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -14,10 +11,13 @@ import com.google.refine.quality.metrics.AbstractQualityMetric;
 import com.google.refine.quality.problems.QualityProblem;
 import com.google.refine.quality.utilities.Constants;
 import com.google.refine.quality.utilities.JenaModelLoader;
+import com.google.refine.quality.utilities.Utilities;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.sparql.core.Quad;
 
-public class MetricProcessing {
+public class CleaningUtils {
 
   /**
    * The method applies metrics to list of RDF triples fetched from URL.
@@ -78,5 +78,26 @@ public class MetricProcessing {
       probelms.addAll(metric.getQualityProblems());
     }
     return probelms;
+  }
+
+  public static Model getDeltaModel(Model model, List<QualityProblem> problems) {
+    Model deltaModel = ModelFactory.createDefaultModel();
+    for (QualityProblem problem : problems) {
+      Quad quad = problem.getQuad();
+      Statement stat = Utilities.createStatement(quad.getSubject().toString(), quad.getPredicate()
+          .toString(), quad.getObject().toString());
+      deltaModel.add(stat);
+    }
+    return deltaModel;
+  }
+
+  public static Model cleanModel(Model model, List<QualityProblem> problems) {
+    for (QualityProblem problem : problems) {
+      Quad quad = problem.getQuad();
+      Statement stat = Utilities.createStatement(quad.getSubject().toString(), quad.getPredicate()
+        .toString(), quad.getObject().toString());
+      model.remove(stat);
+    }
+    return model;
   }
 }

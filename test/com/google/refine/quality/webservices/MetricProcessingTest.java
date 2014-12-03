@@ -23,14 +23,14 @@ public class MetricProcessingTest {
     // checks whether .nt can be read from url.
     String url = "http://www.w3.org/TR/REC-rdf-syntax/example07.nt";
     try {
-      MetricProcessing.identifyQualityProblems(new JSONArray(), url);
+      CleaningUtils.identifyQualityProblems(new JSONArray(), url);
     } catch (Exception e) {
       fail();
     }
     // fails, wrong url.
     String url1 = "http://www.w3.org/TR/REC-rdf-syntax/example01.nt";
     try {
-      MetricProcessing.identifyQualityProblems(new JSONArray(), url1);
+      CleaningUtils.identifyQualityProblems(new JSONArray(), url1);
       fail();
     } catch (Exception e) {
     }
@@ -42,7 +42,7 @@ public class MetricProcessingTest {
     String url = "https://raw.githubusercontent.com/diachron/quality/master/src/test/resources/"
         + "testdumps/SampleInput_LabelsUsingCapitals.ttl";
     try {
-      MetricProcessing.identifyQualityProblems(new JSONArray(), url);
+      CleaningUtils.identifyQualityProblems(new JSONArray(), url);
     } catch (Exception e) {
       fail();
     }
@@ -50,7 +50,7 @@ public class MetricProcessingTest {
     String url1 = "https://raw.githubusercontent.com/diachron/quality/master/src/test/resources/"
         + "testdumps/SSampleInput_LabelsUsingCapitals.ttl";
     try {
-      MetricProcessing.identifyQualityProblems(new JSONArray(), url1);
+      CleaningUtils.identifyQualityProblems(new JSONArray(), url1);
       fail();
     } catch (Exception e) {
     }
@@ -62,7 +62,7 @@ public class MetricProcessingTest {
     String url1 = "https://raw.githubusercontent.com/diachron/quality/master/src/test/resources/"
         + "testdumps/SampleInput_LabelsUsingCapitals.ttl";
     JSONArray metrics1 = new JSONArray("[LabelsUsingCapitals]");
-    List<QualityProblem> problems = MetricProcessing.identifyQualityProblems(metrics1, url1);
+    List<QualityProblem> problems = CleaningUtils.identifyQualityProblems(metrics1, url1);
     Assert.assertFalse(problems.isEmpty());
     Assert.assertEquals(VocabularyLoader.getResourcePropertyValue(QPROB.LabelsUsingCapitalsProblem,
         RDFS.label, Constants.QPROB_VOCAB), problems.get(0).getProblemName());
@@ -70,7 +70,7 @@ public class MetricProcessingTest {
     String url2 = "https://raw.githubusercontent.com/diachron/quality/master/src/test/resources/"
         + "testdumps/SampleInput_WhitespaceInAnnotation.ttl";
     JSONArray metrics2 = new JSONArray("[WhitespaceInAnnotation]");
-    List<QualityProblem> problems2 = MetricProcessing.identifyQualityProblems(metrics2, url2);
+    List<QualityProblem> problems2 = CleaningUtils.identifyQualityProblems(metrics2, url2);
     Assert.assertFalse(problems2.isEmpty());
     Assert.assertEquals(VocabularyLoader.getResourcePropertyValue(
         QPROB.WhitespaceInAnnotationProblem, RDFS.label, Constants.QPROB_VOCAB), problems2.get(0)
