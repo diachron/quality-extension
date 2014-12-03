@@ -4,12 +4,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,13 +15,7 @@ import org.json.JSONWriter;
 
 import com.google.refine.quality.problems.QualityProblem;
 import com.google.refine.quality.utilities.JenaModelLoader;
-import com.google.refine.quality.vocabularies.QPROB;
-import com.google.refine.quality.vocabularies.QR;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.vocabulary.RDF;
-import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class DiachronWebService {
   private static final int SC_BAD_REQUEST = 400;
@@ -112,53 +101,17 @@ public class DiachronWebService {
   }
 
   // TODO the quality report does not correspond to the one in the D3.2
-  protected static Model generateQualityReport(String dataset, long totalTriples,
+  protected static Model generateQualityReport(String dataset, long triples,
       List<QualityProblem> qualityProblems) {
-    Hashtable<Resource, Integer> problemCount = new Hashtable<Resource, Integer>();
+    QualityReport qualityReport = new  QualityReport(dataset);
+    QualityStatistic qualityStatistic = new QualityStatistic(triples, qualityProblems.size());
 
-    Model model = ModelFactory.createDefaultModel();
-    Resource report = model.createResource();
-    report.addProperty(QR.computedOn, model.createResource(dataset));
-
-    Resource qualityStats = model.createResource();
-    qualityStats.addProperty(QR.totalNumberOfTriples, model.createTypedLiteral(totalTriples));
-    qualityStats.addProperty(QR.numberOfProblems, model.createTypedLiteral(qualityProblems.size()));
-
-    for (QualityProblem qualityProblem : qualityProblems) {
-      Resource qprob = model.createResource(qualityProblem.getProblemURI());
-      qprob.addProperty(RDFS.label, qualityProblem.getProblemName());
-      qprob.addProperty(QPROB.problemDescription, qualityProblem.getProblemDescription());
-      qprob.addProperty(QPROB.cleaningSuggestion, qualityProblem.getCleaningSuggestion());
-      qprob.addProperty(QPROB.qrefineRule, qualityProblem.getCleaningSuggestion());
-
-      if (!problemCount.containsKey(qualityProblem.getProblemURI())) {
-        problemCount.put(qualityProblem.getProblemURI(), 0);
-      }
-      int currentCount = problemCount.get(qualityProblem.getProblemURI()).intValue();
-      problemCount.put(qualityProblem.getProblemURI(), currentCount + 1);
+    for (QualityProblem problem : qualityProblems) {
+      qualityReport.addQualityProblem(problem);
+      qualityStatistic.incrementProblemCounter(problem.getProblemURI());
     }
-
-    updateStats(model, qualityStats, problemCount);
-    return model;
-  }
-
-  private static void updateStats(Model model, Resource stats,
-      Hashtable<Resource, Integer> problemCount) {
-    Set<Entry<Resource, Integer>> entrySet = problemCount.entrySet();
-    Iterator<Entry<Resource, Integer>> iterator = entrySet.iterator();
-
-    while (iterator.hasNext()) {
-      Entry<Resource, Integer> entry = iterator.next();
-      Resource qProb = entry.getKey();
-      qProb.addProperty(QR.numberOfAffectedTriples,
-        model.createTypedLiteral(entry.getValue().intValue()));
-
-      Resource triple = model.createResource(generateURI()).addProperty(RDF.type, RDF.Statement)
-        .addProperty(RDF.subject, qProb.getProperty(QR.numberOfAffectedTriples).getSubject())
-        .addProperty(RDF.predicate, model.createResource(QR.numberOfAffectedTriples))
-        .addProperty(RDF.object, qProb.getProperty(QR.numberOfAffectedTriples).getObject());
-      stats.addProperty(QR.problem, triple);
-    }
+    qualityReport.setQualityStatistic(qualityStatistic.getQualityStatisticModel());
+    return qualityReport.getQualityReportModel();
   }
 
   private static void respond(HttpServletResponse response, String status, String message)
@@ -177,11 +130,5 @@ public class DiachronWebService {
     writer.endObject();
     w.flush();
     w.close();
-  }
-
-  private static Resource generateURI() {
-    String uri = "urn:" + UUID.randomUUID().toString();
-    Resource r = ModelFactory.createDefaultModel().createResource(uri);
-    return r;
   }
 }
