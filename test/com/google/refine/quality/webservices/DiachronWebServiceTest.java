@@ -42,7 +42,7 @@ public class DiachronWebServiceTest {
     Model model = ModelFactory.createDefaultModel();
     InputStream is = new ByteArrayInputStream( message.getBytes());
     model.read(is, null, "Turtle");
-
+    model.write(System.out, "Turtle");
     Assert.assertEquals("ok", status);
     Assert.assertFalse(model.isEmpty());
     // assert number of problems and other things 
