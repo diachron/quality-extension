@@ -28,7 +28,7 @@ public class QualityDataStructuresTest {
 
     List<String> metrics = Arrays.asList("EmptyAnnotationValue");
     List<String> problemsRes = Arrays.asList(QPROB.EmptyAnnotationValueProblem.toString());
-    List<QualityProblem> problems = MetricProcessing.identifyQualityProblems(model, metrics);
+    List<QualityProblem> problems = CleaningUtils.identifyQualityProblems(model, metrics);
 
     QualityReport qr = new QualityReport("reporturi");
     for (QualityProblem pr : problems) {
