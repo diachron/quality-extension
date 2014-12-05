@@ -30,15 +30,9 @@ public class CleaningUtils {
    * @throws IllegalAccessException 
    * @throws InstantiationException 
    */
-  public static List<QualityProblem> identifyQualityProblems(JSONArray metrics, String fileURL)
-      throws MetricException, JSONException, ClassNotFoundException, InstantiationException,
-      IllegalAccessException {
-
-    // check if the file exists and than load model from the url
-    // other approach is to get the file from and pass it as an input stream to
-    // the getQuads of the JenaLoader class.
-    // Add new private class method for it within this class.
-
+  @Deprecated
+  public static List<QualityProblem> identifyQualityProblems(JSONArray metrics, String fileURL) 
+      throws ClassNotFoundException, JSONException, InstantiationException, IllegalAccessException {
     List<QualityProblem> probelms = new ArrayList<QualityProblem>();
     List<Quad> quads = JenaModelLoader.getQuads(fileURL);
     for (int i = 0; i < metrics.length(); i++) {
@@ -53,9 +47,9 @@ public class CleaningUtils {
     }
     return probelms;
   }
-  
+
   /**
-   * The method applies metrics to list of RDF triples fetched from URL.
+   * The method applies metrics to a RDF jena model.
    * @param metrics An array list of metrics.
    * @param model A RDF data model.
    * @return A list of identified quality problems.
@@ -80,6 +74,12 @@ public class CleaningUtils {
     return probelms;
   }
 
+  /**
+   * Creates a RDF Jena model containing statements with quality problems.
+   * @param model A RDF model.
+   * @param problems A list of quality problems.
+   * @return A RDF jena model with problematic triples.
+   */
   public static Model getDeltaModel(Model model, List<QualityProblem> problems) {
     Model deltaModel = ModelFactory.createDefaultModel();
     for (QualityProblem problem : problems) {
@@ -91,6 +91,12 @@ public class CleaningUtils {
     return deltaModel;
   }
 
+  /**
+   * Cleans a RDF jena model from problematic statements.
+   * @param model A RDF jena model.
+   * @param problems A list of quality problems.
+   * @return A cleaned RDF jena model.
+   */
   public static Model cleanModel(Model model, List<QualityProblem> problems) {
     for (QualityProblem problem : problems) {
       Quad quad = problem.getQuad();

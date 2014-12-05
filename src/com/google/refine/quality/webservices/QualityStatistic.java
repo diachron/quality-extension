@@ -13,6 +13,10 @@ import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.RDF;
 
+/**
+ * The QualityStatistic data structure creates a RDF jena model containing
+ * the quality statistic report described in D3.2.
+ */
 public class QualityStatistic {
   private Model model;
   private Resource stat;

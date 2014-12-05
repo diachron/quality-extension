@@ -14,6 +14,10 @@ import com.hp.hpl.jena.sparql.core.Quad;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
+/**
+ * The QualityReport data structure creates a RDF jena model containing
+ * the quality report described in D3.2.
+ */
 public class QualityReport {
   private Model model;
   private Resource report;

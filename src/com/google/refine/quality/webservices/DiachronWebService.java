@@ -25,7 +25,7 @@ public class DiachronWebService {
   private static final String SERIALIZATION = "Turtle";
 
   /**
-   * Returns a set of cleaning suggestions as a JSON entity in the http
+   * Returns the cleaning quality report as a JSON entity in the http
    * response. See D3.2 section 4.2.4.
    * @throws IOException
    * @throws JSONException
@@ -55,9 +55,10 @@ public class DiachronWebService {
 
   /**
    * Cleans a dataset. See D3.2 section 4.2.4.
-   * 
-   * @param request
-   * @param response
+   * @param request The request should have three parameters.
+   *  "download" is a URI of the dataset to be cleaned.
+   *  "metrics" is a json array of metrics to be applied for the cleaning.
+   *  "delta" is flag defining whether cleaned statements must be returned.
    * @throws IOException
    * @throws JSONException
    */
@@ -104,9 +105,9 @@ public class DiachronWebService {
   }
 
   /**
-   * @param request
-   * @return
-   * @throws IllegalArgumentException
+   * Parses a http request for a dataset URI.
+   * @return A dataset URI as a string.
+   * @throws IllegalArgumentException if the parameter is missing.
    */
   protected static String getDatasetURL(HttpServletRequest request) throws IllegalArgumentException {
     String dataset = request.getParameter("download");
@@ -117,10 +118,9 @@ public class DiachronWebService {
   }
 
   /**
-   * 
-   * @param request
-   * @return
-   * @throws IllegalArgumentException
+   * Parses a http request for the delta flag.
+   * @return The delta flag as a boolean.
+   * @throws IllegalArgumentException if the parameter is missing.
    */
   protected static boolean getDelta(HttpServletRequest request) throws IllegalArgumentException {
     String deltaParam = request.getParameter("delta");
@@ -136,25 +136,28 @@ public class DiachronWebService {
   /**
    * Parses a metric parameter of the request. The string parameter has a format
    * of a json array. Example of a string ["metrics1", "metrics2"].
-   * 
    * @return A list of metrics.
-   * @throws IllegalArgumentException
-   * @throws JSONException
+   * @throws IllegalArgumentException if the parameter is missing.
+   * @throws JSONException if a parameter content can not be parsed as JSONArray.
    */
   protected static List<String> getMetrics(HttpServletRequest request)
       throws IllegalArgumentException, JSONException {
     String metrics = request.getParameter("metrics");
+    if (metrics == null) {
+      throw new IllegalArgumentException();
+    }
     JSONArray metricsArray = new JSONArray(metrics);
     List<String> list = new ArrayList<String>();
     for (int i = 0; i < metricsArray.length(); i++) {
       list.add(metricsArray.getString(i));
     }
-    if (metrics == null) {
-      throw new IllegalArgumentException();
-    }
     return list;
   }
 
+  /**
+   * Generates the quality report model.
+   * @return A quality report RDF jena model.
+   */
   protected static Model generateQualityReport(String dataset, long triples,
       List<QualityProblem> qualityProblems) {
     QualityReport qualityReport = new QualityReport(dataset);
