@@ -1,73 +1,30 @@
 <html>
     <head>
-     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Cleaning service</title>
+    	<meta charset="utf-8">
+    	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+    	<meta name="viewport" content="width=device-width, initial-scale=1">
+    	<title>Cleaning service</title>
 
-    <link rel="stylesheet" href="styles/bootstrap.css">
-    <link rel="stylesheet" href="styles/bootstrap-theme.css">
-    <script src="scripts/bootstrap.js"></script>
+    	<link rel="stylesheet" href="styles/bootstrap.css">
+    	<link rel="stylesheet" href="styles/bootstrap-theme.css">
+    	<!--<script type="text/javascript" src="scripts/bootstrap.js"></script>-->
+    	
+		<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+    	<script type="text/javascript" src="scripts/webservices/web-services.js"></script>
+    	<script type="text/javascript">
+    		$(function() {
+				var webServiceView = new WebServiceView();
+				var html = webServiceView.buildHtml();
+	
+				$("form").append(html);
+				var hidden = $('<intput type="hidden" id="urlValue" name="urlValue" value="'+ request.getParameter('download') +'" />');
+				$("form").append(hidden);
+			});
+    	</script>
     </head>
     <body>
-        <div id="header">
-            <h1>Cleaning service</h1>
-        </div>
-        <div id="center">
-            <form action="cleaning_suggestions" method="POST" enctype="multipart/form-data">
-                <ul>
-                    <li>
-                      <input type="checkbox" name="metrics" value="Accuracy" id="accuracy">Accuracy
-                      <ul>
-                        <li>
-                          <input type="checkbox" name="accuracySubMet" value="IncompatibleDatatypeRange"
-                                 id="accuracySubMet1">Incompatible Datatype Range
-                        </li>
-                        <li>
-                          <input type="checkbox" name="accuracySubMet" value="MalformedDatatypeLiterals"
-                                 id="accuracySubMet2">Malformed Datatype Literals
-                        </li>
-                      </ul>
-                    </li>
-                    <input type="checkbox" name="metrics" value="Consistency" id="consistency">Consistency
-					<ul>
-					  <li>
-					    <input type="checkbox" name="consistencySubMet" value="HomogeneousDatatypes" id="consistencySubMet1">Homogeneous Datatypes
-					  </li>
-					  <li>
-					    <input type="checkbox" name="consistencySubMet" value="MisplacedClassesOrProperties" id="consistencySubMet2">Mispaced Classes Or Properties
-					  </li>
-					  <li>
-					    <input type="checkbox" name="consistencySubMet" value="MisusedOwlDatatypeOrObjectProperties" id="consistencySubMet3">Musused OWL Datatype Or Object Property
-					  </li>
-					  <li>
-					    <input type="checkbox" name="consistencySubMet" value="OntologyHijacking" id="consistencySubMet4">Ontology Hijacking
-					  </li>
-					  <li>
-					    <input type="checkbox" name="consistencySubMet" value="UndefinedClasses" id="consistencySubMet5">Undefined Classes
-					  </li>
-					  <li>
-					    <input type="checkbox" name="consistencySubMet" value="UndefinedProperties" id="consistencySubMet6">Undefined Properties
-					  </li>	
-					</ul>	
-				  </li>
-				  <li>
-				    <input type="checkbox" name="metrics" value="Understandability" id="understandability">Understandability
-					<ul>
-					  <li>
-					    <input type="checkbox" name="understandabilitySubMet" value="EmptyAnnotationValue" id="understandabilitySubMet1">Empty Annotation Value
-					  </li>
-					  <li>
-						<input type="checkbox" name="understandabilitySubMet" value="LabelsUsingCapitals" id="understandabilitySubMet2">Labels Using Capitals		
-					  </li>
-					  <li>
-						<input type="checkbox" name="understandabilitySubMet" value="WhitespaceInAnnotation" id="understandabilitySubMet3">Whitespace In Annotation
-					  </li>
-					</ul>
-				  </li>
-                </ul>
-                <input type="submit" value="do smth">
-            </form>
-        </div>
+    	<form action="cleaning_suggestions" method="POST" enctype="multipart/form-data">
+			
+        </form>
     </body>
 </html>

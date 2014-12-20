@@ -28,6 +28,7 @@ function init() {
        "scripts/download/download-dialog.js",
        "scripts/statistics/statistics.js",
        "scripts/menu.js",
+       "scripts/webservices/web-services.js"
        ]
   );
 

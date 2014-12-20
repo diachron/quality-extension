@@ -8,8 +8,9 @@
 
     <link rel="stylesheet" href="styles/bootstrap.css">
     <link rel="stylesheet" href="styles/bootstrap-theme.css">
-    <script src="scripts/bootstrap.js"></script>
-    
+    <!--<script src="scripts/bootstrap.js"></script>-->
+    <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="scripts/webservices/web-services.js"></script>
     <script type="text/javascript">
       function openRefine() {
         form.action = "open_in_refine"
@@ -18,10 +19,52 @@
       }
       
       function webService() {
-        form.action = "clean"
+        form.action = "ws"
         form.method = "get"
         form.submit();
       }
+      $(function(){
+      	
+      	$('#metricsTree').hide(1)
+      	var webServiceView = new WebServiceView();
+		var html = webServiceView.buildHtml();
+      	$('#metricsTree').append(html);
+      	
+      	$('input[type=radio][name=operation]').change(function(){
+      		if(this.value === 'openRefine') {
+      			$('#metricsTree').hide(1000);
+      		}
+      		else {
+      			$('#metricsTree').show(1000);
+      		}
+      	});
+      	
+      	$('input[type=checkbox]').on('change', function(){ 
+      		
+      		//one of the parent metrics
+      		if($(this).val()==='') {
+      			$(this).next().find('input[type=checkbox]').prop('checked',this.checked);
+      		} 
+      		else {
+      			if(!this.checked) {
+      				$(this).parent().parent().prev().prop('checked', false);
+      			}
+      			else {
+      				var siblings = $(this).parent().siblings();
+      				var allSelected = true;
+      				for(var i=0; i<siblings.length; i++) {
+      					if(!siblings[i].children[0].checked) {
+      						allSelected = false;
+      						break;
+      					}
+      				}
+      				$(this).parent().parent().prev().prop('checked', allSelected);
+      			}
+      		}
+      		
+      	});
+      	
+      });
     </script>
   </head>
   <body>
@@ -34,9 +77,15 @@
      <form name="form" enctype="multipart/form-data" id="dataset" class="form-horizontal">
         <label for="url_input">Dataset</label>
         <input id="url_input" class="form-control" type="url" name="download"><br>
-
-        <input type="button" onclick="openRefine()" class="btn btn-primary btn-lg" value="OpenRefine" /> 
-        <input type="button" onclick="webService()" class="btn btn-primary btn-lg" value="Web Service" />
+		
+		<input name="operation" type="radio" value="openRefine" checked />Open Refine
+		<input name="operation" type="radio" value="webServices" />Web Services<br/>
+		
+		<div id="metricsTree">
+		</div>
+		
+        <!--<input type="button" onclick="openRefine()" class="btn btn-primary btn-lg" value="OpenRefine" />--> 
+        <input type="button" onclick="webService()" class="btn btn-primary btn-lg" value="Submit" />
       </form>
     </div>
   </div>
