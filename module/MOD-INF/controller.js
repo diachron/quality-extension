@@ -4,7 +4,7 @@ importPackage(com.google.refine.quality.webservices);
 var html = "text/html";
 var encoding = "UTF-8";
 var ClientSideResourceManager = Packages.com.google.refine.ClientSideResourceManager;
-var QualityReport = new com.google.refine.quality.webservices.QualityReport;
+//var QualityReport = new com.google.refine.quality.webservices.QualityReport;
 var MetricProcessing = new com.google.refine.quality.webservices.MetricProcessing;
 var CreateProject = new com.google.refine.quality.commands.CreateProjectCommand;
 
@@ -60,6 +60,11 @@ function process(path, request, response) {
   } else if (path === 'clean') {
     DiachronWebService.clean(request, response);
   } else if (path === 'get_cleaning_suggestions') {
+	
+	var context = {};
+	context.download = request.getParameter("download");
+	context.metrics = request.getParameter("metrics");
+	
     DiachronWebService.getCleaningSuggestions(request, response);
   }
 

@@ -38,7 +38,36 @@
       			$('#metricsTree').show(1000);
       		}
       	});
-      	
+		
+		$('#btn_submit').click(function(){
+			
+			if($("input[name='operation']:checked").val()==='openRefine') {
+				form.action = "open_in_refine"
+        		form.method = "post"
+        		form.submit();
+			}
+			else {
+				var metrices = [];
+			
+				$('input[type=checkbox]').each(function(){
+					if($(this).is(":checked") && $(this).val() !== '') {
+						metrices.push($(this).val());
+					}
+				});
+			
+				if(metrices.length>0) {
+					$('<input />').attr('type','hidden').attr('value', 
+					JSON.stringify(metrices, null, 2)).attr('id','metrics').
+					attr('name', 'metrics').appendTo('#dataset');
+								
+					form.action = "get_cleaning_suggestions";
+        			form.method = "get";
+        			form.submit();
+				}
+			}
+
+		});
+		      	
       	$('input[type=checkbox]').on('change', function(){ 
       		
       		//one of the parent metrics
@@ -63,7 +92,6 @@
       		}
       		
       	});
-      	
       });
     </script>
   </head>
@@ -85,7 +113,7 @@
 		</div>
 		
         <!--<input type="button" onclick="openRefine()" class="btn btn-primary btn-lg" value="OpenRefine" />--> 
-        <input type="button" onclick="webService()" class="btn btn-primary btn-lg" value="Submit" />
+        <input type="button" id="btn_submit" class="btn btn-primary btn-lg" value="Submit" />
       </form>
     </div>
   </div>
