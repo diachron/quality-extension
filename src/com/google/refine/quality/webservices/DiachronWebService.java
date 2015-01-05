@@ -22,7 +22,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 public class DiachronWebService {
   private static final int SC_BAD_REQUEST = 400;
   private static final int SC_OK = 200;
-  private static final String SERIALIZATION = "Turtle";
+  private static final String SERIALIZATION = "JSON-LD";
 
   /**
    * Returns the cleaning quality report as a JSON entity in the http
