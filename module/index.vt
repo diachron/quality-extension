@@ -12,16 +12,14 @@
     <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="scripts/webservices/web-services.js"></script>
     <script type="text/javascript">
-      function openRefine() {
-        form.action = "open_in_refine"
-        form.method = "post"
-        form.submit();
+      function changeViewToOpenRefine() {
+      	$('#btn_submit').attr('value',"Submit");
+      	$('#btn_clean').hide(1);
       }
       
-      function webService() {
-        form.action = "ws"
-        form.method = "get"
-        form.submit();
+      function changeViewToWebService() {
+      	$('#btn_submit').attr('value',"Cleaning Suggestions");
+      	$('#btn_clean').show(1);
       }
       $(function(){
       	
@@ -30,15 +28,21 @@
 		var html = webServiceView.buildHtml();
       	$('#metricsTree').append(html);
       	
+      	changeViewToOpenRefine();
+      	
       	$('input[type=radio][name=operation]').change(function(){
       		if(this.value === 'openRefine') {
       			$('#metricsTree').hide(1000);
+      			changeViewToOpenRefine();
       		}
       		else {
       			$('#metricsTree').show(1000);
+      			changeViewToWebService();
       		}
       	});
-		
+		$('#btn_clean').click(function(){
+			alert("Clean Called");
+		});
 		$('#btn_submit').click(function(){
 			
 			if($("input[name='operation']:checked").val()==='openRefine') {
@@ -109,11 +113,14 @@
 		<input name="operation" type="radio" value="openRefine" checked />Open Refine
 		<input name="operation" type="radio" value="webServices" />Web Services<br/>
 		
-		<div id="metricsTree">
+		<div id="metricsTree" style="border: 1px solid;padding: 10px 20px; border-radius: 25px;">
+			<h4>Quality Metrics</h4>
+			<p>Please select quality metrics to analyze or clean data.</p>
 		</div>
-		
-        <!--<input type="button" onclick="openRefine()" class="btn btn-primary btn-lg" value="OpenRefine" />--> 
-        <input type="button" id="btn_submit" class="btn btn-primary btn-lg" value="Submit" />
+		<div id="buttons">
+			<input type="button" id="btn_submit" class="btn btn-primary btn-lg" value="Submit" />
+			<input type="button" id="btn_clean"  class="btn btn-primary btn-lg" value="Clean" />
+		</div>
       </form>
     </div>
   </div>
