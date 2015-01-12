@@ -1,13 +1,20 @@
 package com.google.refine.quality.webservices;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -43,10 +50,8 @@ public class DiachronWebService {
       generateQualityReport(datasetURL, model.size(), problems).write(out, SERIALIZATION);
 
       response.setStatus(SC_OK);
-      PrintWriter writer = response.getWriter();
-      writer.println(out.toString());
-      writer.close();
-      //respond(response, "ok", out.toString());
+      respondFile(response,"application/octet-stream", 
+          "cleaningSuggestions.txt",out.toString().getBytes());
     } catch (IllegalArgumentException e) {
       response.setStatus(SC_BAD_REQUEST);
       respond(response, "error", "Request parameters are not complete.");
@@ -71,19 +76,30 @@ public class DiachronWebService {
     try {
       String datasetURL = getDatasetURL(request);
       List<String> metrics = getMetrics(request);
-      final boolean delta = getDelta(request);
+      //final boolean delta = getDelta(request);
 
       Model model = JenaModelLoader.getModel(datasetURL);
       List<QualityProblem> problems = CleaningUtils.identifyQualityProblems(model, metrics);
       CleaningUtils.cleanModel(model, problems);
 
-      final StringWriter out = new StringWriter();
+      StringWriter out = new StringWriter();
       model.write(out, SERIALIZATION);
-
       final Model deltaModel = CleaningUtils.getDeltaModel(model, problems);
-
+      
       response.setStatus(SC_OK);
-      respondJSON(response, new Jsonizable() {
+      ///Temporary Code
+      Hashtable<String, StringWriter> outputEntries = new Hashtable<String, StringWriter>();
+      outputEntries.put("cleanedModel.txt", out);
+      
+      out = new StringWriter();
+      deltaModel.write(out, SERIALIZATION);
+
+      outputEntries.put("deltaModel.txt", out);
+      respondFile(response, "application/zip", "updatedModels.zip", getZippedBytes(outputEntries));
+      ////////
+      
+      //Removed Temporarily 
+      /*respondJSON(response, new Jsonizable() {
         @Override
         public void write(JSONWriter writer, Properties options) throws JSONException {
           writer.object();
@@ -97,7 +113,7 @@ public class DiachronWebService {
           }
           writer.endObject();
         }
-      }, new Properties());
+      }, new Properties());*/
     } catch (IllegalArgumentException e) {
       response.setStatus(SC_BAD_REQUEST);
       respond(response, "error", "Request parameters are not complete.");
@@ -175,6 +191,30 @@ public class DiachronWebService {
     return qualityReport.getQualityReportModel();
   }
 
+  private static byte[] getZippedBytes(Hashtable<String, StringWriter> entries) 
+      throws IOException {
+    
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    ZipOutputStream zos = new ZipOutputStream(baos);
+    
+    Iterator<Map.Entry<String, StringWriter>> it = entries.entrySet().iterator();
+    
+    while(it.hasNext()) {
+      
+      Map.Entry<String, StringWriter> entry = it.next();
+      
+      zos.putNextEntry(new ZipEntry(entry.getKey()));
+      zos.write(entry.toString().getBytes());
+      zos.closeEntry();
+      
+    }
+    zos.flush();
+    baos.flush();
+    zos.close();
+    baos.close();
+    return baos.toByteArray();
+  
+  }
   private static void respondJSON(HttpServletResponse response, Jsonizable o, Properties options)
       throws IOException, JSONException {
     response.setCharacterEncoding("UTF-8");
@@ -189,6 +229,17 @@ public class DiachronWebService {
     w.close();
   }
 
+  private static void respondFile(HttpServletResponse response, String contentType, 
+      String fileName,byte []responseBytes) 
+      throws IOException {
+    response.setContentType(contentType);
+    response.setHeader("Content-Disposition", "attachment;filename=\""+fileName+"\"");
+  
+    ServletOutputStream oStream = response.getOutputStream();
+    oStream.write(responseBytes);
+    oStream.flush();
+    oStream.close();
+  }
   private static void respond(HttpServletResponse response, String status, String message)
       throws IOException, JSONException {
     response.setCharacterEncoding("UTF-8");

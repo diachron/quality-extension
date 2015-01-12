@@ -21,6 +21,21 @@
       	$('#btn_submit').attr('value',"Cleaning Suggestions");
       	$('#btn_clean').show(1);
       }
+      function addMetricesInRequest() { 
+      	var metrices = [];
+		
+		$('input[type=checkbox]').each(function(){ 
+			if($(this).is(":checked") && $(this).val() !== '') { 
+				metrices.push($(this).val());
+			}
+		});
+		
+		if(metrices.length > 0) { 
+			$('<input />').attr('type','hidden').attr('value', 
+			JSON.stringify(metrices, null, 2)).attr('id','metrics').
+			attr('name', 'metrics').appendTo('#dataset');
+		}
+      }
       $(function(){
       	
       	$('#metricsTree').hide(1)
@@ -41,7 +56,11 @@
       		}
       	});
 		$('#btn_clean').click(function(){
-			alert("Clean Called");
+			addMetricesInRequest();
+				
+			form.action = "clean";
+        	form.method = "get";
+        	form.submit();
 		});
 		$('#btn_submit').click(function(){
 			
@@ -51,23 +70,13 @@
         		form.submit();
 			}
 			else {
-				var metrices = [];
-			
-				$('input[type=checkbox]').each(function(){
-					if($(this).is(":checked") && $(this).val() !== '') {
-						metrices.push($(this).val());
-					}
-				});
-			
-				if(metrices.length>0) {
-					$('<input />').attr('type','hidden').attr('value', 
-					JSON.stringify(metrices, null, 2)).attr('id','metrics').
-					attr('name', 'metrics').appendTo('#dataset');
-								
-					form.action = "get_cleaning_suggestions";
-        			form.method = "get";
-        			form.submit();
-				}
+				
+				addMetricesInRequest();
+				
+				form.action = "get_cleaning_suggestions";
+        		form.method = "get";
+        		form.submit();
+				
 			}
 
 		});
