@@ -1,6 +1,7 @@
 package com.google.refine.quality.webservices;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -42,7 +43,10 @@ public class DiachronWebService {
       generateQualityReport(datasetURL, model.size(), problems).write(out, SERIALIZATION);
 
       response.setStatus(SC_OK);
-      respond(response, "ok", out.toString());
+      PrintWriter writer = response.getWriter();
+      writer.println(out.toString());
+      writer.close();
+      //respond(response, "ok", out.toString());
     } catch (IllegalArgumentException e) {
       response.setStatus(SC_BAD_REQUEST);
       respond(response, "error", "Request parameters are not complete.");

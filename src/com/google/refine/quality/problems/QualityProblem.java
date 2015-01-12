@@ -37,6 +37,10 @@ public class QualityProblem {
     return VocabularyLoader.getResourcePropertyValue(this.problemtURI, QPROB.cleaningSuggestion,
         Constants.QPROB_VOCAB);
   }
+  public String getQRefineRule() {
+    return VocabularyLoader.getResourcePropertyValue(this.problemtURI, QPROB.qrefineRule, 
+        Constants.QPROB_VOCAB);
+  }
 
   public String getProblemName() {
     return VocabularyLoader.getResourcePropertyValue(this.problemtURI, RDFS.label,
