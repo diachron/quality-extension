@@ -1,30 +1,30 @@
 <html>
     <head>
-    	<meta charset="utf-8">
-    	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-    	<meta name="viewport" content="width=device-width, initial-scale=1">
-    	<title>Cleaning service</title>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Cleaning service</title>
 
-    	<link rel="stylesheet" href="styles/bootstrap.css">
-    	<link rel="stylesheet" href="styles/bootstrap-theme.css">
-    	<!--<script type="text/javascript" src="scripts/bootstrap.js"></script>-->
-    	
-		<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
-    	<script type="text/javascript" src="scripts/webservices/web-services.js"></script>
-    	<script type="text/javascript">
-    		$(function() {
-				var webServiceView = new WebServiceView();
-				var html = webServiceView.buildHtml();
-	
-				$("form").append(html);
-				var hidden = $('<intput type="hidden" id="urlValue" name="urlValue" value="'+ request.getParameter('download') +'" />');
-				$("form").append(hidden);
-			});
-    	</script>
+        <link rel="stylesheet" href="styles/bootstrap.css">
+        <link rel="stylesheet" href="styles/bootstrap-theme.css">
+        <!--<script type="text/javascript" src="scripts/bootstrap.js"></script>-->
+        
+        <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+        <script type="text/javascript" src="scripts/webservices/web-services.js"></script>
+        <script type="text/javascript">
+            $(function() {
+                var webServiceView = new WebServiceView();
+                var html = webServiceView.buildHtml();
+
+                $("form").append(html);
+                var hidden = $('<intput type="hidden" id="urlValue" name="urlValue" value="'+ request.getParameter('download') +'" />');
+                $("form").append(hidden);
+            });
+        </script>
     </head>
     <body>
-    	<form action="cleaning_suggestions" method="POST" enctype="multipart/form-data">
-			
+        <form action="cleaning_suggestions" method="POST" enctype="multipart/form-data">
+            
         </form>
     </body>
 </html>

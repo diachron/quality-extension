@@ -52,7 +52,7 @@ qr:numberOfProblems
 qr:problem
 		a rdf:Property, owl:DatatypeProperty ;
 		rdfs:label	"problem" ;
-		rdfs:comment	"Contains information about total number of identified problems" ;
+		rdfs:comment	"Contains information about total number of identified problems, can contains several problems" ;
 		rdfs:domain	qr:QualityStatistics ;
 		rdfs:range	 qr:QualityProblem .
 	
