@@ -2,7 +2,6 @@ package com.google.refine.quality.webservices;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -30,11 +29,11 @@ import com.hp.hpl.jena.rdf.model.Model;
 public class DiachronWebService {
   private static final int SC_BAD_REQUEST = 400;
   private static final int SC_OK = 200;
-  private static final String SERIALIZATION = "JSON-LD";
+  private static final String SERIALIZATION = "Turtle";
 
   /**
-   * Returns the cleaning quality report as a JSON entity in the http
-   * response. See D3.2 section 4.2.4.
+   * Returns the cleaning quality report as a JSON entity in the http response.
+   * See D3.2 section 4.2.4.
    * @throws IOException
    * @throws JSONException
    */
@@ -50,8 +49,7 @@ public class DiachronWebService {
       generateQualityReport(datasetURL, model.size(), problems).write(out, SERIALIZATION);
 
       response.setStatus(SC_OK);
-      respondFile(response,"application/octet-stream", 
-          "cleaningSuggestions.txt",out.toString().getBytes());
+      respondFile(response,"application/octet-stream", "cleaningSuggestions.ttl", out.toString().getBytes());
     } catch (IllegalArgumentException e) {
       response.setStatus(SC_BAD_REQUEST);
       respond(response, "error", "Request parameters are not complete.");
@@ -87,14 +85,15 @@ public class DiachronWebService {
       final Model deltaModel = CleaningUtils.getDeltaModel(model, problems);
       
       response.setStatus(SC_OK);
-      ///Temporary Code
+      ///Temporary Code TODO remove this hashtable. It uses always two keys,
+      // they can be passed as params.
       Hashtable<String, StringWriter> outputEntries = new Hashtable<String, StringWriter>();
-      outputEntries.put("cleanedModel.txt", out);
+      outputEntries.put("cleanedModel.ttl", out);
       
       out = new StringWriter();
       deltaModel.write(out, SERIALIZATION);
 
-      outputEntries.put("deltaModel.txt", out);
+      outputEntries.put("deltaModel.ttl", out);
       respondFile(response, "application/zip", "updatedModels.zip", getZippedBytes(outputEntries));
       ////////
       
@@ -191,30 +190,25 @@ public class DiachronWebService {
     return qualityReport.getQualityReportModel();
   }
 
-  private static byte[] getZippedBytes(Hashtable<String, StringWriter> entries) 
-      throws IOException {
-    
+  private static byte[] getZippedBytes(Hashtable<String, StringWriter> entries) throws IOException {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     ZipOutputStream zos = new ZipOutputStream(baos);
-    
+
     Iterator<Map.Entry<String, StringWriter>> it = entries.entrySet().iterator();
-    
+
     while(it.hasNext()) {
-      
       Map.Entry<String, StringWriter> entry = it.next();
-      
       zos.putNextEntry(new ZipEntry(entry.getKey()));
       zos.write(entry.toString().getBytes());
       zos.closeEntry();
-      
     }
     zos.flush();
     baos.flush();
     zos.close();
     baos.close();
     return baos.toByteArray();
-  
   }
+
   private static void respondJSON(HttpServletResponse response, Jsonizable o, Properties options)
       throws IOException, JSONException {
     response.setCharacterEncoding("UTF-8");
@@ -229,17 +223,17 @@ public class DiachronWebService {
     w.close();
   }
 
-  private static void respondFile(HttpServletResponse response, String contentType, 
-      String fileName,byte []responseBytes) 
-      throws IOException {
+  private static void respondFile(HttpServletResponse response, String contentType,
+      String fileName, byte[] responseBytes) throws IOException {
     response.setContentType(contentType);
-    response.setHeader("Content-Disposition", "attachment;filename=\""+fileName+"\"");
+    response.setHeader("Content-Disposition", "attachment;filename=\"" + fileName + "\"");
   
     ServletOutputStream oStream = response.getOutputStream();
     oStream.write(responseBytes);
     oStream.flush();
     oStream.close();
   }
+
   private static void respond(HttpServletResponse response, String status, String message)
       throws IOException, JSONException {
     response.setCharacterEncoding("UTF-8");

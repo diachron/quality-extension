@@ -58,18 +58,16 @@ function process(path, request, response) {
     // pass dataurl in a context or use request..
     send(request, response, "webservice.vt", {});
   } else if (path === 'clean') {
-    
-	  var context = {};
-	  context.download = request.getParameter("download");
-	  context.metrics = request.getParameter("metrics");
-	  
-	  DiachronWebService.clean(request, response);
+    var context = {};
+    context.download = request.getParameter("download");
+    context.metrics = request.getParameter("metrics");
+
+    DiachronWebService.clean(request, response);
   } else if (path === 'get_cleaning_suggestions') {
-	
-	var context = {};
-	context.download = request.getParameter("download");
-	context.metrics = request.getParameter("metrics");
-	
+    var context = {};
+    context.download = request.getParameter("download");
+    context.metrics = request.getParameter("metrics");
+
     DiachronWebService.getCleaningSuggestions(request, response);
   }
 

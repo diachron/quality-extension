@@ -27,6 +27,7 @@ public class MalformedDatatypeProblem extends QualityProblem {
     return String.format("Expected datatype %s.", expectedDatatype);
   }
 
+  @Override
   public String getCleaningSuggestion() {
     return String.format("Convert %s to %s.", quad.getObject().getLiteralLexicalForm(),
       expectedDatatype);

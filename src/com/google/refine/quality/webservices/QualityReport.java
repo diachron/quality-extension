@@ -46,8 +46,7 @@ public class QualityReport {
     problemResource.addProperty(RDFS.label, problem.getProblemName());
     problemResource.addProperty(QPROB.problemDescription, problem.getProblemDescription());
     problemResource.addProperty(QPROB.cleaningSuggestion, problem.getCleaningSuggestion());
-    if(problem.getQRefineRule() != null && 
-        !problem.getQRefineRule().trim().equals("")) {
+    if(problem.getQRefineRule() != null && !problem.getQRefineRule().trim().equals("")) {
       problemResource.addProperty(QPROB.qrefineRule, problem.getQRefineRule());
     }
     problemResource.addProperty(QR.problematicThing, createStatementResourse(problem.getQuad()));
