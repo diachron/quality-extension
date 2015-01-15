@@ -4,7 +4,6 @@ importPackage(com.google.refine.quality.webservices);
 var html = "text/html";
 var encoding = "UTF-8";
 var ClientSideResourceManager = Packages.com.google.refine.ClientSideResourceManager;
-var DiachronWebService = new com.google.refine.quality.webservices.DiachronWebService;
 var MetricProcessing = new com.google.refine.quality.webservices.MetricProcessing;
 var CreateProject = new com.google.refine.quality.commands.CreateProjectCommand;
 
@@ -12,7 +11,8 @@ function init() {
   var RefineServlet = Packages.com.google.refine.RefineServlet;
 
   RefineServlet.registerCommand(module, "exportProject", new ExportProjectCommand());
-  RefineServlet.registerCommand(module, "identifyQualityProblems", new IdentifyQualityProblemsCommand());
+  RefineServlet.registerCommand(module, "identifyQualityProblems",
+    new IdentifyQualityProblemsCommand());
   RefineServlet.registerCommand(module, "transformData", new TransformDataCommand());
   RefineServlet.registerCommand(module, "getHistory", new HistoryCommand());
 
@@ -54,20 +54,25 @@ function process(path, request, response) {
   } else if (path === 'ws') {
     var dataurl =  request.getParameter("download");
     logger.info(dataurl);
-    // pass dataurl in a context or use request..
     send(request, response, "webservice.vt", {});
   } else if (path === 'clean') {
-    var context = {};
-    context.download = request.getParameter("download");
-    context.metrics = request.getParameter("metrics");
-
-    DiachronWebService.clean(request, response);
+   
+    DiachronWebService.cleanREST(request, response);
   } else if (path === 'get_cleaning_suggestions') {
+    
+    DiachronWebService.getCleaningSuggestionsREST(request, response);
+  } else if (path === 'clean_download') {
     var context = {};
     context.download = request.getParameter("download");
     context.metrics = request.getParameter("metrics");
 
-    DiachronWebService.getCleaningSuggestions(request, response);
+    DiachronWebService.downloadCleanResults(request, response);
+  } else if (path === 'get_cleaning_suggestions_download') {
+    var context = {};
+    context.download = request.getParameter("download");
+    context.metrics = request.getParameter("metrics");
+
+    DiachronWebService.downloadCleaningSuggestions(request, response);
   }
 
    if (path == "/" || path == "") {
