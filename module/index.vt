@@ -53,14 +53,26 @@
                 $('#metricsTree').show(1000);
                 changeViewToWebService();
             }
-      	});
+        });
+
         $('#btn_clean').click(function(){
             addMetricesInRequest();
             form.action = "clean_download";
             form.method = "get";
             form.submit();
         });
+
         $('#btn_submit').click(function() {
+            var url = $('#url_input').val();
+            var file = $('#file_input').val();
+            if(url == '' && file != '') {
+                $('#url_input').attr('name','upload');
+            } else if (url == '' && file == '') {
+                 $('#url_input').focus();
+            } else if (url != '' && file == '') {
+
+            }
+
             if($("input[name='operation']:checked").val() === 'openRefine') {
                 form.action = "open_in_refine"
                 form.method = "post"
@@ -74,9 +86,9 @@
 
         });
 
-        $('input[type=checkbox]').on('change', function(){ 
+        $('input[type=checkbox]').on('change', function(){
             //one of the parent metrics
-            if($(this).val()==='') {
+            if($(this).val() === '') {
                 $(this).next().find('input[type=checkbox]').prop('checked',this.checked);
             } else {
                 if(!this.checked) {
@@ -108,6 +120,7 @@
         <form name="form" enctype="multipart/form-data" id="dataset" class="form-horizontal">
           <label for="url_input">Dataset</label>
           <input id="url_input" class="form-control" type="url" name="download"><br>
+          <input id="file_input" type="file" multiple="" bind="fileInput" name="upload" style="padding-bottom: 5px">
 
           <input name="operation" type="radio" value="openRefine" checked>Open Refine</input><br/>
           <input name="operation" type="radio" value="webServices">Web Service</input><br/>
