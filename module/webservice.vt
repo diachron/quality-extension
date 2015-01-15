@@ -23,7 +23,7 @@
         </script>
     </head>
     <body>
-        <form action="cleaning_suggestions" method="POST" enctype="multipart/form-data">
+        <form action="cleaning_suggestions_download" method="POST" enctype="multipart/form-data">
             
         </form>
     </body>

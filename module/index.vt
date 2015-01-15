@@ -13,125 +13,115 @@
     <script type="text/javascript" src="scripts/webservices/web-services.js"></script>
     <script type="text/javascript">
       function changeViewToOpenRefine() {
-      	$('#btn_submit').attr('value',"Submit");
-      	$('#btn_clean').hide(1);
+        $('#btn_submit').attr('value',"Submit");
+        $('#btn_clean').hide(1);
       }
-      
-      function changeViewToWebService() {
-      	$('#btn_submit').attr('value',"Cleaning Suggestions");
-      	$('#btn_clean').show(1);
-      }
-      function addMetricesInRequest() { 
-      	var metrices = [];
-		
-		$('input[type=checkbox]').each(function(){ 
-			if($(this).is(":checked") && $(this).val() !== '') { 
-				metrices.push($(this).val());
-			}
-		});
-		
-		if(metrices.length > 0) { 
-			$('<input />').attr('type','hidden').attr('value', 
-			JSON.stringify(metrices, null, 2)).attr('id','metrics').
-			attr('name', 'metrics').appendTo('#dataset');
-		}
+
+    function changeViewToWebService() {
+        $('#btn_submit').attr('value',"Cleaning Suggestions");
+        $('#btn_clean').show(1);
+    }
+    function addMetricesInRequest() { 
+        var metrices = [];
+
+        $('input[type=checkbox]').each(function(){ 
+            if($(this).is(":checked") && $(this).val() !== '') {
+                metrices.push($(this).val());
+            }
+        });
+
+        if(metrices.length > 0) { 
+            $('<input />').attr('type','hidden').attr('value',
+            JSON.stringify(metrices, null, 2)).attr('id','metrics').
+            attr('name', 'metrics').appendTo('#dataset');
+        }
       }
       $(function(){
-      	
-      	$('#metricsTree').hide(1)
-      	var webServiceView = new WebServiceView();
-		var html = webServiceView.buildHtml();
-      	$('#metricsTree').append(html);
-      	
-      	changeViewToOpenRefine();
-      	
-      	$('input[type=radio][name=operation]').change(function(){
-      		if(this.value === 'openRefine') {
-      			$('#metricsTree').hide(1000);
-      			changeViewToOpenRefine();
-      		}
-      		else {
-      			$('#metricsTree').show(1000);
-      			changeViewToWebService();
-      		}
-      	});
-		$('#btn_clean').click(function(){
-			addMetricesInRequest();
-				
-			form.action = "clean";
-        	form.method = "get";
-        	form.submit();
-		});
-		$('#btn_submit').click(function(){
-			
-			if($("input[name='operation']:checked").val()==='openRefine') {
-				form.action = "open_in_refine"
-        		form.method = "post"
-        		form.submit();
-			}
-			else {
-				
-				addMetricesInRequest();
-				
-				form.action = "get_cleaning_suggestions";
-        		form.method = "get";
-        		form.submit();
-				
-			}
 
-		});
-		      	
-      	$('input[type=checkbox]').on('change', function(){ 
-      		
-      		//one of the parent metrics
-      		if($(this).val()==='') {
-      			$(this).next().find('input[type=checkbox]').prop('checked',this.checked);
-      		} 
-      		else {
-      			if(!this.checked) {
-      				$(this).parent().parent().prev().prop('checked', false);
-      			}
-      			else {
-      				var siblings = $(this).parent().siblings();
-      				var allSelected = true;
-      				for(var i=0; i<siblings.length; i++) {
-      					if(!siblings[i].children[0].checked) {
-      						allSelected = false;
-      						break;
-      					}
-      				}
-      				$(this).parent().parent().prev().prop('checked', allSelected);
-      			}
-      		}
-      		
+        $('#metricsTree').hide(1)
+        var webServiceView = new WebServiceView();
+        var html = webServiceView.buildHtml();
+        $('#metricsTree').append(html);
+
+        changeViewToOpenRefine();
+    
+        $('input[type=radio][name=operation]').change(function(){
+            if(this.value === 'openRefine') {
+                $('#metricsTree').hide(1000);
+                changeViewToOpenRefine();
+            } else {
+                $('#metricsTree').show(1000);
+                changeViewToWebService();
+            }
       	});
+        $('#btn_clean').click(function(){
+            addMetricesInRequest();
+            form.action = "clean_download";
+            form.method = "get";
+            form.submit();
+        });
+        $('#btn_submit').click(function() {
+            if($("input[name='operation']:checked").val() === 'openRefine') {
+                form.action = "open_in_refine"
+                form.method = "post"
+                form.submit();
+            } else {
+                addMetricesInRequest();
+                form.action = "get_cleaning_suggestions_download";
+                form.method = "get";
+                form.submit();
+            }
+
+        });
+
+        $('input[type=checkbox]').on('change', function(){ 
+            //one of the parent metrics
+            if($(this).val()==='') {
+                $(this).next().find('input[type=checkbox]').prop('checked',this.checked);
+            } else {
+                if(!this.checked) {
+                    $(this).parent().parent().prev().prop('checked', false);
+                } else {
+                    var siblings = $(this).parent().siblings();
+                    var allSelected = true;
+                    for (var i = 0; i < siblings.length; i++) {
+                        if(!siblings[i].children[0].checked) {
+                            allSelected = false;
+                            break;
+                        }
+                    }
+                    $(this).parent().parent().prev().prop('checked', allSelected);
+                }
+            }
+        });
       });
     </script>
   </head>
-  <body>
-  <div class="container">
-    <div class="page-header">
-      <h1>Diachron</h1>
-    </div>
 
-    <div>
-     <form name="form" enctype="multipart/form-data" id="dataset" class="form-horizontal">
-        <label for="url_input">Dataset</label>
-        <input id="url_input" class="form-control" type="url" name="download"><br>
-		
-		<input name="operation" type="radio" value="openRefine" checked />Open Refine
-		<input name="operation" type="radio" value="webServices" />Web Services<br/>
-		
-		<div id="metricsTree" style="border: 1px solid;padding: 10px 20px; border-radius: 25px;">
-			<h4>Quality Metrics</h4>
-			<p>Please select quality metrics to analyze or clean data.</p>
-		</div>
-		<div id="buttons">
-			<input type="button" id="btn_submit" class="btn btn-primary btn-lg" value="Submit" />
-			<input type="button" id="btn_clean"  class="btn btn-primary btn-lg" value="Clean" />
-		</div>
-      </form>
+  <body>
+    <div class="container">
+      <div class="page-header">
+        <h1>Diachron</h1>
+      </div>
+
+      <div>
+        <form name="form" enctype="multipart/form-data" id="dataset" class="form-horizontal">
+          <label for="url_input">Dataset</label>
+          <input id="url_input" class="form-control" type="url" name="download"><br>
+
+          <input name="operation" type="radio" value="openRefine" checked>Open Refine</input><br/>
+          <input name="operation" type="radio" value="webServices">Web Service</input><br/>
+
+          <div id="metricsTree" style="padding: 10px 20px;">
+            <h4>Quality Metrics</h4>
+            <p>Please select quality metrics to analyze or clean data.</p>
+          </div>
+          <div id="buttons" style="padding-top: 5px">
+            <input type="button" id="btn_submit" class="btn btn-primary btn-lg" value="Submit" />
+            <input type="button" id="btn_clean"  class="btn btn-primary btn-lg" value="Clean" />
+          </div>
+        </form>
+      </div>
     </div>
-  </div>
   </body>
 </html>
