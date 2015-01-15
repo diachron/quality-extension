@@ -56,7 +56,7 @@ public class DiachronWebServiceTest {
     ByteArrayOutputStream responseStream = new ByteArrayOutputStream();
     Mockito.when(res.getWriter()).thenReturn(new PrintWriter(responseStream));
 
-    DiachronWebService.clean(req, res);
+    DiachronWebService.cleanREST(req, res);
 
     JSONObject json = new JSONObject(responseStream.toString("utf-8"));
     String status = (String) json.get("status");
@@ -88,7 +88,7 @@ public class DiachronWebServiceTest {
     ByteArrayOutputStream responseStream = new ByteArrayOutputStream();
     Mockito.when(res.getWriter()).thenReturn(new PrintWriter(responseStream));
 
-    DiachronWebService.getCleaningSuggestions(req, res);
+    DiachronWebService.getCleaningSuggestionsREST(req, res);
 
     JSONObject json = new JSONObject(responseStream.toString("utf-8"));
     String status = (String) json.get("status");
@@ -118,7 +118,7 @@ public class DiachronWebServiceTest {
     ByteArrayOutputStream responseStream = new ByteArrayOutputStream();
     Mockito.when(res.getWriter()).thenReturn(new PrintWriter(responseStream));
 
-    DiachronWebService.getCleaningSuggestions(req, res);
+    DiachronWebService.getCleaningSuggestionsREST(req, res);
 
     JSONObject json = new JSONObject(responseStream.toString("utf-8"));
     String status = (String) json.get("status");
@@ -142,7 +142,7 @@ public class DiachronWebServiceTest {
     ByteArrayOutputStream responseStream = new ByteArrayOutputStream();
     Mockito.when(res.getWriter()).thenReturn(new PrintWriter(responseStream));
 
-    DiachronWebService.getCleaningSuggestions(req, res);
+    DiachronWebService.getCleaningSuggestionsREST(req, res);
 
     JSONObject json = new JSONObject(responseStream.toString("utf-8"));
     String status = (String) json.get("status");
@@ -165,7 +165,7 @@ public class DiachronWebServiceTest {
     ByteArrayOutputStream responseStream = new ByteArrayOutputStream();
     Mockito.when(res.getWriter()).thenReturn(new PrintWriter(responseStream));
 
-    DiachronWebService.getCleaningSuggestions(req, res);
+    DiachronWebService.getCleaningSuggestionsREST(req, res);
 
     JSONObject json = new JSONObject(responseStream.toString("utf-8"));
     String status = (String) json.get("status");
@@ -190,7 +190,7 @@ public class DiachronWebServiceTest {
     ByteArrayOutputStream responseStream = new ByteArrayOutputStream();
     Mockito.when(res.getWriter()).thenReturn(new PrintWriter(responseStream));
 
-    DiachronWebService.getCleaningSuggestions(req, res);
+    DiachronWebService.getCleaningSuggestionsREST(req, res);
 
     JSONObject json = new JSONObject(responseStream.toString("utf-8"));
     String status = (String) json.get("status");
@@ -214,7 +214,7 @@ public class DiachronWebServiceTest {
     ByteArrayOutputStream responseStream = new ByteArrayOutputStream();
     Mockito.when(res.getWriter()).thenReturn(new PrintWriter(responseStream));
 
-    DiachronWebService.clean(req, res);
+    DiachronWebService.cleanREST(req, res);
 
 //    JSONObject json = new JSONObject(responseStream.toString("utf-8"));
 //    String status = (String) json.get("status");
