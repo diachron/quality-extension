@@ -58,7 +58,7 @@ public class CreateProjectCommand extends Command {
     optionObj.append("limit", -1);
     optionObj.append("includeFileSources", false);
     optionObj.append("storeBlankRows", true);
-    optionObj.append("encoding", "");
+    optionObj.append("encoding", "UTF-8");
     optionObj.append("ignoreLines", -1);
     optionObj.append("linesPerRow", 1);
     optionObj.append("storeBlankCellsAsNulls", true);
