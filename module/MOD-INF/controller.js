@@ -4,7 +4,6 @@ importPackage(com.google.refine.quality.webservices);
 var html = "text/html";
 var encoding = "UTF-8";
 var ClientSideResourceManager = Packages.com.google.refine.ClientSideResourceManager;
-var MetricProcessing = new com.google.refine.quality.webservices.MetricProcessing;
 var CreateProject = new com.google.refine.quality.commands.CreateProjectCommand;
 
 function init() {
