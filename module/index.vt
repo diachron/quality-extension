@@ -4,16 +4,30 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Diachron</title>
+    <title>Cleaning</title>
 
     <link rel="stylesheet" href="styles/bootstrap.css">
     <link rel="stylesheet" href="styles/bootstrap-theme.css">
-    <!--<script src="scripts/bootstrap.js"></script>-->
     <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="scripts/webservices/web-services.js"></script>
+
+    <style media="screen" type="text/css">
+      h1, h2, h3, h4, h5, h6 {
+      font-family: 'Corben', Georgia, Times, serif;
+    }
+    p, div {
+      font-family: 'Nobile', Helvetica, Arial, sans-serif;
+    }
+    body {
+      background: url(cream_dust.png) repeat 0 0;
+    }
+    </style>
+
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet'  type='text/css'>
+    
     <script type="text/javascript">
       function changeViewToOpenRefine() {
-        $('#btn_submit').attr('value',"Submit");
+        $('#btn_submit').attr('value', "Start");
         $('#btn_clean').hide(1);
       }
 
@@ -113,28 +127,41 @@
   <body>
     <div class="container">
       <div class="page-header">
-        <h1>Diachron</h1>
-      </div>
+        <img src="diachron-logo.png" align="baseline" style="width: 20%; height: 20%; margin: 0px 10px 0px 0px"/>
+        <h2 style="margin: 0px 0px 0px 20px">Cleaning Service</h2>
+      </div
 
+      <br/>
+      <br/>
       <div>
         <form name="form" enctype="multipart/form-data" id="dataset" class="form-horizontal">
-          <label for="url_input">Dataset</label>
-          <input id="url_input" class="form-control" type="url" name="download"><br>
-          <input id="file_input" type="file" multiple="" bind="fileInput" name="upload" style="padding-bottom: 5px">
-
-          <input name="operation" type="radio" value="openRefine" checked>Open Refine</input><br/>
-          <input name="operation" type="radio" value="webServices">Web Service</input><br/>
-
-          <div id="metricsTree" style="padding: 10px 20px;">
-            <h4>Quality Metrics</h4>
-            <p>Please select quality metrics to analyze or clean data.</p>
-          </div>
-          <div id="buttons" style="padding-top: 5px">
-            <input type="button" id="btn_submit" class="btn btn-primary btn-lg" value="Submit" />
-            <input type="button" id="btn_clean"  class="btn btn-primary btn-lg" value="Clean" />
+            <fieldset style="width: 50%">
+              <legend>Select Dataset</legend>
+              <input id="url_input" class="form-control" type="url" name="download" placeholder="Enter URL of the dataset"><br>
+              <input id="file_input" type="file" multiple="" bind="fileInput" name="upload">
+            </fieldset>
+           
+           <br/>
+           <br/>
+           <br/>
+           
+           <fieldset style="width: 50%">
+              <legend>Select Service</legend>
+              <input name="operation" type="radio" value="openRefine" checked>Open Refine</input><br/>
+              <input name="operation" type="radio" value="webServices">Web Service</input><br/>
+              <div id="metricsTree" style="border:1px solid #CFCFCF; margin-top: 10px; padding: 10px 10px 10px 10px;">
+                <h4>Quality Metrics</h4>
+                <p>Please select quality metrics to analyze or clean data.</p>
+              </div>
+            </fieldset>
+          
+          <div id="buttons" style="padding-top: 10px; width: 20%; height: 20%">
+            <input type="button" id="btn_submit" class="btn btn-primary btn-block" value="Submit" />
+            <input type="button" id="btn_clean"  class="btn btn-primary btn-block" value="Clean" />
           </div>
         </form>
       </div>
     </div>
+
   </body>
 </html>
