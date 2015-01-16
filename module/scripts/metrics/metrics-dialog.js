@@ -1,8 +1,68 @@
 function MetricDialog() {
   var self = this;
+//  this.mertics_init = {
+//      "Working metrics" : [ {
+//        "Checked" : [ {
+//          "EmptyAnnotationValue" : "Empty annotation value"
+//        }, {
+//          "LabelsUsingCapitals" : "Label using capitals"
+//        }, {
+//          "WhitespaceInAnnotation" : "Whitespace in annotation"
+//        }, {
+//          "UndefinedProperties" : "Undefined properties"
+//        },  {
+//          "MalformedDatatypeLiterals" : "Malformed datatype literals"
+//        }, {
+//          "OntologyHijacking" : "Ontology hijacking"
+//        }]
+//      }],
+//      "Accessibility" : [ {
+//        "Availability" : [ {
+//          "Dereferencibility" : "Dereferencibility"
+//        }, {
+//          "NoDereferencedBackLinks" : "No dereferenced back links"
+//        } ]
+//      }, {
+//        "Licensing" : [ {
+//          "MachineReadableLicense" : "Machine readable license"
+//        } ]
+//      }, {
+//        "Performance" : [ {
+//          "DataSourceScalability" : "Data source scalability"
+//        }] }, {
+//          "security" : [ {
+//            "HTTPSDataAccess" : "HTTPS data access"
+//          }] }
+//        ],
+//        "Representational" : [ { // complete
+//          "Understandability" : [ {
+//            "EmptyAnnotationValue" : "Empty annotation value"
+//          }, {
+//            "LabelsUsingCapitals" : "Label using capitals"
+//          }, {
+//            "WhitespaceInAnnotation" : "Whitespace in annotation"
+//          }, {
+//            "EmptyAnnotationValue" : "EmptyAnnotationValue"
+//          }, {
+//            "LowBlankNodeUsage" : "Low blank node usage"
+//          } ]
+//        }, {
+//          "Conciseness" : [ {
+//            "ShortURIs" : "Short URIs"
+//          } ]
+//        } ],
+//
+//        "Dynamicity" : [ //incomplete
+//            {"Currency" : [] }, { "Timeliness" : [ {} ]}, { "Volatility" : [ {} ] }
+//         ], 
+//         "Intrinsic" : [ //incomplete
+//             {"accuracy" : [] }, { "Conciseness" : [ {} ]}, { "Consistency" : [ {} ] }
+//         ]
+//  };
+//}
   this.mertics_init = {
-      "Working metrics" : [ {
-        "Checked" : [ {
+      "Metrics" : [ {
+        "Metrics" : [ {
           "EmptyAnnotationValue" : "Empty annotation value"
         }, {
           "LabelsUsingCapitals" : "Label using capitals"
@@ -15,49 +75,7 @@ function MetricDialog() {
         }, {
           "OntologyHijacking" : "Ontology hijacking"
         }]
-      }],
-      "Accessibility" : [ {
-        "Availability" : [ {
-          "Dereferencibility" : "Dereferencibility"
-        }, {
-          "NoDereferencedBackLinks" : "No dereferenced back links"
-        } ]
-      }, {
-        "Licensing" : [ {
-          "MachineReadableLicense" : "Machine readable license"
-        } ]
-      }, {
-        "Performance" : [ {
-          "DataSourceScalability" : "Data source scalability"
-        }] }, {
-          "security" : [ {
-            "HTTPSDataAccess" : "HTTPS data access"
-          }] }
-        ],
-        "Representational" : [ { // complete
-          "Understandability" : [ {
-            "EmptyAnnotationValue" : "Empty annotation value"
-          }, {
-            "LabelsUsingCapitals" : "Label using capitals"
-          }, {
-            "WhitespaceInAnnotation" : "Whitespace in annotation"
-          }, {
-            "EmptyAnnotationValue" : "EmptyAnnotationValue"
-          }, {
-            "LowBlankNodeUsage" : "Low blank node usage"
-          } ]
-        }, {
-          "Conciseness" : [ {
-            "ShortURIs" : "Short URIs"
-          } ]
-        } ],
-
-        "Dynamicity" : [ //incomplete
-            {"Currency" : [] }, { "Timeliness" : [ {} ]}, { "Volatility" : [ {} ] }
-         ], 
-         "Intrinsic" : [ //incomplete
-             {"accuracy" : [] }, { "Conciseness" : [ {} ]}, { "Consistency" : [ {} ] }
-         ]
+      }]
   };
 }
 
