@@ -22,7 +22,8 @@ import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.sparql.core.Quad;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.refine.model.Cell;
 import com.google.refine.model.Project;
 import com.google.refine.model.Row;
@@ -143,14 +144,12 @@ public final class Utilities {
   /**
    * Serializes a map.
    * @param map A map to serialize.
-   * @return A string containing XML representation of the map.
+   * @return A string containing the JSON representation of the map.
+   * @throws JsonProcessingException 
    */
-  public static String convertMapToString(@SuppressWarnings("rawtypes") Map map) {
-    ByteArrayOutputStream bos = new ByteArrayOutputStream();
-    XMLEncoder xmlEncoder = new XMLEncoder(bos);
-    xmlEncoder.writeObject(map);
-    xmlEncoder.flush();
-    return bos.toString();
+  public static String convertMapToString(Map map) throws JsonProcessingException {
+    ObjectMapper mapper = new ObjectMapper();
+    return mapper.writeValueAsString(map);
   }
 
   /**

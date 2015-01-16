@@ -1,7 +1,5 @@
 package com.google.refine.quality.commands;
 
-import java.beans.XMLDecoder;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -14,10 +12,14 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONWriter;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.refine.Jsonizable;
 import com.google.refine.commands.Command;
 import com.google.refine.model.Project;
@@ -27,6 +29,7 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.sparql.core.Quad;
 
 public class ExportProjectCommand extends Command {
+  private static final Logger LOG = Logger.getLogger(ExportProjectCommand.class);
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -56,7 +59,6 @@ public class ExportProjectCommand extends Command {
             writer.endObject();
           }
         });
-
       } catch (JSONException e) {
         e.printStackTrace();
       }
@@ -83,7 +85,16 @@ public class ExportProjectCommand extends Command {
 
   @SuppressWarnings("unchecked")
   private static Map<String, String> readPrefixesMapFromMetadata(String serializedMap) {
-    XMLDecoder xmlDecoder = new XMLDecoder(new ByteArrayInputStream(serializedMap.getBytes()));
-    return (Map<String, String>) xmlDecoder.readObject();
+    ObjectMapper mapper = new ObjectMapper();
+    try {
+      return mapper.readValue(serializedMap, Map.class);
+    } catch (JsonParseException e) {
+      LOG.error(e.getLocalizedMessage());
+    } catch (JsonMappingException e) {
+      LOG.error(e.getLocalizedMessage());
+    } catch (IOException e) {
+      LOG.error(e.getLocalizedMessage());
+    }
+    return new HashMap<String, String>();
   }
 }

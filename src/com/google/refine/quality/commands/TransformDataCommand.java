@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.sparql.core.Quad;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.refine.commands.Command;
 import com.google.refine.model.Project;
 import com.google.refine.quality.utilities.JenaModelLoader;
@@ -54,8 +55,9 @@ public class TransformDataCommand extends Command {
    * Writes a serialized prefixes map to an OpenRefine's metadata.
    * @param model A Jena model.
    * @param project An OpenRefine project.
+   * @throws JsonProcessingException
    */
-  private void writePrefixesToMetadata(Model model, Project project) {
+  private void writePrefixesToMetadata(Model model, Project project) throws JsonProcessingException {
     String prefixes = Utilities.convertMapToString(model.getNsPrefixMap());
     project.getMetadata().setCustomMetadata("prefixes", prefixes);
   }
