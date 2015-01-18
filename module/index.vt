@@ -69,32 +69,42 @@
             }
         });
 
-        $('#btn_clean').click(function(){
+        $('#btn_clean').click(function() {
             addMetricesInRequest();
+            var url = $('#url_input').val();
+            var file = $('#file_input').val();
+            var httpMethod = "GET";
+            if(url == '' && file != '') {
+                httpMethod = "POST"
+            } else if (url == '' && file == '') {
+                 $('#url_input').focus();
+            } else if (url != '' && file == '') { }
             form.action = "clean_download";
-            form.method = "get";
+            form.method = httpMethod;
             form.submit();
         });
 
         $('#btn_submit').click(function() {
             var url = $('#url_input').val();
             var file = $('#file_input').val();
+            
+            var httpMethod = "POST";
             if(url == '' && file != '') {
-                $('#url_input').attr('name','upload');
+               $('#url_input').attr('name','upload');
             } else if (url == '' && file == '') {
-                 $('#url_input').focus();
+                $('#url_input').focus();
             } else if (url != '' && file == '') {
-
             }
 
             if($("input[name='operation']:checked").val() === 'openRefine') {
                 form.action = "open_in_refine"
-                form.method = "post"
+                form.method = httpMethod;
                 form.submit();
             } else {
                 addMetricesInRequest();
                 form.action = "get_cleaning_suggestions_download";
-                form.method = "get";
+                form.method = httpMethod;
+                form.enctype = "multipart/form-data";
                 form.submit();
             }
 
