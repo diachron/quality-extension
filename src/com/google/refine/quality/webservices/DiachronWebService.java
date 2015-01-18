@@ -54,7 +54,14 @@ public class DiachronWebService {
       HttpServletResponse response) throws IOException, JSONException {
     try {
       response.setStatus(SC_OK);
-      respond(response, "ok", getCleaningSuggestions(request).toString());
+      String dataset = getDatasetURL(request);
+      Model model = JenaModelLoader.getModel(dataset);
+
+      List<QualityProblem> problems = CleaningUtils.identifyQualityProblems(model,
+        getMetrics(request));
+      StringWriter out = new StringWriter();
+      generateQualityReport(dataset, model.size(), problems).write(out, SERIALIZATION);
+      respond(response, "ok", out.toString());
     } catch (IllegalArgumentException e) {
       response.setStatus(SC_BAD_REQUEST);
       respond(response, "error", "Request parameters are not complete.");

@@ -1,9 +1,5 @@
 package com.google.refine.quality.utilities;
 
-import java.beans.XMLDecoder;
-import java.beans.XMLEncoder;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -147,20 +143,9 @@ public final class Utilities {
    * @return A string containing the JSON representation of the map.
    * @throws JsonProcessingException 
    */
-  public static String convertMapToString(Map map) throws JsonProcessingException {
+  public static String convertMapToString(@SuppressWarnings("rawtypes") Map map) throws JsonProcessingException {
     ObjectMapper mapper = new ObjectMapper();
     return mapper.writeValueAsString(map);
-  }
-
-  /**
-   * Deserializes a map.
-   * @param map A string to deserialize from.
-   * @return A map.
-   */
-  @SuppressWarnings("rawtypes")
-  public static Map creteMapFromString(String map) {
-    XMLDecoder xmlDecoder = new XMLDecoder(new ByteArrayInputStream(map.getBytes()));
-    return (Map) xmlDecoder.readObject();
   }
 
   /**
