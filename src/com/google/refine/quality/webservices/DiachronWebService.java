@@ -2,6 +2,7 @@ package com.google.refine.quality.webservices;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -17,16 +18,24 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONWriter;
 
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+
 import com.google.refine.Jsonizable;
 import com.google.refine.quality.problems.QualityProblem;
 import com.google.refine.quality.utilities.JenaModelLoader;
-import com.hp.hpl.jena.rdf.model.Model;
 
 public class DiachronWebService {
+  private static final String METHOD_GET = "GET";
   private static final int SC_BAD_REQUEST = 400;
   private static final int SC_OK = 200;
   private static final String SERIALIZATION = "Turtle";
@@ -80,17 +89,65 @@ public class DiachronWebService {
    * Returns the cleaning quality report.
    * @param request
    * @return An quality report as a {@code StringWriter} object.
+   * @throws FileUploadException
    */
   public static StringWriter getCleaningSuggestions(HttpServletRequest request) throws IOException,
-      JSONException, ClassNotFoundException, InstantiationException, IllegalAccessException {
-    String datasetURL = getDatasetURL(request);
-    List<String> metrics = getMetrics(request);
-    Model model = JenaModelLoader.getModel(datasetURL);
+      JSONException, ClassNotFoundException, InstantiationException, IllegalAccessException,
+      FileUploadException {
+    Model model = ModelFactory.createDefaultModel();
+    List<String> metrics = new ArrayList<String>();
+    String dataset = "";
+
+    // really ugly
+    if (request.getMethod().equals(METHOD_GET)) {
+      dataset = getDatasetURL(request);
+      model = JenaModelLoader.getModel(dataset);
+      metrics = getMetrics(request);
+    } else {
+      @SuppressWarnings("unchecked")
+      List<FileItem> multiparts = new ServletFileUpload(new DiskFileItemFactory())
+          .parseRequest(request);
+
+      for (FileItem item : multiparts) {
+        if (!item.isFormField() && item.getFieldName().equals("upload")) {
+          InputStream stream = item.getInputStream();
+          model = JenaModelLoader.getModel(stream);
+          dataset = item.getName();
+        } else if (item.getFieldName().equals("metrics")) {
+          metrics = JsonArrStringToList(IOUtils.toString(item.getInputStream(), "UTF-8"));
+        }
+      }
+    }
 
     List<QualityProblem> problems = CleaningUtils.identifyQualityProblems(model, metrics);
     StringWriter out = new StringWriter();
-    generateQualityReport(datasetURL, model.size(), problems).write(out, SERIALIZATION);
+    generateQualityReport(dataset, model.size(), problems).write(out, SERIALIZATION);
     return out;
+  }
+
+  /**
+   * Parses a metric parameter of the request. The string parameter has a format
+   * of a json array. Example of a string ["metrics1", "metrics2"].
+   * @return A list of metrics.
+   * @throws IllegalArgumentException if the parameter is missing.
+   * @throws JSONException if a parameter content can not be parsed as JSONArray.
+   */
+  protected static List<String> getMetrics(HttpServletRequest request)
+      throws IllegalArgumentException, JSONException {
+    String metrics = request.getParameter("metrics");
+    if (metrics == null) {
+      throw new IllegalArgumentException();
+    }
+    return JsonArrStringToList(metrics);
+  }
+
+  private static List<String> JsonArrStringToList(String jsonArray) throws JSONException {
+    JSONArray metricsArray = new JSONArray(jsonArray);
+    List<String> list = new ArrayList<String>();
+    for (int i = 0; i < metricsArray.length(); i++) {
+      list.add(metricsArray.getString(i));
+    }
+    return list;
   }
 
   /**
@@ -98,13 +155,34 @@ public class DiachronWebService {
    * @throws IOException
    * @throws JSONException
    */
+  // TODO code duplication
   public static void downloadCleanResults(HttpServletRequest request, HttpServletResponse response)
       throws IOException, JSONException {
     try {
-      String datasetURL = getDatasetURL(request);
-      List<String> metrics = getMetrics(request);
+      Model model = ModelFactory.createDefaultModel();
+      List<String> metrics = new ArrayList<String>();
+      String dataset = "";
 
-      Model model = JenaModelLoader.getModel(datasetURL);
+      if (request.getMethod().equals(METHOD_GET)) {
+        dataset = getDatasetURL(request);
+        model = JenaModelLoader.getModel(dataset);
+        metrics = getMetrics(request);
+      } else {
+        @SuppressWarnings("unchecked")
+        List<FileItem> multiparts = new ServletFileUpload(new DiskFileItemFactory())
+            .parseRequest(request);
+
+        for (FileItem item : multiparts) {
+          if (!item.isFormField() && item.getFieldName().equals("upload")) {
+            InputStream stream = item.getInputStream();
+            model = JenaModelLoader.getModel(stream);
+            dataset = item.getName();
+          } else if (item.getFieldName().equals("metrics")) {
+            metrics = JsonArrStringToList(IOUtils.toString(item.getInputStream(), "UTF-8"));
+          }
+        }
+      }
+
       List<QualityProblem> problems = CleaningUtils.identifyQualityProblems(model, metrics);
       CleaningUtils.cleanModel(model, problems);
 
@@ -209,27 +287,6 @@ public class DiachronWebService {
       delta = Boolean.parseBoolean(deltaParam);
     }
     return delta;
-  }
-
-  /**
-   * Parses a metric parameter of the request. The string parameter has a format
-   * of a json array. Example of a string ["metrics1", "metrics2"].
-   * @return A list of metrics.
-   * @throws IllegalArgumentException if the parameter is missing.
-   * @throws JSONException if a parameter content can not be parsed as JSONArray.
-   */
-  protected static List<String> getMetrics(HttpServletRequest request)
-      throws IllegalArgumentException, JSONException {
-    String metrics = request.getParameter("metrics");
-    if (metrics == null) {
-      throw new IllegalArgumentException();
-    }
-    JSONArray metricsArray = new JSONArray(metrics);
-    List<String> list = new ArrayList<String>();
-    for (int i = 0; i < metricsArray.length(); i++) {
-      list.add(metricsArray.getString(i));
-    }
-    return list;
   }
 
   /**
