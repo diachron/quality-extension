@@ -1,7 +1,6 @@
 package com.google.refine.quality.commands;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -40,23 +39,28 @@ public class IdentifyQualityProblemsCommand extends Command {
       try {
         project = getProject(request);
 
+        if (project.getMetadata().getCustomMetadata("Quality") != null) {
+          cleanProblemsFields();
+        }
+
         if (project.getMetadata().getCustomMetadata("Quality") == null) {
           project.getMetadata().setCustomMetadata("Quality", true);
           addProblemDescriptionColumns();
         }
         quads = Utilities.getQuadsFromProject(project);
-
-        @SuppressWarnings("unchecked")
-        ArrayList<String> metricsList = (ArrayList<String>) project.getMetadata().getCustomMetadata("metrics");
-
+        
+//        @SuppressWarnings("unchecked")
+//        ArrayList<String> metricsList = (ArrayList<String>) project.getMetadata()
+//          .getCustomMetadata("metrics");
         JSONArray metrics = new JSONArray(request.getParameter("metrics"));
         for (int i = 0; i < metrics.length(); i++) {
           String metricName = (String) metrics.get(i);
 
-          if (!metricsList.contains(metricName)) {
-            metricsList.add(metricName);
-            project.getMetadata().setCustomMetadata("metrics", metricsList);
-            Class<?> cls = Class.forName(String.format("%s.%s", Constants.METRICS_PACKAGE, metricName));
+//          if (!metricsList.contains(metricName)) {
+//            metricsList.add(metricName);
+//            project.getMetadata().setCustomMetadata("metrics", metricsList);
+            Class<?> cls = Class.forName(String.format("%s.%s", Constants.METRICS_PACKAGE,
+              metricName));
             AbstractQualityMetric metric = (AbstractQualityMetric) cls.newInstance();
 
             metric.before();
@@ -64,7 +68,7 @@ public class IdentifyQualityProblemsCommand extends Command {
             metric.after();
             postProblems(metric.getQualityProblems());
             project.getMetadata().setCustomMetadata(metricName, metric.getQualityProblems().size());
-          }
+//          }
         }
 
       } catch (IOException e) {
@@ -92,6 +96,24 @@ public class IdentifyQualityProblemsCommand extends Command {
         throw new QualityExtensionException("Illegal arguments. " + e.getLocalizedMessage());
       }
     }
+
+  /**
+   * Cleans the problem description columns in the OpenRefine project.
+   * @throws IOException
+   * @throws ServletException
+   */
+  private void cleanProblemsFields() throws IOException, ServletException {
+    for (int i = 0; i < refine.size(); i++) {
+      for (int column = 0; column < 4; column++) {
+        int cell = Constants.PROBLEM_CELL + column;
+        if (!project.rows.get(i).getCell(cell).toString().isEmpty()) {
+          System.out.println(project.rows.get(i).getCell(cell).toString());
+          RefineCommands.editCell(project, request, response, i, cell, "");
+          LOG.info(String.format("Edit single cell at row: %s, col: %s", i, cell));
+        }
+      }
+    }
+  }
 
   /**
    * Add a problem list identified by a single metric into
@@ -170,7 +192,9 @@ public class IdentifyQualityProblemsCommand extends Command {
   private void addProblemDescriptionColumns() throws IOException, ServletException {
     RefineCommands.addColumn(project, request, response, "Problem Type", "Object", 3);
     RefineCommands.addColumn(project, request, response, "Problem Description", "Problem Type", 4);
-    RefineCommands.addColumn(project, request, response, "Cleaning Suggestion", "Problem Description", 5);
-    RefineCommands.addColumn(project, request, response, "GREL Expresion", "Cleaning Suggestion", 6);
+    RefineCommands.addColumn(project, request, response, "Cleaning Suggestion",
+      "Problem Description", 5);
+    RefineCommands.addColumn(project, request, response, "GREL Expresion",
+      "Cleaning Suggestion", 6);
   }
 }
