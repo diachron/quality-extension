@@ -37,7 +37,7 @@ pobo:BTO_0002178 a owl:Class ;
     rdfs:subClassOf efo:EFO_0002884 .
 
 pobo:BTO_0002179 a owl:Class ;
-    rdfs:label " "^^xsd:string ;
+    rdfs:label "" ;
     pobo:def "\"The 184A1N4 and 184B5 cell lines are nontumorigenic cell lines derived from primary cultures of HMECs that were immortalized with benzo(a)pyrene.\" [PMID:15827326]" ;
     pobo:namespace "BrendaTissueOBO" ;
     efo:alternative_term "A1N4 cell",
@@ -45,7 +45,7 @@ pobo:BTO_0002179 a owl:Class ;
     rdfs:subClassOf efo:EFO_0002884 .
 
 pobo:BTO_0002180 a owl:Class ;
-    rdfs:label " "^^xsd:string ;
+    rdfs:label "" ;
     pobo:def "\"The 184A1N4 and 184B5 cell lines are nontumorigenic cell lines derived from primary cultures of HMECs that were immortalized with benzo(a)pyrene.\" [PMID:15827326]" ;
     pobo:namespace "BrendaTissueOBO" ;
     rdfs:subClassOf efo:EFO_0002884 .
@@ -57,7 +57,7 @@ pobo:BTO_0002599 a owl:Class ;
     rdfs:subClassOf efo:EFO_0000322 .
 
 pobo:BTO_0004263 a owl:Class ;
-    rdfs:label " "^^xsd:string ;
+    rdfs:label "" ;
     pobo:def "\"A differentiating cell line, established from the mouse myoblastic cell line C2C12.\" [PMID:9227903]" ;
     pobo:namespace "BrendaTissueOBO" ;
     efo:alternative_term "COM3 cell",
@@ -65,7 +65,7 @@ pobo:BTO_0004263 a owl:Class ;
     rdfs:subClassOf pobo:BTO_0000256 .
 
 pobo:BTO_0004264 a owl:Class ;
-    rdfs:label " INC-2 cell "^^xsd:string ;
+    rdfs:label " INC-2 cell " ;
     pobo:def "\"A non-differentiating cell line, established from the mouse myoblastic cell line C2C12.\" [PMID:9227903]" ;
     pobo:namespace "BrendaTissueOBO" ;
     efo:alternative_term "INC2 cell"^^xsd:string,
@@ -138,7 +138,7 @@ pobo:CHEBI_10033 a owl:Class ;
     rdfs:subClassOf pobo:CHEBI_23888 .
 
 pobo:CHEBI_101278 a owl:Class ;
-    rdfs:label " diltiazem "^^xsd:string ;
+    rdfs:label " diltiazem ";
     obo2:InChI "InChI=1S/C22H26N2O4S/c1-15(25)28-20-21(16-9-11-17(27-4)12-10-16)29-19-8-6-5-7-18(19)24(22(20)26)14-13-23(2)3/h5-12,20-21H,13-14H2,1-4H3/t20-,21+/m1/s1"^^xsd:string ;
     obo2:InChIKey "InChIKey=HSUGRBWQSSZJOP-RTWAWAEBSA-N"^^xsd:string ;
     obo2:SMILES "COc1ccc(cc1)[C@@H]1Sc2ccccc2N(CCN(C)C)C(=O)[C@@H]1OC(C)=O"^^xsd:string ;
@@ -168,7 +168,7 @@ pobo:CHEBI_101278 a owl:Class ;
     rdfs:subClassOf pobo:CHEBI_37577 .
 
 pobo:CHEBI_1224 a owl:Class ;
-    rdfs:label " 2-nitrofluorene "^^xsd:string ;
+    rdfs:label " 2-nitrofluorene ";
     efo:alternative_term "2-nitro-9H-fluorene"^^xsd:string,
         "C13 Urea"^^xsd:string,
         "C13H9NO2"^^xsd:string,
