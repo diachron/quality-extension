@@ -2,6 +2,8 @@ package com.google.refine.quality.problems;
 
 import java.net.URI;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.core.Quad;
 
@@ -37,5 +39,10 @@ public class DatatypeQualityProblem extends QualityProblem {
     } else {
       return "";
     }
+  }
+
+  @Override
+  public Quad getCleanedQuad() {
+    throw new NotImplementedException();
   }
 }

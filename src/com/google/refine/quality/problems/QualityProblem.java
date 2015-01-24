@@ -9,6 +9,7 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 
 /**
  * Contains information about problematic quads.
+ * TODO make the class abstract.
  */
 public class QualityProblem {
 
@@ -50,6 +51,11 @@ public class QualityProblem {
   public String getGrelExpression() {
     return VocabularyLoader.getResourcePropertyValue(this.problemtURI, QPROB.qrefineRule,
         Constants.QPROB_VOCAB);
+  }
+
+  //TODO make method abstract
+  public Quad getCleanedQuad() {
+    return quad;
   }
 
   @Override

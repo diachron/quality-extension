@@ -14,9 +14,8 @@ import org.apache.xerces.util.URI;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.core.Quad;
-
 import com.google.refine.quality.exceptions.MetricException;
-import com.google.refine.quality.problems.QualityProblem;
+import com.google.refine.quality.problems.WhitespaceInAnnotationProblem;
 import com.google.refine.quality.utilities.Constants;
 import com.google.refine.quality.vocabularies.QPROB;
 
@@ -99,7 +98,7 @@ public class WhitespaceInAnnotation extends AbstractQualityMetric {
       String value = object.getLiteralValue().toString();
       if (!value.equals(value.trim())) {
         whitespaceLiterals++;
-        problems.add(new QualityProblem(quad, qualityReport));
+        problems.add(new WhitespaceInAnnotationProblem(quad, qualityReport));
         LOG.info(String.format("Whitespce is found in annotation of quad: %s", quad.toString()));
       }
     }
