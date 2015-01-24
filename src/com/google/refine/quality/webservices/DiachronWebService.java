@@ -29,21 +29,15 @@ import org.json.JSONWriter;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
-
 import com.google.refine.Jsonizable;
+import com.google.refine.quality.cleaning.CleaningUtils;
 import com.google.refine.quality.problems.QualityProblem;
+import com.google.refine.quality.reports.QualityReport;
+import com.google.refine.quality.reports.QualityStatistic;
+import com.google.refine.quality.utilities.Constants;
 import com.google.refine.quality.utilities.JenaModelLoader;
 
 public class DiachronWebService {
-  private static final String METHOD_GET = "GET";
-  private static final int SC_BAD_REQUEST = 400;
-  private static final int SC_OK = 200;
-  private static final String SERIALIZATION = "Turtle";
-  private static final String CLEANING_SUGGESTION = "Cleaning_suggestion.ttl";
-  private static final String CLEANED_RESULT = "Cleaned.zip";
-  private static final String CLEANED_DATASET = "cleanedModel.ttl";
-  private static final String DELTA_MODEL = "deltaModel.ttl";
-
   /**
    * Returns the cleaning quality report as a JSON entity in the http response.
    * See D3.2 section 4.2.4.
@@ -53,20 +47,20 @@ public class DiachronWebService {
   public static void getCleaningSuggestionsREST(HttpServletRequest request,
       HttpServletResponse response) throws IOException, JSONException {
     try {
-      response.setStatus(SC_OK);
+      response.setStatus(Constants.SC_OK);
       String dataset = getDatasetURL(request);
       Model model = JenaModelLoader.getModel(dataset);
 
       List<QualityProblem> problems = CleaningUtils.identifyQualityProblems(model,
         getMetrics(request));
       StringWriter out = new StringWriter();
-      generateQualityReport(dataset, model.size(), problems).write(out, SERIALIZATION);
+      generateQualityReport(dataset, model.size(), problems).write(out, Constants.SERIALIZATION);
       respond(response, "ok", out.toString());
     } catch (IllegalArgumentException e) {
-      response.setStatus(SC_BAD_REQUEST);
+      response.setStatus(Constants.SC_BAD_REQUEST);
       respond(response, "error", "Request parameters are not complete.");
     } catch (Exception e) {
-      response.setStatus(SC_BAD_REQUEST);
+      response.setStatus(Constants.SC_BAD_REQUEST);
       respond(response, "error",
         "Request parameters cannot be parsed or an error in applying metrics");
     }
@@ -80,13 +74,13 @@ public class DiachronWebService {
   public static void downloadCleaningSuggestions(HttpServletRequest request,
       HttpServletResponse response) throws IOException, JSONException {
     try {
-      respondFile(response, "application/octet-stream", CLEANING_SUGGESTION,
+      respondFile(response, "application/octet-stream", Constants.CLEANING_SUGGESTION,
         getCleaningSuggestions(request).toString().getBytes());
     } catch (IllegalArgumentException e) {
-      response.setStatus(SC_BAD_REQUEST);
+      response.setStatus(Constants.SC_BAD_REQUEST);
       respond(response, "error", "Request parameters are not complete.");
     } catch (Exception e) {
-      response.setStatus(SC_BAD_REQUEST);
+      response.setStatus(Constants.SC_BAD_REQUEST);
       respond(response, "error",
         "Request parameters cannot be parsed or an error in applying metrics");
     }
@@ -106,7 +100,7 @@ public class DiachronWebService {
     String dataset = "";
 
     // really ugly
-    if (request.getMethod().equals(METHOD_GET)) {
+    if (request.getMethod().equals(Constants.METHOD_GET)) {
       dataset = getDatasetURL(request);
       model = JenaModelLoader.getModel(dataset);
       metrics = getMetrics(request);
@@ -128,7 +122,7 @@ public class DiachronWebService {
 
     List<QualityProblem> problems = CleaningUtils.identifyQualityProblems(model, metrics);
     StringWriter out = new StringWriter();
-    generateQualityReport(dataset, model.size(), problems).write(out, SERIALIZATION);
+    generateQualityReport(dataset, model.size(), problems).write(out, Constants.SERIALIZATION);
     return out;
   }
 
@@ -170,7 +164,7 @@ public class DiachronWebService {
       List<String> metrics = new ArrayList<String>();
       String dataset = "";
 
-      if (request.getMethod().equals(METHOD_GET)) {
+      if (request.getMethod().equals(Constants.METHOD_GET)) {
         dataset = getDatasetURL(request);
         model = JenaModelLoader.getModel(dataset);
         metrics = getMetrics(request);
@@ -194,21 +188,21 @@ public class DiachronWebService {
       CleaningUtils.cleanModel(model, problems);
 
       StringWriter out = new StringWriter();
-      model.write(out, SERIALIZATION);
+      model.write(out, Constants.SERIALIZATION);
       Hashtable<String, StringWriter> outputEntries = new Hashtable<String, StringWriter>();
-      outputEntries.put(CLEANED_DATASET, out);
+      outputEntries.put(Constants.CLEANED_DATASET, out);
 
       out = new StringWriter();
-      CleaningUtils.getDeltaModel(model, problems).write(out, SERIALIZATION);
-      outputEntries.put(DELTA_MODEL, out);
+      CleaningUtils.getDeltaModel(model, problems).write(out, Constants.SERIALIZATION);
+      outputEntries.put(Constants.DELTA_MODEL, out);
 
-      response.setStatus(SC_OK);
-      respondFile(response, "application/zip", CLEANED_RESULT, getZippedBytes(outputEntries));
+      response.setStatus(Constants.SC_OK);
+      respondFile(response, "application/zip", Constants.CLEANED_RESULT, getZippedBytes(outputEntries));
     } catch (IllegalArgumentException e) {
-      response.setStatus(SC_BAD_REQUEST);
+      response.setStatus(Constants.SC_BAD_REQUEST);
       respond(response, "error", "Request parameters are not complete.");
     } catch (Exception e) {
-      response.setStatus(SC_BAD_REQUEST);
+      response.setStatus(Constants.SC_BAD_REQUEST);
       respond(response, "error",
         "Request parameters cannot be parsed or an error in applying metrics");
     }
@@ -236,11 +230,11 @@ public class DiachronWebService {
       CleaningUtils.cleanModel(model, problems);
 
       final StringWriter out = new StringWriter();
-      model.write(out, SERIALIZATION);
+      model.write(out, Constants.SERIALIZATION);
 
       final Model deltaModel = CleaningUtils.getDeltaModel(model, problems);
 
-      response.setStatus(SC_OK);
+      response.setStatus(Constants.SC_OK);
       respondJSON(response, new Jsonizable() {
         @Override
         public void write(JSONWriter writer, Properties options) throws JSONException {
@@ -251,17 +245,17 @@ public class DiachronWebService {
           writer.key("uri").value(out.toString());
           if (delta) {
             StringWriter out = new StringWriter();
-            deltaModel.write(out, SERIALIZATION);
+            deltaModel.write(out, Constants.SERIALIZATION);
             writer.key("delta").value(out.toString());
           }
           writer.endObject();
         }
       }, new Properties());
     } catch (IllegalArgumentException e) {
-      response.setStatus(SC_BAD_REQUEST);
+      response.setStatus(Constants.SC_BAD_REQUEST);
       respond(response, "error", "Request parameters are not complete.");
     } catch (Exception e) {
-      response.setStatus(SC_BAD_REQUEST);
+      response.setStatus(Constants.SC_BAD_REQUEST);
       respond(response, "error",
           "Request parameters cannot be parsed or an error in applying metrics");
     }
@@ -269,7 +263,7 @@ public class DiachronWebService {
 
   /**
    * Parses a http request for a dataset URI.
-   * @return A dataset URI as a string.
+   * @return A dataset URI as .a string.
    * @throws IllegalArgumentException if the parameter is missing.
    */
   protected static String getDatasetURL(HttpServletRequest request) throws IllegalArgumentException {

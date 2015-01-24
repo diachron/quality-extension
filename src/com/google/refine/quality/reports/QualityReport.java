@@ -1,4 +1,4 @@
-package com.google.refine.quality.webservices;
+package com.google.refine.quality.reports;
 
 import com.google.refine.quality.problems.QualityProblem;
 import com.google.refine.quality.utilities.Utilities;

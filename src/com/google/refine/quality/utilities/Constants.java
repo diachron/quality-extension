@@ -39,4 +39,14 @@ public class Constants {
     return USER_DIR.contains("extensions/quality-extension") ? "" : "extensions/quality-extension"
       + File.separator;
   }
+
+  // Web Service constans
+  public static final String METHOD_GET = "GET";
+  public static final int SC_BAD_REQUEST = 400;
+  public static final int SC_OK = 200;
+  public static final String SERIALIZATION = "Turtle";
+  public static final String CLEANING_SUGGESTION = "Cleaning_suggestion.ttl";
+  public static final String CLEANED_RESULT = "Cleaned.zip";
+  public static final String CLEANED_DATASET = "cleanedModel.ttl";
+  public static final String DELTA_MODEL = "deltaModel.ttl";
 }

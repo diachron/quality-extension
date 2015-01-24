@@ -18,6 +18,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.google.refine.quality.cleaning.CleaningUtils;
 import com.google.refine.quality.problems.QualityProblem;
 import com.google.refine.quality.utilities.JenaModelLoader;
 import com.google.refine.quality.utilities.Utilities;

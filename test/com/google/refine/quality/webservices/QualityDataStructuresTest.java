@@ -6,7 +6,10 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.google.refine.quality.cleaning.CleaningUtils;
 import com.google.refine.quality.problems.QualityProblem;
+import com.google.refine.quality.reports.QualityReport;
+import com.google.refine.quality.reports.QualityStatistic;
 import com.google.refine.quality.utilities.JenaModelLoader;
 import com.google.refine.quality.vocabularies.QPROB;
 import com.google.refine.quality.vocabularies.QR;

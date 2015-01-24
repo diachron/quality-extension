@@ -1,4 +1,4 @@
-package com.google.refine.quality.webservices;
+package com.google.refine.quality.reports;
 
 import java.util.ArrayList;
 import java.util.List;
