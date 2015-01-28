@@ -18,7 +18,10 @@ qr:QualityProblem a rdfs:Class ;
 qr:QualityStatistics a rdfs:Class ;
 	rdfs:comment "Represents a brief overview of the quality report." ;
 	rdfs:label "Quality Statistics" .
-		
+
+qr:CleaningReport a rdfs:Class ;
+	rdfs:comment "Represents a brief overview of the cleaned triples." ;
+	rdfs:label "Cleaning Results".
 	
 # Properties
 qr:computedOn 
@@ -27,7 +30,21 @@ qr:computedOn
 	rdfs:domain qr:QualityReport ;
 	rdfs:label "computedOn" ;
 	rdfs:range rdfs:Resource .
-	
+
+qr:cleaning
+	a rdf:Property, owl:ObjectProperty ;
+        rdfs:comment "describes all cleaned triples effected by different problems." ;
+        rdfs:domain qr:QualityReport ;
+        rdfs:label "cleaning" ;
+        rdfs:range qr:CleaningReport .
+
+qr:cleanedProblem
+        a rdf:Property, owl:ObjectProperty ;
+        rdfs:comment "describe cleaned triples effected by one problem." ;
+        rdfs:domain qr:CleaningReport ;
+        rdfs:label "cleanedProblem" ;
+        rdfs:range qr:QualityProblem .
+
 qr:statistics 
 		a rdf:Property, owl:ObjectProperty ;
 		rdfs:comment "Comprises statistics of the quality report" ;
@@ -84,3 +101,4 @@ qr:numberOfAffectedTriples
 		rdfs:comment	"Contains information about number of infected triples" ;
 		rdfs:domain	qr:QualityProblem;
 		rdfs:range	 xsd:integer.
+

@@ -3,93 +3,112 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
 >
-  <rdf:Description rdf:about="http://purl.org/eis/vocab/qr#statistics">
-    <rdfs:comment>Comprises statistics of the quality report</rdfs:comment>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
-    <rdfs:range rdf:resource="http://purl.org/eis/vocab/qr#QualityStatistics"/>
-    <rdfs:label>statistics</rdfs:label>
-    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
-    <rdfs:domain rdf:resource="http://purl.org/eis/vocab/qr#QualityReport"/>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://purl.org/eis/vocab/qr#hasProblem">
-    <rdfs:domain rdf:resource="http://purl.org/eis/vocab/qr#QualityReport"/>
-    <rdfs:label>has Problem</rdfs:label>
-    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
-    <rdfs:comment>Identifies problem instances in the report</rdfs:comment>
-    <rdfs:range rdf:resource="http://purl.org/eis/vocab/qr#QualityProblem"/>
-  </rdf:Description>
   <rdf:Description rdf:about="http://purl.org/eis/vocab/qr#computedOn">
-    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+    <rdfs:domain rdf:resource="http://purl.org/eis/vocab/qr#QualityReport"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
     <rdfs:comment>Represents the dataset URI on which quality metrics where computed</rdfs:comment>
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
-    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
-    <rdfs:domain rdf:resource="http://purl.org/eis/vocab/qr#QualityReport"/>
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
     <rdfs:label>computedOn</rdfs:label>
   </rdf:Description>
-  <rdf:Description rdf:about="http://purl.org/eis/vocab/qr#numberOfProblems">
+  <rdf:Description rdf:about="http://purl.org/eis/vocab/qr#isDescribedBy">
+    <rdfs:range rdf:resource="http://purl.org/eis/vocab/daq#Metric"/>
+    <rdfs:domain rdf:resource="http://purl.org/eis/vocab/qr#QualityProblem"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:label>isDescribedBy</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+    <rdfs:comment>Represent the URI of the metric which instantiated this problem</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://purl.org/eis/vocab/qr#problem">
     <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
-    <rdfs:label>numberOfProblems</rdfs:label>
-    <rdfs:comment>Contains information about total number of identified problems</rdfs:comment>
     <rdfs:domain rdf:resource="http://purl.org/eis/vocab/qr#QualityStatistics"/>
+    <rdfs:range rdf:resource="http://purl.org/eis/vocab/qr#QualityProblem"/>
+    <rdfs:comment>Contains information about total number of identified problems, can contains several problems</rdfs:comment>
+    <rdfs:label>problem</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://purl.org/eis/vocab/qr#totalNumberOfTriples">
+    <rdfs:comment>Contains information about total number of triples in data set</rdfs:comment>
+    <rdfs:domain rdf:resource="http://purl.org/eis/vocab/qr#QualityStatistics"/>
+    <rdfs:label>totalTriples</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://purl.org/eis/vocab/qr#QualityProblem">
     <rdfs:comment>Represents a quality problem detected during the assessment of quality metrics on triples.</rdfs:comment>
     <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
     <rdfs:label>Quality Problem</rdfs:label>
   </rdf:Description>
-  <rdf:Description rdf:about="http://purl.org/eis/vocab/qr#numberOfAffectedTriples">
-    <rdfs:label>numberOfProblematicTriples</rdfs:label>
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+  <rdf:Description rdf:about="http://purl.org/eis/vocab/qr#cleaning">
     <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
-    <rdfs:domain rdf:resource="http://purl.org/eis/vocab/qr#QualityProblem"/>
+    <rdfs:range rdf:resource="http://purl.org/eis/vocab/qr#CleaningReport"/>
+    <rdfs:label>cleaning</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:comment>describes all cleaned triples effected by different problems.</rdfs:comment>
+    <rdfs:domain rdf:resource="http://purl.org/eis/vocab/qr#QualityReport"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://purl.org/eis/vocab/qr#numberOfAffectedTriples">
     <rdfs:comment>Contains information about number of infected triples</rdfs:comment>
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://purl.org/eis/vocab/qr#totalNumberOfTriples">
+    <rdfs:label>numberOfProblematicTriples</rdfs:label>
     <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
-    <rdfs:domain rdf:resource="http://purl.org/eis/vocab/qr#QualityStatistics"/>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
-    <rdfs:comment>Contains information about total number of triples in data set</rdfs:comment>
-    <rdfs:label>totalTriples</rdfs:label>
-    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://purl.org/eis/vocab/qr#QualityStatistics">
-    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
-    <rdfs:comment>Represents a brief overview of the quality report.</rdfs:comment>
-    <rdfs:label>Quality Statistics</rdfs:label>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://purl.org/eis/vocab/qr#QualityReport">
-    <rdfs:comment>Represents a report on the problems detected during the assessment of quality on a dataset.</rdfs:comment>
-    <rdfs:label>Quality Report</rdfs:label>
-    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://purl.org/eis/vocab/qr#isDescribedBy">
-    <rdfs:comment>Represent the URI of the metric which instantiated this problem</rdfs:comment>
     <rdfs:domain rdf:resource="http://purl.org/eis/vocab/qr#QualityProblem"/>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
-    <rdfs:range rdf:resource="http://purl.org/eis/vocab/daq#Metric"/>
     <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
-    <rdfs:label>isDescribedBy</rdfs:label>
   </rdf:Description>
   <rdf:Description rdf:about="http://purl.org/eis/vocab/qr#problematicThing">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
-    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
-    <rdfs:label>affects</rdfs:label>
-    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
     <rdfs:domain rdf:resource="http://purl.org/eis/vocab/qr#QualityProblem"/>
     <rdfs:comment>Represent the actual problematic instance from the dataset. This could be a list of resources (rdf:Seq) or a list of reified statements.</rdfs:comment>
+    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+    <rdfs:label>affects</rdfs:label>
   </rdf:Description>
-  <rdf:Description rdf:about="http://purl.org/eis/vocab/qr#problem">
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  <rdf:Description rdf:about="http://purl.org/eis/vocab/qr#CleaningReport">
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+    <rdfs:label>Cleaning Results</rdfs:label>
+    <rdfs:comment>Represents a brief overview of the cleaned triples.</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://purl.org/eis/vocab/qr#statistics">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+    <rdfs:label>statistics</rdfs:label>
+    <rdfs:range rdf:resource="http://purl.org/eis/vocab/qr#QualityStatistics"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:domain rdf:resource="http://purl.org/eis/vocab/qr#QualityReport"/>
+    <rdfs:comment>Comprises statistics of the quality report</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://purl.org/eis/vocab/qr#hasProblem">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+    <rdfs:domain rdf:resource="http://purl.org/eis/vocab/qr#QualityReport"/>
     <rdfs:range rdf:resource="http://purl.org/eis/vocab/qr#QualityProblem"/>
+    <rdfs:comment>Identifies problem instances in the report</rdfs:comment>
+    <rdfs:label>has Problem</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://purl.org/eis/vocab/qr#QualityStatistics">
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+    <rdfs:label>Quality Statistics</rdfs:label>
+    <rdfs:comment>Represents a brief overview of the quality report.</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://purl.org/eis/vocab/qr#QualityReport">
+    <rdfs:comment>Represents a report on the problems detected during the assessment of quality on a dataset.</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+    <rdfs:label>Quality Report</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://purl.org/eis/vocab/qr#cleanedProblem">
+    <rdfs:comment>describe cleaned triples effected by one problem.</rdfs:comment>
+    <rdfs:domain rdf:resource="http://purl.org/eis/vocab/qr#CleaningReport"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+    <rdfs:label>cleanedProblem</rdfs:label>
+    <rdfs:range rdf:resource="http://purl.org/eis/vocab/qr#QualityProblem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://purl.org/eis/vocab/qr#numberOfProblems">
+    <rdfs:label>numberOfProblems</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
     <rdfs:domain rdf:resource="http://purl.org/eis/vocab/qr#QualityStatistics"/>
     <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
-    <rdfs:label>problem</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
     <rdfs:comment>Contains information about total number of identified problems</rdfs:comment>
   </rdf:Description>
 </rdf:RDF>
-
-
