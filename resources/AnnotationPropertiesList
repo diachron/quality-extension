@@ -14,3 +14,4 @@ http://www.w3.org/2000/01/rdf-schema#label
 http://www.w3.org/2000/01/rdf-schema#comment
 http://purl.org/dc/terms/title
 http://purl.org/dc/terms/description
+http://www.w3.org/2000/01/rdf-schema#label
