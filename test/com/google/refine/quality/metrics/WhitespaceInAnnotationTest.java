@@ -16,7 +16,6 @@ import com.hp.hpl.jena.sparql.core.Quad;
 import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
-
 import com.google.refine.quality.problems.QualityProblem;
 import com.google.refine.quality.utilities.Constants;
 
@@ -46,6 +45,28 @@ public class WhitespaceInAnnotationTest {
   }
 
   @Test
+  public void testEmptyLiteral() throws InstantiationException, IllegalAccessException,
+    IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+    metric = (AbstractQualityMetric) cls.newInstance();
+    metric.getClass().getDeclaredMethod("before", Object[].class).invoke(metric, new Object[]{new String[]{}});
+
+
+    Model model = ModelFactory.createDefaultModel();
+    model.createResource("http://example.org/#ex")
+        .addProperty(RDFS.comment, " ");
+    List<Quad> quads = new ArrayList<Quad>();
+    StmtIterator si = model.listStatements();
+    while (si.hasNext()) {
+      quads.add(new Quad(null, si.next().asTriple()));
+    }
+    metric.compute(quads);
+    List<QualityProblem> problems = metric.getQualityProblems();
+    Assert.assertTrue(problems.isEmpty());
+    Assert.assertTrue(problems.size() == 0);
+    Assert.assertEquals(0.0, metric.metricValue(), 0.0);
+  }
+
+  @Test
   public void emptyQuads() throws IllegalAccessException, IllegalArgumentException,
     InvocationTargetException, NoSuchMethodException, SecurityException, InstantiationException {
     metric = (AbstractQualityMetric) cls.newInstance();
@@ -53,7 +74,6 @@ public class WhitespaceInAnnotationTest {
 
     metric.compute(new ArrayList<Quad>());
     List<QualityProblem> problems = metric.getQualityProblems();
-    System.out.println(problems.size());
     Assert.assertTrue(problems.isEmpty());
     Assert.assertTrue(problems.size() == 0);
     Assert.assertEquals(0.0, metric.metricValue(), 0.0);
@@ -67,7 +87,6 @@ public class WhitespaceInAnnotationTest {
 
     metric.compute(quads);
     List<QualityProblem> problems = metric.getQualityProblems();
-    System.out.println(problems.size());;
     Assert.assertFalse(problems.isEmpty());
     Assert.assertTrue(problems.size() == 3);
     Assert.assertEquals(0.5, metric.metricValue(), 0.0);
@@ -92,7 +111,6 @@ public class WhitespaceInAnnotationTest {
     metric.compute(quards);
     List<QualityProblem> problems = metric.getQualityProblems();
     Assert.assertTrue(problems.isEmpty());
-    System.out.println(problems.size());;
     Assert.assertTrue(problems.size() == 0);
     Assert.assertEquals(0.0, metric.metricValue(), 0.0);
   }

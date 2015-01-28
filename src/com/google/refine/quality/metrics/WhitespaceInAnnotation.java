@@ -96,7 +96,8 @@ public class WhitespaceInAnnotation extends AbstractQualityMetric {
     Node object = quad.getObject();
     if (object.isLiteral()) {
       String value = object.getLiteralValue().toString();
-      if (!value.equals(value.trim())) {
+      String f = value.trim();
+      if (!value.equals(value.trim()) && !value.trim().isEmpty()) {
         whitespaceLiterals++;
         problems.add(new WhitespaceInAnnotationProblem(quad, qualityReport));
         LOG.info(String.format("Whitespce is found in annotation of quad: %s", quad.toString()));
