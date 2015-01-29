@@ -3,8 +3,6 @@ package com.google.refine.quality.problems;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.core.Quad;
 
@@ -44,10 +42,5 @@ public class MalformedDatatypeProblem extends QualityProblem {
     } else {
       return " ";
     }
-  }
-
-  @Override
-  public Quad getCleanedQuad() {
-    throw new NotImplementedException();
   }
 }

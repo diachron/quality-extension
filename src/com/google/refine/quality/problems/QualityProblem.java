@@ -53,11 +53,6 @@ public class QualityProblem {
         Constants.QPROB_VOCAB);
   }
 
-  //TODO make method abstract
-  public Quad getCleanedQuad() {
-    return quad;
-  }
-
   @Override
   public boolean equals(Object other) {
     if (this == other)
