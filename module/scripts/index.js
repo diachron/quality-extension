@@ -67,6 +67,7 @@ $(function() {
     } else if (url == '' && file == '') {
       $('#url_input').focus();
     } else if (url != '' && file == '') {
+    	httpMethod = "GET";
     }
 
     if ($("input[name='operation']:checked").val() === 'openRefine') {
