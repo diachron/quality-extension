@@ -1,5 +1,6 @@
 package com.google.refine.quality.problems;
 
+import com.google.refine.quality.utilities.Utilities;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
@@ -16,10 +17,12 @@ public class WhitespaceInAnnotationProblem extends QualityProblem implements IAu
     
     String subject = quad.getSubject().toString();
     String predicate = quad.getPredicate().toString();
-    String object = quad.getObject().getLiteralValue().toString().trim();
+    String object = quad.getObject().toString();
     
-    return ResourceFactory.createStatement(ResourceFactory.createResource(subject), 
-        ResourceFactory.createProperty(predicate), 
-        ResourceFactory.createPlainLiteral(object));
+    Statement statement = Utilities.createStatement(subject, predicate, object);
+    String literalVal = statement.getObject().asLiteral().getString();
+    statement.changeObject(literalVal.trim());
+    
+    return statement;
   }
 }
