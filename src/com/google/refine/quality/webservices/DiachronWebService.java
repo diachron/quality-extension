@@ -31,6 +31,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.google.refine.Jsonizable;
 import com.google.refine.quality.cleaning.CleaningUtils;
+import com.google.refine.quality.cleaning.ModelCleaner;
 import com.google.refine.quality.problems.IAutoCleanable;
 import com.google.refine.quality.problems.QualityProblem;
 import com.google.refine.quality.problems.QualityProblemTest;
@@ -188,8 +189,10 @@ public class DiachronWebService {
       }
 
       List<QualityProblem> problems = CleaningUtils.identifyQualityProblems(model, metrics);
-      CleaningUtils.cleanModel(model, problems);
 
+      ModelCleaner modelCleaner = new ModelCleaner();
+      modelCleaner.cleanModel(model, problems);
+      
       StringWriter out = new StringWriter();
       model.write(out, Constants.SERIALIZATION);
       Hashtable<String, StringWriter> outputEntries = new Hashtable<String, StringWriter>();
@@ -230,8 +233,10 @@ public class DiachronWebService {
 
       Model model = JenaModelLoader.getModel(datasetURL);
       List<QualityProblem> problems = CleaningUtils.identifyQualityProblems(model, metrics);
-      CleaningUtils.cleanModel(model, problems);
-
+      
+      ModelCleaner modelCleaner = new ModelCleaner();
+      modelCleaner.cleanModel(model, problems);
+      
       final StringWriter out = new StringWriter();
       model.write(out, Constants.SERIALIZATION);
 
