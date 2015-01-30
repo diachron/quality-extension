@@ -36,7 +36,10 @@ public class QualityReport {
     model.add(statistic);
     report.addProperty(QR.statistics, statistic.getResource("statistic"));
   }
-
+  public void setCleaningReport(Model cleaningReport) {
+    model.add(cleaningReport);
+    report.addProperty(QR.cleaning, cleaningReport.getResource("cleaningReport"));
+  }
   public void addQualityProblem(QualityProblem problem) {
     problems.add(createQualityProblem(problem));
   }

@@ -41,8 +41,4 @@ public class DatatypeQualityProblem extends QualityProblem {
     }
   }
 
-  @Override
-  public Quad getCleanedQuad() {
-    throw new NotImplementedException();
-  }
 }

@@ -1,9 +1,7 @@
 package com.google.refine.quality.reports;
 
 import java.util.HashSet;
-import java.util.List;
 
-import com.google.refine.quality.problems.QualityProblem;
 import com.google.refine.quality.vocabularies.QR;
 import com.hp.hpl.jena.rdf.model.Bag;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -29,41 +27,33 @@ public class CleaningReport {
     
   }
   
-  public void addCleanedProblems(List<QualityProblem> problems) {
+  public void addCleanedProblem(Resource problem) {
     
     NodeIterator itr = cleanedProblems.iterator();
     HashSet<String> probs = new HashSet<String>();
     
-    while(itr.hasNext()) {
+    while (itr.hasNext()) {
       Resource bagItem = (Resource)itr.next();
       probs.add(bagItem.getProperty(RDF.type).getObject().toString());
     }
     
-    for(QualityProblem problem: problems) {
-      
-      Resource problemUri = problem.getProblemURI();
-      
-      if(probs.contains(problemUri.toString())) {
-      
-        itr = cleanedProblems.iterator();
-        while(itr.hasNext()) {
-        
-          Resource bagItem = (Resource) itr.next();
-          String cleanedProblemName = bagItem.getProperty(RDF.type).getObject().toString();
-          
-          if(cleanedProblemName.equals(problemUri.toString())) {
-            Statement statement = bagItem.getProperty(QR.numberOfAffectedTriples);
-            long count = statement.getObject().asLiteral().getLong();
-            statement.changeLiteralObject(++count);
-          }
+    if(probs.contains(problem.toString())) {
+      itr = cleanedProblems.iterator();
+      while (itr.hasNext()) {
+ 
+        Resource bagItem = (Resource) itr.next();
+        String cleanedProblemName = bagItem.getProperty(RDF.type).getObject().toString();
+        if(cleanedProblemName.equals(problem.toString())) {
+          Statement st = bagItem.getProperty(QR.numberOfAffectedTriples);
+          long count = st.getObject().asLiteral().getLong();
+          st.changeLiteralObject(++count);
         }
       }
-      else { 
-        cleanedProblems.add(model.createResource(problemUri).addProperty(QR.numberOfAffectedTriples, 
-            model.createTypedLiteral(1)));
-      }
     }
-    
+    else {
+      cleanedProblems.add(model.createResource(problem).addProperty(QR.numberOfAffectedTriples,
+          model.createTypedLiteral(1)));
+    }
   }
   
   public Model getModel() {

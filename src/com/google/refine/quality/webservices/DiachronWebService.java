@@ -31,7 +31,10 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.google.refine.Jsonizable;
 import com.google.refine.quality.cleaning.CleaningUtils;
+import com.google.refine.quality.problems.IAutoCleanable;
 import com.google.refine.quality.problems.QualityProblem;
+import com.google.refine.quality.problems.QualityProblemTest;
+import com.google.refine.quality.reports.CleaningReport;
 import com.google.refine.quality.reports.QualityReport;
 import com.google.refine.quality.reports.QualityStatistic;
 import com.google.refine.quality.utilities.Constants;
@@ -298,12 +301,19 @@ public class DiachronWebService {
       List<QualityProblem> qualityProblems) {
     QualityReport qualityReport = new QualityReport(dataset);
     QualityStatistic qualityStatistic = new QualityStatistic(triples, qualityProblems.size());
-
+    CleaningReport cleaningReport = new CleaningReport();
+    
     for (QualityProblem problem : qualityProblems) {
-      qualityReport.addQualityProblem(problem);
-      qualityStatistic.incrementProblemCounter(problem.getProblemURI());
+      if(problem instanceof IAutoCleanable) {
+        cleaningReport.addCleanedProblem(problem.getProblemURI());
+      }
+      else {
+        qualityReport.addQualityProblem(problem);
+        qualityStatistic.incrementProblemCounter(problem.getProblemURI());
+      }
     }
     qualityReport.setQualityStatistic(qualityStatistic.getQualityStatisticModel());
+    qualityReport.setCleaningReport(cleaningReport.getModel());
     return qualityReport.getQualityReportModel();
   }
 
