@@ -2,8 +2,6 @@ package com.google.refine.quality.problems;
 
 import java.net.URI;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.core.Quad;
 

@@ -67,7 +67,8 @@ $(function() {
     } else if (url == '' && file == '') {
       $('#url_input').focus();
     } else if (url != '' && file == '') {
-    	httpMethod = "GET";
+//    httpMethod = "GET"; @TODO fix and refactor. method must not be get for GET here, otherwise
+//      form field with the name upload wont be parsed by OpenRefine methods.
     }
 
     if ($("input[name='operation']:checked").val() === 'openRefine') {
