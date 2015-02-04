@@ -32,9 +32,8 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.google.refine.Jsonizable;
 import com.google.refine.quality.cleaning.CleaningUtils;
 import com.google.refine.quality.cleaning.ModelCleaner;
-import com.google.refine.quality.problems.IAutoCleanable;
+import com.google.refine.quality.problems.AutoCleanable;
 import com.google.refine.quality.problems.QualityProblem;
-import com.google.refine.quality.problems.QualityProblemTest;
 import com.google.refine.quality.reports.CleaningReport;
 import com.google.refine.quality.reports.QualityReport;
 import com.google.refine.quality.reports.QualityStatistic;
@@ -309,7 +308,7 @@ public class DiachronWebService {
     CleaningReport cleaningReport = new CleaningReport();
     
     for (QualityProblem problem : qualityProblems) {
-      if(problem instanceof IAutoCleanable) {
+      if(problem instanceof AutoCleanable) {
         cleaningReport.addCleanedProblem(problem.getProblemURI());
       }
       else {

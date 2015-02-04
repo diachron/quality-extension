@@ -111,6 +111,28 @@ public final class Utilities {
    * @param quad A Jena quad object.
    * @return A Jena statement obejct.
    */
+  public static Statement createStatement(Quad quad) {
+    if (quad == null) {
+      throw new NullPointerException();
+    }
+    String object = quad.getSubject().toString();
+    String predicate = quad.getPredicate().toString();
+    String subject = quad.getSubject().toString();
+    RDFNode objectNode = null;
+
+    if (Utilities.isUrl(object)) {
+      objectNode = ResourceFactory.createResource(object);
+    } else {
+      objectNode = ResourceFactory.createPlainLiteral(object.substring(1, object.length() - 1));
+    }
+    return ResourceFactory.createStatement(ResourceFactory.createResource(subject),
+        ResourceFactory.createProperty(predicate), objectNode);
+  }
+  /**
+   * Creates a statement object from a quad.
+   * @param quad A Jena quad object.
+   * @return A Jena statement obejct.
+   */
   public static Statement createStatement(String subject, String predicate, String object) {
     RDFNode objectNode = null;
 
