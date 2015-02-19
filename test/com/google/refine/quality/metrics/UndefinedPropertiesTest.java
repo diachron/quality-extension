@@ -17,7 +17,6 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.sparql.core.Quad;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDFS;
-
 import com.google.refine.quality.problems.QualityProblem;
 import com.google.refine.quality.utilities.Constants;
 
@@ -71,6 +70,42 @@ public class UndefinedPropertiesTest {
     Assert.assertFalse(problems.isEmpty());
      Assert.assertTrue(problems.size() == 4);
     Assert.assertEquals(0.5, metric.metricValue(), 0.0);
+  }
+
+  @Test
+  public void suggestion() throws IllegalAccessException, IllegalArgumentException,
+      InvocationTargetException, NoSuchMethodException, SecurityException, InstantiationException {
+    Model model = ModelFactory.createDefaultModel();
+
+    Resource rdfResource = model.createResource("http://example.org/11");
+    Resource rdfResource1 = model.createResource("http://example.org/22");
+
+    model.createResource("http://example.org/#1")
+        .addProperty(RDFS.subPropertyOf, rdfResource)
+        .addProperty(ResourceFactory.createProperty("http://example.org/#property1"), rdfResource)
+        .addProperty(ResourceFactory.createProperty("http://example.org/#property2"), rdfResource1)
+        .addProperty(RDFS.comment, "here goes a comment")
+        .addProperty(ResourceFactory.createProperty("http://www.w3.org/2000/01/redf-schema#comment"),
+          "comment").addProperty(OWL.onProperty, rdfResource).addProperty(OWL.oneOf, rdfResource)
+        .addProperty(RDFS.comment, ResourceFactory.createResource("http://example.org/#2"));
+
+    List<Quad> quads = new ArrayList<Quad>();
+    StmtIterator si = model.listStatements();
+    while (si.hasNext()) {
+      quads.add(new Quad(null, si.next().asTriple()));
+    }
+    metric = (AbstractQualityMetric) cls.newInstance();
+    metric.getClass().getDeclaredMethod("before", Object[].class)
+    .invoke(metric, new Object[] { new String[] {} });
+
+    metric.compute(quads);
+    List<QualityProblem> problems = metric.getQualityProblems();
+    for (QualityProblem pr : problems) {
+      if (pr.getCleaningSuggestion().isEmpty()) {}
+    }
+    Assert.assertFalse(problems.isEmpty());
+    Assert.assertTrue(problems.size() == 5);
+    Assert.assertEquals(0.5, metric.metricValue(), 0.01);
   }
 
   @AfterClass

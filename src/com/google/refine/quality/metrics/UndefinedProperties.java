@@ -6,18 +6,20 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.apache.xerces.util.URI;
 
+import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein;
+
+import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.core.Quad;
 import com.hp.hpl.jena.vocabulary.RDFS;
-
 import com.google.refine.quality.exceptions.MetricException;
-import com.google.refine.quality.problems.QualityProblem;
 import com.google.refine.quality.problems.UndefinedPropertyProblem;
 import com.google.refine.quality.utilities.Constants;
 import com.google.refine.quality.utilities.VocabularyReader;
@@ -31,6 +33,7 @@ public class UndefinedProperties extends AbstractQualityMetric {
   private long properties = 0;
 
   private static Set<String> propertiesSet = new HashSet<String>();
+  private static Set<String> allProperties = new HashSet<String>();
 
   /**
    * Loads a list of properties.
@@ -72,6 +75,26 @@ public class UndefinedProperties extends AbstractQualityMetric {
     propertiesSet.clear();
   }
 
+  @Override
+  public void compute(List<Quad> quads) {
+    collectProperties(quads);
+    for (Quad quad : quads) {
+      compute(quad);
+    }
+  }
+
+  private void collectProperties(List<Quad> quads) {
+    for (Quad quad : quads) {
+      String pred = quad.getPredicate().toString();
+      if (quad.getPredicate().isURI()) {
+        Model model = VocabularyReader.read(quad.getPredicate().getURI());
+        if (!model.isEmpty()) {
+          allProperties.add(pred);
+        }
+      }
+    }
+  }
+
   /**
    * The method identifies whether a component (subject, predicate or object) of
    * the given quad references an undefined class or property.
@@ -86,7 +109,8 @@ public class UndefinedProperties extends AbstractQualityMetric {
       Model model = VocabularyReader.read(predicateURI);
       if (model.isEmpty()) {
         undefinedProperties++;
-        problems.add(new QualityProblem(quad, qualityReport));
+        problems.add(new UndefinedPropertyProblem(quad, qualityReport,
+            getMostSimilarProperty(quad.getPredicate())));
         LOG.info(String.format("Undefined property is found: %s", predicateURI));
       } else if (model.getResource(predicateURI).isURIResource()) {
         checkDomainAndRange(model, predicateURI, quad);
@@ -102,7 +126,8 @@ public class UndefinedProperties extends AbstractQualityMetric {
     if (!(model.getResource(uri).hasProperty(RDFS.domain) && model.getResource(uri)
       .hasProperty(RDFS.range))) {
       undefinedProperties++;
-      problems.add(new UndefinedPropertyProblem(quad, qualityReport));
+      problems.add(new UndefinedPropertyProblem(quad, qualityReport,
+        getMostSimilarProperty(quad.getPredicate())));
       LOG.info(String.format("Property has not a domain and range: %s", uri));
     }
   }
@@ -114,14 +139,28 @@ public class UndefinedProperties extends AbstractQualityMetric {
       Model model = VocabularyReader.read(objectURI);
       if (model.isEmpty()) {
         undefinedProperties++;
-        problems.add(new QualityProblem(quad, qualityReport));
+        problems.add(new UndefinedPropertyProblem(quad, qualityReport,
+            getMostSimilarProperty(quad.getObject())));
         LOG.info(String.format("Object contains an undefined property: %s", objectURI));
       } else if (!model.getResource(objectURI).isURIResource()) {
         undefinedProperties++;
-        problems.add(new QualityProblem(quad, qualityReport));
+        problems.add(new UndefinedPropertyProblem(quad, qualityReport,
+            getMostSimilarProperty(quad.getObject())));
         LOG.info(String.format("Object contains an undefined property: %s", objectURI));
       }
     }
+  }
+
+  private String getMostSimilarProperty(Node property) {
+    Levenshtein sim = new Levenshtein();
+    double max = Constants.LEVENSTEIN_THRESHOLD;
+    String bestMatch = "";
+    for (String prop : allProperties) {
+      double similarity = sim.getSimilarity(prop, property.toString());
+      if (similarity > max) { max = similarity; bestMatch = prop; }
+    }
+    LOG.info(String.format("Best match is \" %s \" with Levenstein distance of %f", bestMatch, max));
+    return bestMatch;
   }
 
   /**
