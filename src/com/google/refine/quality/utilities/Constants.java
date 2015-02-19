@@ -40,7 +40,7 @@ public class Constants {
       + File.separator;
   }
 
-  // Web Service constans
+  // Web Service constants
   public static final String METHOD_GET = "GET";
   public static final int SC_BAD_REQUEST = 400;
   public static final int SC_OK = 200;
@@ -49,4 +49,7 @@ public class Constants {
   public static final String CLEANED_RESULT = "Cleaned.zip";
   public static final String CLEANED_DATASET = "cleanedModel.ttl";
   public static final String DELTA_MODEL = "deltaModel.ttl";
+
+  // Metrics constants
+  public static final double LEVENSTEIN_THRESHOLD = 0.20;
 }

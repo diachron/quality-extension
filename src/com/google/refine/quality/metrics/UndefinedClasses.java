@@ -6,21 +6,23 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.apache.xerces.util.URI;
 
-import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.sparql.core.Quad;
+import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein;
 
 import com.google.refine.quality.exceptions.MetricException;
 import com.google.refine.quality.problems.UndefinedClassProblem;
 import com.google.refine.quality.utilities.Constants;
 import com.google.refine.quality.utilities.VocabularyReader;
 import com.google.refine.quality.vocabularies.QPROB;
+import com.hp.hpl.jena.graph.Node;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.sparql.core.Quad;
 
 /**
  * Detects undefined classes and properties from data set by checking for its
@@ -36,6 +38,7 @@ public class UndefinedClasses extends AbstractQualityMetric {
   private long classes = 0;
 
   private static Set<String> properties = new HashSet<String>();
+  private static Set<String> allClasses = new HashSet<String>();
 
   /**
    * Loads a list of class properties.
@@ -79,29 +82,60 @@ public class UndefinedClasses extends AbstractQualityMetric {
     properties.clear();
   }
 
+  @Override
+  public void compute(List<Quad> quads) {
+    collectClasses(quads);
+    for (Quad quad : quads) {
+      compute(quad);
+    }
+  }
+
+  private void collectClasses(List<Quad> quads) {
+    for (Quad quad : quads) {
+      Node object = quad.getObject();
+      if (properties.contains(quad.getPredicate().getURI()) && object.isURI()) {
+        Model model = VocabularyReader.read(object.getURI());
+        if (!model.isEmpty()) {
+          allClasses.add(object.toString());
+        }
+      }
+    }
+  }
+
   /**
    * The method identifies whether a component (subject, predicate or object)
    * of the given quad references an undefined class.
    * @param quad A quad to check for quality problems.
    */
-  @Override
   public void compute(Quad quad) {
     Node object = quad.getObject();
 
     if (properties.contains(quad.getPredicate().getURI()) && object.isURI()) {
       classes++;
-
       Model model = VocabularyReader.read(object.getURI());
       if (model.isEmpty()) {
         undefinedClasses++;
-        problems.add(new UndefinedClassProblem(quad, qualityReport));
+        problems.add(new UndefinedClassProblem(quad, qualityReport, getMostSimilarType(quad.getObject())));
         LOG.info(String.format("Undefined class is found in quad: %s", quad.toString()));
       } else if (!model.getResource(object.getURI()).isURIResource()) {
         undefinedClasses++;
-        problems.add(new UndefinedClassProblem(quad, qualityReport));
+        getMostSimilarType(quad.getObject());
+        problems.add(new UndefinedClassProblem(quad, qualityReport, getMostSimilarType(quad.getObject())));
         LOG.info(String.format("Undefined class is found in quad: %s", quad.toString()));
       }
     }
+  }
+
+  private String getMostSimilarType(Node object) {
+    Levenshtein sim = new Levenshtein();
+    double max = Constants.LEVENSTEIN_THRESHOLD;
+    String bestMatch = "";
+    for (String type : allClasses) {
+      double similarity = sim.getSimilarity(type, object.toString());
+      if (similarity > max) { max = similarity; bestMatch = type; }
+    }
+    LOG.info(String.format("Best match is \" %s \" with Levenstein distance of %f", bestMatch, max));
+    return bestMatch;
   }
 
   /**

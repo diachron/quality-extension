@@ -5,13 +5,15 @@ import com.hp.hpl.jena.sparql.core.Quad;
 
 public class UndefinedClassProblem extends QualityProblem {
 
-  public UndefinedClassProblem(Quad quad, Resource qualityReport) {
+  private String suggestion;
+
+  public UndefinedClassProblem(Quad quad, Resource qualityReport, String suggestion) {
     super(quad, qualityReport);
+    this.suggestion = suggestion;
   }
 
   @Override
-  public String getProblemDescription() {
-    return String.format("%s is not defined", quad.getObject());
+  public String getCleaningSuggestion() {
+    return String.format("Possible class is %s", suggestion);
   }
-
 }

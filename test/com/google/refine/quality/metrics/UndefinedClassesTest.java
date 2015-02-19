@@ -16,8 +16,8 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.sparql.core.Quad;
 import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 import com.hp.hpl.jena.vocabulary.OWL;
+import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
-
 import com.google.refine.quality.problems.QualityProblem;
 import com.google.refine.quality.utilities.Constants;
 
@@ -31,8 +31,10 @@ public class UndefinedClassesTest {
     cls = Class.forName(String.format("%s.%s", Constants.METRICS_PACKAGE, "UndefinedClasses"));
 
     Model model = ModelFactory.createDefaultModel();
-    Resource rdfResource = model.createResource("http://example.org/them");
-    model.createResource("http://example.org/#spiderman").addProperty(RDFS.subClassOf, FOAF.Person)
+    Resource rdfResource = model.createResource("http://example.org/them", FOAF.Person);
+    Resource rdfResource1 = model.createResource("http://example.org/them", FOAF.Person);
+
+    rdfResource1
         .addProperty(RDFS.domain, FOAF.Agent).addProperty(RDFS.range, FOAF.Agent)
         .addProperty(OWL.allValuesFrom, rdfResource).addProperty(OWL.oneOf, rdfResource);
 
@@ -68,6 +70,44 @@ public class UndefinedClassesTest {
     Assert.assertFalse(problems.isEmpty());
     Assert.assertTrue(problems.size() == 2);
     Assert.assertEquals(0.4, metric.metricValue(), 0.0);
+  }
+  
+  
+  @Test
+  public void suggestion() throws IllegalAccessException, IllegalArgumentException,
+      InvocationTargetException, NoSuchMethodException, SecurityException, InstantiationException {
+    Model model = ModelFactory.createDefaultModel();
+
+    Resource foafPersonWrong = model.createResource("http://xmlnds.com/foaf/0.1/Personaas");
+    Resource foafPersonWrong1 = model.createResource("http://xmlns.com/fofaf/0.1/dpersona");
+    Resource foafPersonWrong2 = model.createResource("http://example.org/foaf/0.1/Person");
+    Resource foafAgentWrong = model.createResource("http://xmlns.com/fodaf/0.1/Agent");
+
+    model.createResource("http://example.org/#1").addProperty(RDFS.subClassOf, FOAF.Person)
+    .addProperty(RDFS.domain, FOAF.Agent).addProperty(RDFS.range, FOAF.Agent)
+    .addProperty(OWL.allValuesFrom, foafPersonWrong);
+    model.createResource("http://example.org/#2").addProperty(RDF.type, foafPersonWrong1);
+    model.createResource("http://example.org/#3").addProperty(RDF.type, foafPersonWrong2);
+    model.createResource("http://example.org/#4").addProperty(RDF.type, foafAgentWrong);
+    model.write(System.out, "Turtle");
+
+    List<Quad> quads = new ArrayList<Quad>();
+    StmtIterator si = model.listStatements();
+    while (si.hasNext()) {
+      quads.add(new Quad(null, si.next().asTriple()));
+    }
+    metric = (AbstractQualityMetric) cls.newInstance();
+    metric.getClass().getDeclaredMethod("before", Object[].class)
+    .invoke(metric, new Object[] { new String[] {} });
+
+    metric.compute(quads);
+    List<QualityProblem> problems = metric.getQualityProblems();
+    for (QualityProblem pr : problems) {
+      if (pr.getCleaningSuggestion().isEmpty()) {}
+    }
+    Assert.assertFalse(problems.isEmpty());
+    Assert.assertTrue(problems.size() == 4);
+    Assert.assertEquals(0.57, metric.metricValue(), 0.1);
   }
 
   @AfterClass
