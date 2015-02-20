@@ -1,0 +1,151 @@
+\documentclass[a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+
+\usepackage{graphicx}
+\usepackage{mathptmx}
+\usepackage{fancyhdr}
+\usepackage[top=5cm, bottom=3cm, left=2.5cm, right=2.5cm]{geometry}
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+\usepackage{sectsty}
+\usepackage{tocloft}
+\usepackage{tabu}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{url}
+\usepackage{subcaption}
+\usepackage{listings}
+%\usepackage{csquotes}
+
+\usepackage{algorithm}
+%\usepackage{algorithmic}
+\usepackage{algpseudocode}
+\usepackage[textsize=footnotesize]{todonotes}
+\usepackage{lastpage}
+
+% Changing TOC/LOF/LOT presentation
+
+\renewcommand{\cfttoctitlefont}{\large\bfseries\scshape}
+\renewcommand{\cftloftitlefont}{\large\bfseries\scshape}
+\renewcommand{\cftlottitlefont}{\large\bfseries\scshape}
+\renewcommand{\cftsecfont}{\bfseries\scshape}
+\renewcommand{\cftsubsecfont}{\scshape}
+\renewcommand{\cftsubsubsecfont}{\scshape}
+\renewcommand\contentsname{Table of Contents}
+\renewcommand\listfigurename{Table of Figures}
+\renewcommand\listtablename{List of Tables}
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+
+% Embedding logos to the page style
+
+\pagestyle{fancyplain}
+\lhead{\includegraphics[width=.3\textwidth]{diachron-logo}}
+\rhead{Grant Agreement No. 601043}
+\cfoot{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\allsectionsfont{\sffamily}
+
+\begin{document}
+
+% Title page
+\begin{titlepage}
+
+\begin{center}
+  \begin{tabular}{ccc}
+    \includegraphics[width=.15\textwidth]{eu-logo} &
+    \includegraphics[width=.6\textwidth]{diachron-logo} &
+    \includegraphics[width=.15\textwidth]{fp7-logo}
+  \end{tabular}
+\end{center}
+
+\vspace{4ex}
+EU Project No:601043 (Integrated Project (IP))
+
+\vspace{2ex}
+DIACHRON
+
+\vspace{2ex}
+%\todo{CL: I realised that ``Cleaning'' is missing in the title.  Shall we add ``… and Cleaning Services'', or be more correct and say ``of … Repairing Services and the Cleaning Application''?}Managing the Evolution and Preservation of the Data Web DIACHRON
+
+\begin{center}
+  \begin{tabular}{@{}|l p{9cm}|}
+    \hline
+    Dissemination level:  & Public \\
+    Type of Document:  & Report \\
+    Contractual date of delivery: & M16 \\
+    Actual Date of Delivery:  & M16 \\
+    Deliverable Number: & D3.2 \\
+    Deliverable Name: & Specification and Implementation of Monitoring, \newline Synchronization and Repairing Services \\
+    Deliverable Leader: & FORTH \\
+    Work package(s): & WP3 \\
+    Status \& version: & Final version 1.0\\
+    Number of pages: &  \pageref{LastPage} \\
+    WP contributing to the deliverable: & WP3 \\
+    WP / Task responsible: & WP3: T3.1, T3.2, T3.3 \\
+    Coordinator (name / contact): & Giorgos Flouris (fgeo@ics.forth.gr) \\
+    Other Contributors: 
+    & Yannis Roussakis (FORTH), Ioannis Chrysakis (FORTH), \\ 
+    & Michalis Chortis (FORTH), Kostas Stefanidis (FORTH) \\
+    & Christos Pateritsas (ATHENA) \\
+    & Natalja Friesen (UBONN), Christoph Lange (UBONN) \\
+    EC Project Officer: & Federico Milani \\
+    \multicolumn{2}{|p{15cm}|}{\cellcolor{gray!20}
+      \textbf{Keywords: Implementation, Specification, Changes, Change Definition, Change Representation, Change Detection, Monitoring, Propagation, Repair, Cleaning}
+    } \\
+    \multicolumn{2}{|p{15cm}|}{\cellcolor{gray!50}
+      \textbf{Abstract:} \newline
+      This report includes technical documentation regarding the implementation of the WP3 services (detection, repairing, cleaning), as well as the final version of the specifications, with emphasis on any differences with respect to what was reported in Deliverable D3.1.
+    } \\
+    \hline
+  \end{tabular}
+\end{center}
+
+\end{titlepage}
+
+
+% Version history
+\begin{center}
+  \begin{tabular}{|c|c|p{6cm}|p{7cm}|}
+    \hline
+    \multicolumn{4}{|c|}{\cellcolor{CornflowerBlue}Document History} \\
+    \hline
+    \rowcolor{LightSteelBlue}
+    Ver. & Date & Contributor(s) & Description \\     \hline
+    0.9 & February $20^{th}$, 2015 & Natalja Friesen & Cleaning \\     \hline
+   \end{tabular}
+\end{center}
+
+\newpage
+
+% TOC
+\tableofcontents
+\newpage
+
+% LOF and LOT contiguously
+\listoffigures
+\listoftables
+\newpage
+
+% Actual content beyond this point
+
+\input{macros.tex}
+
+
+\clearpage
+\input{cleaning_openRefine.tex}
+\clearpage
+
+\clearpage
+\input{cleaning_service.tex}
+\clearpage
+
+
+\bibliographystyle{plain}
+\bibliography{biblioUBONN}
+
+\appendix
+
+\end{document}
