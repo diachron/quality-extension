@@ -1,0 +1,8 @@
+qr:WhitespaceInAnnotationProblem a rdfs:Class ;
+		rdfs:subClassOf qr:QualityProblem ;
+		qr:problemDescription "Literal value contains white spaces" ;
+		qr:cleaningSuggestion "Trim leading and trailing whitespace" ;
+		qr:grelCleaningRule "value.trim()" .
+		
+	
+		
