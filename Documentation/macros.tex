@@ -1,0 +1,92 @@
+%\newcommand{\GF}[1]    {\textbf{[Giorgos Note: {#1}]}}
+%\newcommand{\YR}[1]    {\textbf{[YannisR Note: {#1}]}}
+%\newcommand{\YX}[1]    {\textbf{[YannisX Note: {#1}]}}
+\newcommand{\CL}[1]    {\textbf{[Christoph Note: {#1}]}}
+%\newcommand{\MC}[1]    {\textbf{[Michalis Note: {#1}]}}
+
+\newcommand{\assignment}[1]{\todo[color=green!30,inline]{#1}}
+\newcommand{\overview}[1]{\todo[color=blue!30,inline]{#1}}
+
+\newcommand{\uu}[1]{\ensuremath{#1}}
+% Symbol for names of resources
+
+\newcommand{\triple}[3] {\ensuremath{(}\uu{#1}, \uu{#2}, \uu{#3}\ensuremath{)}}
+\newcommand{\tripletxt}[3] {(#1,#2,#3)}
+% These commands are used to write triples in some standard format (given the subject, property and object of the triple)
+
+\newcommand{\op}[1] {\textit{#1}}
+% Symbol for change operations
+
+%\newcommand{\lang} {\ensuremath{{\cal L}}}
+% Symbol for the language of changes
+
+\newcommand{\map}      {\ensuremath{{\cal M}}}
+\newcommand{\mapone}   {\ensuremath{{\mu}}}
+% Symbols for mappings
+
+\newcommand{\res}     {\ensuremath{\mathsf{rdfs:resource}}}
+\newcommand{\class}   {\ensuremath{\mathsf{rdfs:class}}}
+\newcommand{\prop}    {\ensuremath{\mathsf{rdf:property}}}
+\newcommand{\lit}     {\ensuremath{\mathsf{rdfs:literal}}}
+\newcommand{\type}    {\ensuremath{\mathsf{rdf:type}}}
+\newcommand{\cisa}    {\ensuremath{\mathsf{rdfs:subClassOf}}}
+\newcommand{\pisa}    {\ensuremath{\mathsf{rdfs:subPropertyOf}}}
+\newcommand{\pdomain} {\ensuremath{\mathsf{rdfs:domain}}}
+\newcommand{\prange}  {\ensuremath{\mathsf{rdfs:range}}}
+\newcommand{\comment} {\ensuremath{\mathsf{rdfs:comment}}}
+\newcommand{\labell}  {\ensuremath{\mathsf{rdfs:label}}}
+%\newcommand{\deltadef}{\ensuremath{\delta = \langle\delta_{a}, \delta_{d} \rangle}}
+% Commands for the various RDF(S) constructs (short versions)
+
+\newcommand{\chng}      {\ensuremath{\delta}}
+\newcommand{\cond}      {\ensuremath{\phi}}
+%\newcommand{\subsumed}  {\ensuremath{\Sigma}}
+%\newcommand{\applied}   {\ensuremath{{\cal A}}}
+% Commands for defining changes
+
+\newcommand{\dllite}[1] {\ensuremath{DL\text{-}Lite_{{#1}}}}
+% Command for DL-Lite
+
+\newcommand{\isDimension}[1]{\ensuremath{\triple{#1}{\type}{\uu{diachron:DimensionProperty}}}}
+\newcommand{\hasAttribute}[2]{\ensuremath{\triple{#1}{\uu{diachron:hasAttribute}}{#2}}}
+\newcommand{\hasRange}[2]{\ensuremath{\triple{#1}{\mathsf{rdfs:range}}{#2}}}
+\newcommand{\hasSubject}[2]{\ensuremath{\triple{#1}{\uu{diachron:subject}}{#2}}}
+\newcommand{\isObservation}[1]{\ensuremath{\triple{#1}{\type}{\uu{diachron:Observation}}}}
+\newcommand{\isMeasure}[1]{\ensuremath{\triple{#1}{\type}{\uu{diachron:MeasureProperty}}}}
+\newcommand{\isCodelist}[1]{\ensuremath{\triple{#1}{\type}{\uu{diachron:Codelist}}}}
+\newcommand{\isHierarchy}[1]{\ensuremath{\triple{#1}{\type}{\uu{diachron:Hierarchy}}}}
+\newcommand{\hasCodelist}[2]{\ensuremath{\triple{#1}{\uu{diachron:hasCodelist}}{#2}}}
+\newcommand{\hasHierarchy}[2]{\ensuremath{\triple{#1}{\uu{diachron:hasHierarchy}}{#2}}}
+\newcommand{\isCodeListTerm}[1]{\ensuremath{\triple{#1}{\type}{\uu{diachron:CodeListTerm}}}}
+\newcommand{\inScheme}[2]{\ensuremath{\triple{#1}{\uu{diachron:inScheme}}{#2}}}
+\newcommand{\hasParent}[2]{\ensuremath{\triple{#1}{\uu{diachron:hasParent}}{#2}}}
+\newcommand{\isAttribute}[1]{\ensuremath{\triple{#1}{\type}{\uu{diachron:AttributeProperty}}}}
+\newcommand{\isFT}[1]{\ensuremath{\triple{#1}{\type}{\uu{diachron:FactTable}}}}
+\newcommand{\hasMeasure}[2]{\ensuremath{\triple{#1}{\uu{diachron:hasMeasure}}{#2}}}
+\newcommand{\hasDimension}[2]{\ensuremath{\triple{#1}{\uu{diachron:hasDimension}}{#2}}}
+\newcommand{\isRelevant}[2]{\ensuremath{\triple{#1}{\uu{diachron:isRelevantTo}}{#2}}}
+
+\newcommand{\dattr}{\ensuremath{diachron:hasAttribute}}
+\newcommand{\drattr}{\ensuremath{diachron:hasRecordAttribute}}
+\newcommand{\dsubj}{\ensuremath{diachron:subject}}
+\newcommand{\dpred}{\ensuremath{diachron:predicate}}
+\newcommand{\dobj}{\ensuremath{diachron:object}}
+\newcommand{\dhch}{\ensuremath{diachron:hasCodelist}}
+\newcommand{\dhhier}{\ensuremath{diachron:hasHierarchy}}
+\newcommand{\dis}{\ensuremath{diachron:inScheme}}
+\newcommand{\dhp}{\ensuremath{diachron:hasParent}}
+\newcommand{\dhd}{\ensuremath{diachron:hasDimension}}
+\newcommand{\dhm}{\ensuremath{diachron:hasMeasure}}
+\newcommand{\disrel}{\ensuremath{diachron:isRelevantTo}}
+\newcommand{\dimpr}{\ensuremath{diachron:DimensionProperty}}
+\newcommand{\measpr}{\ensuremath{diachron:MeasureProperty}}
+\newcommand{\dch}{\ensuremath{diachron:Codelist}}
+\newcommand{\dhier}{\ensuremath{diachron:Hierarchy}}
+\newcommand{\dobs}{\ensuremath{diachron:Observation}}
+\newcommand{\drecattr}{\ensuremath{diachron:RecordAttribute}}
+\newcommand{\dchterm}{\ensuremath{diachron:CodeListTerm}}
+\newcommand{\dFT}{\ensuremath{diachron:FactTable}}
+\newcommand{\dattrprop}{\ensuremath{diachron:AttributeProperty}}
+
+\newtheorem{definition}{Definition}
+\newtheorem{example}{Example}
