@@ -115,14 +115,21 @@ public class DiachronWebService {
       for (FileItem item : multiparts) {
         if (!item.isFormField() && item.getFieldName().equals("upload")) {
           InputStream stream = item.getInputStream();
+          if(stream == null || stream.available() == 0) {
+        	  throw new IllegalArgumentException();
+          }
           model = JenaModelLoader.getModel(stream);
           dataset = item.getName();
         } else if (item.getFieldName().equals("metrics")) {
-          metrics = JsonArrStringToList(IOUtils.toString(item.getInputStream(), "UTF-8"));
+        	metrics = JsonArrStringToList(IOUtils.toString(item.getInputStream(), "UTF-8"));
         }
       }
     }
 
+    if(metrics == null || metrics.size() == 0) {
+		throw new IllegalArgumentException();
+	}
+    
     List<QualityProblem> problems = CleaningUtils.identifyQualityProblems(model, metrics);
     StringWriter out = new StringWriter();
     generateQualityReport(dataset, model.size(), problems).write(out, Constants.SERIALIZATION);
