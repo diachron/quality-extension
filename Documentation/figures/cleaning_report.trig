@@ -1,0 +1,26 @@
+	<quality>  <http://purl.org/eis/vocab/qr#cleaning>
+                <cleaningReport> ;
+     <http://purl.org/eis/vocab/qr#computedOn>
+                <https://raw.githubusercontent.com/diachron/SampleInput.ttl> ;
+     <http://purl.org/eis/vocab/qr#hasProblem>
+        [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> ;
+           <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>
+         [ a       <http://purl.org/eis/vocab/qprob#LabelsUsingCapitalsProblem> ;
+              <http://www.w3.org/2000/01/rdf-schema#label>
+                          "Labels Using Capitals Problem" ;
+              <http://purl.org/eis/vocab/qprob#cleaningSuggestion>
+                           "Change the capitalization of the literal" ;
+               <http://purl.org/eis/vocab/qprob#problemDescription>
+                            "Literal uses a bad style of capitalization" ;
+               <http://purl.org/eis/vocab/qr#problematicThing>
+         [ a       <http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement> ;
+               <http://www.w3.org/1999/02/22-rdf-syntax-ns#object>
+                             "NatanaelArndt" ;
+			    <http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate>
+                        "http://www.w3.org/2004/02/skos/core#hiddenLabel" ;
+                         <http://www.w3.org/1999/02/22-rdf-syntax-ns#subject>
+									"http://aksw.org/NatanaelArndt"
+                                    ]
+                          ]
+                ] ;
+

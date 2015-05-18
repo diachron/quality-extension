@@ -1,0 +1,32 @@
+qr:QualityStatistics a rdfs:Class ;
+	rdfs:comment "Represents a brief overview of the quality report." ;
+	rdfs:label "Quality Statistics" .
+	
+qr:statistics 
+		a rdf:Property, owl:ObjectProperty ;
+		rdfs:comment "Comprises statistics of the quality report" ;
+		rdfs:domain qr:QualityReport ;
+		rdfs:label "statistics" ;
+		rdfs:range qr:QualityStatistics .
+
+qr:totalNumberOfTriples
+		a rdf:Property, owl:DatatypeProperty ;
+		rdfs:label	"totalTriples" ;
+		rdfs:comment	"Contains information about total number of triples in data set" ;
+		rdfs:domain	qr:QualityStatistics ;
+		rdfs:range	 xsd:integer .
+
+qr:numberOfProblems
+		a rdf:Property, owl:DatatypeProperty ;
+		rdfs:label	"numberOfProblems" ;
+		rdfs:comment	"Contains information about total number of identified problems" ;
+		rdfs:domain	qr:QualityStatistics ;
+		rdfs:range	 xsd:integer .
+		
+	
+qr:numberOfAffectedTriples	
+		a rdf:Property, owl:DatatypeProperty ;
+		rdfs:label	"numberOfProblematicTriples";
+		rdfs:comment	"Contains information about number of infected triples" ;
+		rdfs:domain	qr:QualityProblem;
+		rdfs:range	 xsd:integer.
