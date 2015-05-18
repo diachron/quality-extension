@@ -67,9 +67,8 @@ $(function() {
     } else if (url == '' && file == '') {
       $('#url_input').focus();
     } else if (url != '' && file == '') {
-    	httpMethod = "GET"; //should be get here otherwise service will not parse parameter download
-    						//service does not need to parse upload param in this case as file param is 
-    						//null.
+      //httpMethod = "GET"; //should be get here otherwise service will not parse parameter download
+        //service does not need to parse upload param in this case as file param is null.
     }
 
     if ($("input[name='operation']:checked").val() === 'openRefine') {
