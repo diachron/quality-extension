@@ -40,8 +40,10 @@ public class TransformDataCommand extends Command {
         String[] elements = getQuadComponents(quad);
         for (int i = 0; i < elements.length; i++) {
           int cell = 1 + i;
-          RefineCommands.editCell(project, request, response, quads.indexOf(quad), cell, elements[i]);
-          LOG.info(String.format("Edit single cell at row: %s, col: %s",  quads.indexOf(quad), cell));
+          RefineCommands.editCell(project, request, response, quads.indexOf(quad),
+            cell, elements[i]);
+          LOG.info(String.format("Edit single cell at row: %s, col: %s",
+            quads.indexOf(quad), cell));
         }
       }
       RefineCommands.removeColumn(project, request, response, "Column 1");
@@ -57,7 +59,8 @@ public class TransformDataCommand extends Command {
    * @param project An OpenRefine project.
    * @throws JsonProcessingException
    */
-  private void writePrefixesToMetadata(Model model, Project project) throws JsonProcessingException {
+  private void writePrefixesToMetadata(Model model, Project project)
+    throws JsonProcessingException {
     String prefixes = Utilities.convertMapToString(model.getNsPrefixMap());
     project.getMetadata().setCustomMetadata("prefixes", prefixes);
   }

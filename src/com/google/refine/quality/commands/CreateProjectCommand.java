@@ -41,8 +41,8 @@ public class CreateProjectCommand extends Command {
 
       List<Exception> exceptions = new LinkedList<Exception>();
 
-      long projectId = ImportingUtilities.createProject(job, format, getDefaultOptions(projectName),
-        exceptions, true);
+      long projectId = ImportingUtilities.createProject(job, format,
+        getDefaultOptions(projectName), exceptions, true);
       LOG.info(String.format("Project has been created. Id: %s", projectId));
 
       HttpUtilities.redirect(response, "/project?project=" + projectId);

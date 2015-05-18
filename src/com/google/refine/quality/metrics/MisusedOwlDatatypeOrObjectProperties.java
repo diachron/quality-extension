@@ -77,13 +77,15 @@ public class MisusedOwlDatatypeOrObjectProperties extends AbstractQualityMetric 
   private void OwlDatatypeProperty(Quad quad) {
     if (quad.getObject().toString().equals(NAMESPACE_MATCH_SUBSTRING + OWL_DATA_TYPE_PROPERTY)) {
       owlDatatypePropertyList.add(quad.getSubject());
-    } else if (quad.getObject().toString().equals(NAMESPACE_MATCH_SUBSTRING + OWL_OBJECT_PROPERTY)) {
+    } else if (quad.getObject().toString().equals(NAMESPACE_MATCH_SUBSTRING
+      + OWL_OBJECT_PROPERTY)) {
       owlObjectPropertyList.add(quad.getSubject());
     }
   }
 
   /**
-   * This method computes identified a given quad is a misuse owl data type property or object property.
+   * This method computes identified a given quad is a misuse owl data type property
+   * or object property.
    * @param quad Quad to identified
    */
   @Override

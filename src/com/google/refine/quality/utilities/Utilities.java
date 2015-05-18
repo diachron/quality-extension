@@ -154,7 +154,8 @@ public final class Utilities {
     if (str == null) {
       return false;
     }
-    String regex = "\\(?\\b(http://|www[.])[-A-Za-z0-9+&amp;@#/%?=~_()|!:,.;]*[-A-Za-z0-9+&amp;@#/%=~_()|]";
+    String regex = "\\(?\\b(http://|www[.])[-A-Za-z0-9+&amp;@#/%?=~_()|"
+      + "!:,.;]*[-A-Za-z0-9+&amp;@#/%=~_()|]";
     Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
     return pattern.matcher(str).find();
   }
@@ -165,7 +166,8 @@ public final class Utilities {
    * @return A string containing the JSON representation of the map.
    * @throws JsonProcessingException 
    */
-  public static String convertMapToString(@SuppressWarnings("rawtypes") Map map) throws JsonProcessingException {
+  public static String convertMapToString(@SuppressWarnings("rawtypes") Map map)
+    throws JsonProcessingException {
     ObjectMapper mapper = new ObjectMapper();
     return mapper.writeValueAsString(map);
   }

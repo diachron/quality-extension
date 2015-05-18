@@ -47,7 +47,8 @@ public class IdentifyQualityProblemsCommand extends Command {
         quads = Utilities.getQuadsFromProject(project);
 
         @SuppressWarnings("unchecked")
-        ArrayList<String> metricsList = (ArrayList<String>) project.getMetadata().getCustomMetadata("metrics");
+        ArrayList<String> metricsList = (ArrayList<String>) project.getMetadata()
+          .getCustomMetadata("metrics");
 
         JSONArray metrics = new JSONArray(request.getParameter("metrics"));
         for (int i = 0; i < metrics.length(); i++) {
@@ -56,7 +57,8 @@ public class IdentifyQualityProblemsCommand extends Command {
           if (!metricsList.contains(metricName)) {
             metricsList.add(metricName);
             project.getMetadata().setCustomMetadata("metrics", metricsList);
-            Class<?> cls = Class.forName(String.format("%s.%s", Constants.METRICS_PACKAGE, metricName));
+            Class<?> cls = Class.forName(String.format("%s.%s", Constants.METRICS_PACKAGE,
+              metricName));
             AbstractQualityMetric metric = (AbstractQualityMetric) cls.newInstance();
 
             metric.before();

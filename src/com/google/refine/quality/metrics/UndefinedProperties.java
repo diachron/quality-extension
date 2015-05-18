@@ -159,7 +159,8 @@ public class UndefinedProperties extends AbstractQualityMetric {
       double similarity = sim.getSimilarity(prop, property.toString());
       if (similarity > max) { max = similarity; bestMatch = prop; }
     }
-    LOG.info(String.format("Best match is \" %s \" with Levenstein distance of %f", bestMatch, max));
+    LOG.info(String.format("Best match is \" %s \" with Levenstein distance of %f",
+      bestMatch, max));
     return bestMatch;
   }
 

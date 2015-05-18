@@ -44,6 +44,7 @@ public class DiachronWebService {
   /**
    * Returns the cleaning quality report as a JSON entity in the http response.
    * See D3.2 section 4.2.4.
+   * 
    * @throws IOException
    * @throws JSONException
    */
@@ -57,7 +58,7 @@ public class DiachronWebService {
       List<QualityProblem> problems = CleaningUtils.identifyQualityProblems(model,
         getMetrics(request));
       StringWriter out = new StringWriter();
-      generateQualityReport(dataset, model.size(), problems).write(out, Constants.SERIALIZATION);
+      generateQualityReport(dataset, model.size(), problems).write(out,Constants.SERIALIZATION);
       respond(response, "ok", out.toString());
     } catch (IllegalArgumentException e) {
       response.setStatus(Constants.SC_BAD_REQUEST);
@@ -65,44 +66,46 @@ public class DiachronWebService {
     } catch (Exception e) {
       response.setStatus(Constants.SC_BAD_REQUEST);
       respond(response, "error",
-        "Request parameters cannot be parsed or an error in applying metrics");
+          "Request parameters cannot be parsed or an error in applying metrics");
     }
   }
 
   /**
    * Returns the cleaning quality report and stores it locally.
+   * 
    * @throws IOException
    * @throws JSONException
    */
   public static void downloadCleaningSuggestions(HttpServletRequest request,
       HttpServletResponse response) throws IOException, JSONException {
     try {
-      respondFile(response, "application/octet-stream", Constants.CLEANING_SUGGESTION,
-        getCleaningSuggestions(request).toString().getBytes());
+      respondFile(response, "application/octet-stream",
+          Constants.CLEANING_SUGGESTION, getCleaningSuggestions(request).toString().getBytes());
     } catch (IllegalArgumentException e) {
       response.setStatus(Constants.SC_BAD_REQUEST);
       respond(response, "error", "Request parameters are not complete.");
     } catch (Exception e) {
       response.setStatus(Constants.SC_BAD_REQUEST);
       respond(response, "error",
-        "Request parameters cannot be parsed or an error in applying metrics");
+          "Request parameters cannot be parsed or an error in applying metrics");
     }
   }
 
   /**
    * Returns the cleaning quality report.
+   * 
    * @param request
    * @return An quality report as a {@code StringWriter} object.
    * @throws FileUploadException
    */
-  public static StringWriter getCleaningSuggestions(HttpServletRequest request) throws IOException,
-      JSONException, ClassNotFoundException, InstantiationException, IllegalAccessException,
-      FileUploadException {
+  public static StringWriter getCleaningSuggestions(HttpServletRequest request)
+    throws IOException, JSONException, ClassNotFoundException,
+    InstantiationException, IllegalAccessException, FileUploadException {
     Model model = ModelFactory.createDefaultModel();
     List<String> metrics = new ArrayList<String>();
     String dataset = "";
 
-    // really ugly
+    // really ugly i am sorry
     if (request.getMethod().equals(Constants.METHOD_GET)) {
       dataset = getDatasetURL(request);
       model = JenaModelLoader.getModel(dataset);
@@ -110,26 +113,26 @@ public class DiachronWebService {
     } else {
       @SuppressWarnings("unchecked")
       List<FileItem> multiparts = new ServletFileUpload(new DiskFileItemFactory())
-          .parseRequest(request);
+        .parseRequest(request);
 
       for (FileItem item : multiparts) {
         if (!item.isFormField() && item.getFieldName().equals("upload")) {
           InputStream stream = item.getInputStream();
-          if(stream == null || stream.available() == 0) {
-        	  throw new IllegalArgumentException();
+          if (stream == null || stream.available() == 0) {
+            throw new IllegalArgumentException();
           }
           model = JenaModelLoader.getModel(stream);
           dataset = item.getName();
         } else if (item.getFieldName().equals("metrics")) {
-        	metrics = JsonArrStringToList(IOUtils.toString(item.getInputStream(), "UTF-8"));
+          metrics = JsonArrStringToList(IOUtils.toString(item.getInputStream(), "UTF-8"));
         }
       }
     }
 
-    if(metrics == null || metrics.size() == 0) {
-		throw new IllegalArgumentException();
-	}
-    
+    if (metrics == null || metrics.size() == 0) {
+      throw new IllegalArgumentException();
+    }
+
     List<QualityProblem> problems = CleaningUtils.identifyQualityProblems(model, metrics);
     StringWriter out = new StringWriter();
     generateQualityReport(dataset, model.size(), problems).write(out, Constants.SERIALIZATION);
@@ -139,9 +142,12 @@ public class DiachronWebService {
   /**
    * Parses a metric parameter of the request. The string parameter has a format
    * of a json array. Example of a string ["metrics1", "metrics2"].
+   * 
    * @return A list of metrics.
-   * @throws IllegalArgumentException if the parameter is missing.
-   * @throws JSONException if a parameter content can not be parsed as JSONArray.
+   * @throws IllegalArgumentException
+   *           if the parameter is missing.
+   * @throws JSONException
+   *           if a parameter content can not be parsed as JSONArray.
    */
   protected static List<String> getMetrics(HttpServletRequest request)
       throws IllegalArgumentException, JSONException {
@@ -152,7 +158,8 @@ public class DiachronWebService {
     return JsonArrStringToList(metrics);
   }
 
-  private static List<String> JsonArrStringToList(String jsonArray) throws JSONException {
+  private static List<String> JsonArrStringToList(String jsonArray)
+      throws JSONException {
     JSONArray metricsArray = new JSONArray(jsonArray);
     List<String> list = new ArrayList<String>();
     for (int i = 0; i < metricsArray.length(); i++) {
@@ -163,12 +170,13 @@ public class DiachronWebService {
 
   /**
    * Cleans a rdf model and stores result locally.
+   * 
    * @throws IOException
    * @throws JSONException
    */
   // TODO code duplication
-  public static void downloadCleanResults(HttpServletRequest request, HttpServletResponse response)
-      throws IOException, JSONException {
+  public static void downloadCleanResults(HttpServletRequest request,
+      HttpServletResponse response) throws IOException, JSONException {
     try {
       Model model = ModelFactory.createDefaultModel();
       List<String> metrics = new ArrayList<String>();
@@ -180,8 +188,8 @@ public class DiachronWebService {
         metrics = getMetrics(request);
       } else {
         @SuppressWarnings("unchecked")
-        List<FileItem> multiparts = new ServletFileUpload(new DiskFileItemFactory())
-            .parseRequest(request);
+        List<FileItem> multiparts = new ServletFileUpload(
+            new DiskFileItemFactory()).parseRequest(request);
 
         for (FileItem item : multiparts) {
           if (!item.isFormField() && item.getFieldName().equals("upload")) {
@@ -198,7 +206,7 @@ public class DiachronWebService {
 
       ModelCleaner modelCleaner = new ModelCleaner();
       modelCleaner.cleanModel(model, problems);
-      
+
       StringWriter out = new StringWriter();
       model.write(out, Constants.SERIALIZATION);
       Hashtable<String, StringWriter> outputEntries = new Hashtable<String, StringWriter>();
@@ -209,40 +217,43 @@ public class DiachronWebService {
       outputEntries.put(Constants.DELTA_MODEL, out);
 
       response.setStatus(Constants.SC_OK);
-      respondFile(response, "application/zip", Constants.CLEANED_RESULT, getZippedBytes(outputEntries));
+      respondFile(response, "application/zip", Constants.CLEANED_RESULT,
+        getZippedBytes(outputEntries));
     } catch (IllegalArgumentException e) {
       response.setStatus(Constants.SC_BAD_REQUEST);
       respond(response, "error", "Request parameters are not complete.");
     } catch (Exception e) {
       response.setStatus(Constants.SC_BAD_REQUEST);
       respond(response, "error",
-        "Request parameters cannot be parsed or an error in applying metrics");
+          "Request parameters cannot be parsed or an error in applying metrics");
     }
   }
-  
+
   /**
    * Cleans a dataset. See D3.2 section 4.2.4.
+   * 
    * @param request
-   *          The request should have three parameters.
-   *          "download" is a URI of the dataset to be cleaned.
-   *          "metrics" is a json array of metrics to be applied for the cleaning.
-   *          "delta" is flag defining whether cleaned statements must be returned.
+   *          The request should have three parameters. "download" is a URI of
+   *          the dataset to be cleaned. "metrics" is a json array of metrics to
+   *          be applied for the cleaning. "delta" is flag defining whether
+   *          cleaned statements must be returned.
    * @throws IOException
    * @throws JSONException
    */
-  public static void cleanREST(HttpServletRequest request, HttpServletResponse response)
-      throws IOException, JSONException {
+  public static void cleanREST(HttpServletRequest request,
+      HttpServletResponse response) throws IOException, JSONException {
     try {
       String datasetURL = getDatasetURL(request);
       List<String> metrics = getMetrics(request);
       final boolean delta = getDelta(request);
 
       Model model = JenaModelLoader.getModel(datasetURL);
-      List<QualityProblem> problems = CleaningUtils.identifyQualityProblems(model, metrics);
-      
+      List<QualityProblem> problems = CleaningUtils.identifyQualityProblems(
+          model, metrics);
+
       ModelCleaner modelCleaner = new ModelCleaner();
       modelCleaner.cleanModel(model, problems);
-      
+
       final StringWriter out = new StringWriter();
       model.write(out, Constants.SERIALIZATION);
 
@@ -251,7 +262,8 @@ public class DiachronWebService {
       response.setStatus(Constants.SC_OK);
       respondJSON(response, new Jsonizable() {
         @Override
-        public void write(JSONWriter writer, Properties options) throws JSONException {
+        public void write(JSONWriter writer, Properties options)
+            throws JSONException {
           writer.object();
           writer.key("status").value("ok");
           // TODO return just url where the model located. Tmp returning
@@ -277,10 +289,13 @@ public class DiachronWebService {
 
   /**
    * Parses a http request for a dataset URI.
+   * 
    * @return A dataset URI as .a string.
-   * @throws IllegalArgumentException if the parameter is missing.
+   * @throws IllegalArgumentException
+   *           if the parameter is missing.
    */
-  protected static String getDatasetURL(HttpServletRequest request) throws IllegalArgumentException {
+  protected static String getDatasetURL(HttpServletRequest request)
+      throws IllegalArgumentException {
     String dataset = request.getParameter("download");
     if (dataset == null) {
       throw new IllegalArgumentException();
@@ -290,10 +305,13 @@ public class DiachronWebService {
 
   /**
    * Parses a http request for the delta flag.
+   * 
    * @return The delta flag as a boolean.
-   * @throws IllegalArgumentException if the parameter is missing.
+   * @throws IllegalArgumentException
+   *           if the parameter is missing.
    */
-  protected static boolean getDelta(HttpServletRequest request) throws IllegalArgumentException {
+  protected static boolean getDelta(HttpServletRequest request)
+      throws IllegalArgumentException {
     String deltaParam = request.getParameter("delta");
     boolean delta = false;
     if (deltaParam == null) {
@@ -306,35 +324,39 @@ public class DiachronWebService {
 
   /**
    * Generates the quality report model.
+   * 
    * @return A quality report RDF jena model.
    */
   protected static Model generateQualityReport(String dataset, long triples,
       List<QualityProblem> qualityProblems) {
     QualityReport qualityReport = new QualityReport(dataset);
-    QualityStatistic qualityStatistic = new QualityStatistic(triples, qualityProblems.size());
+    QualityStatistic qualityStatistic = new QualityStatistic(triples,
+        qualityProblems.size());
     CleaningReport cleaningReport = new CleaningReport();
-    
+
     for (QualityProblem problem : qualityProblems) {
-      if(problem instanceof AutoCleanable) {
+      if (problem instanceof AutoCleanable) {
         cleaningReport.addCleanedProblem(problem.getProblemURI());
-      }
-      else {
+      } else {
         qualityReport.addQualityProblem(problem);
         qualityStatistic.incrementProblemCounter(problem.getProblemURI());
       }
     }
-    qualityReport.setQualityStatistic(qualityStatistic.getQualityStatisticModel());
+    qualityReport.setQualityStatistic(qualityStatistic
+        .getQualityStatisticModel());
     qualityReport.setCleaningReport(cleaningReport.getModel());
     return qualityReport.getQualityReportModel();
   }
 
-  private static byte[] getZippedBytes(Hashtable<String, StringWriter> entries) throws IOException {
+  private static byte[] getZippedBytes(Hashtable<String, StringWriter> entries)
+      throws IOException {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     ZipOutputStream zos = new ZipOutputStream(baos);
 
-    Iterator<Map.Entry<String, StringWriter>> it = entries.entrySet().iterator();
+    Iterator<Map.Entry<String, StringWriter>> it = entries.entrySet()
+        .iterator();
 
-    while(it.hasNext()) {
+    while (it.hasNext()) {
       Map.Entry<String, StringWriter> entry = it.next();
       zos.putNextEntry(new ZipEntry(entry.getKey()));
       zos.write(entry.toString().getBytes());
@@ -347,8 +369,8 @@ public class DiachronWebService {
     return baos.toByteArray();
   }
 
-  private static void respondJSON(HttpServletResponse response, Jsonizable o, Properties options)
-      throws IOException, JSONException {
+  private static void respondJSON(HttpServletResponse response, Jsonizable o,
+      Properties options) throws IOException, JSONException {
     response.setCharacterEncoding("UTF-8");
     response.setHeader("Content-Type", "application/json");
     response.setHeader("Cache-Control", "no-cache");
@@ -372,8 +394,8 @@ public class DiachronWebService {
     oStream.close();
   }
 
-  private static void respond(HttpServletResponse response, String status, String message)
-      throws IOException, JSONException {
+  private static void respond(HttpServletResponse response, String status,
+      String message) throws IOException, JSONException {
     response.setCharacterEncoding("UTF-8");
     response.setHeader("Content-Type", "application/json");
     response.setHeader("Cache-Control", "no-cache");
@@ -381,8 +403,10 @@ public class DiachronWebService {
     Writer w = response.getWriter();
     JSONWriter writer = new JSONWriter(w);
     writer.object();
-    writer.key("status"); writer.value(status);
-    writer.key("message"); writer.value(message);
+    writer.key("status");
+    writer.value(status);
+    writer.key("message");
+    writer.value(message);
     writer.endObject();
     w.flush();
     w.close();

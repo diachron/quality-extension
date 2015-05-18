@@ -101,7 +101,8 @@ public class IncompatibleDatatypeRange extends AbstractQualityMetric {
   protected boolean checkTypeByComparingURI(URI actualDataType, URI expectedDataType) {
     if (actualDataType != null && expectedDataType == null) {
       return true;
-    } else if (actualDataType == null && expectedDataType.getFragment().toLowerCase().equals("literal")) {
+    } else if (actualDataType == null && expectedDataType.getFragment().toLowerCase()
+      .equals("literal")) {
       return true;
     } else if (actualDataType == null) {
       return true;

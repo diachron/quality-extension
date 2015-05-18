@@ -53,8 +53,8 @@ public class MisplacedClassesOrProperties extends AbstractQualityMetric {
       Model predicateModel = VocabularyReader.read(predicate.getURI());
       if (!predicateModel.isEmpty()) {
         if (predicateModel.getResource(predicate.getURI()).isURIResource()) {
-          if (!(predicateModel.getResource(predicate.getURI()).hasProperty(RDFS.domain) && predicateModel
-              .getResource(predicate.getURI()).hasProperty(RDFS.range))) {
+          if (!(predicateModel.getResource(predicate.getURI()).hasProperty(RDFS.domain)
+            && predicateModel.getResource(predicate.getURI()).hasProperty(RDFS.range))) {
             LOG.info("Misplace Property found in predicate: " + predicate.toString());
             misplacedProperties++;
             problems.add(new QualityProblem(quad, MISPLASED_PROPERTY));

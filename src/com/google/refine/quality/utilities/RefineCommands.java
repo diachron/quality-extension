@@ -71,7 +71,8 @@ public class RefineCommands extends Command {
       String separator =  Constants.ROW_SPLITER;
       String mode = "plain";
 
-      AbstractOperation op = new MultiValuedCellSplitOperation(columnName, keyColumnName, separator, mode);
+      AbstractOperation op = new MultiValuedCellSplitOperation(columnName, keyColumnName,
+        separator, mode);
       Process process = op.createProcess(project, new Properties());
 
       performProcessAndRespond(request, response, project, process);

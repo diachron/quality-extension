@@ -115,12 +115,14 @@ public class UndefinedClasses extends AbstractQualityMetric {
       Model model = VocabularyReader.read(object.getURI());
       if (model.isEmpty()) {
         undefinedClasses++;
-        problems.add(new UndefinedClassProblem(quad, qualityReport, getMostSimilarType(quad.getObject())));
+        problems.add(new UndefinedClassProblem(quad, qualityReport, getMostSimilarType(quad.
+          getObject())));
         LOG.info(String.format("Undefined class is found in quad: %s", quad.toString()));
       } else if (!model.getResource(object.getURI()).isURIResource()) {
         undefinedClasses++;
         getMostSimilarType(quad.getObject());
-        problems.add(new UndefinedClassProblem(quad, qualityReport, getMostSimilarType(quad.getObject())));
+        problems.add(new UndefinedClassProblem(quad, qualityReport, getMostSimilarType(quad.
+          getObject())));
         LOG.info(String.format("Undefined class is found in quad: %s", quad.toString()));
       }
     }
