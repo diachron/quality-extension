@@ -113,7 +113,7 @@ public class DiachronWebServiceTest {
     HttpServletResponse res = Mockito.mock(HttpServletResponse.class);
 
     Mockito.when(req.getParameter("download")).thenReturn("https://raw.githubusercontent.com"
-      + "/diachron/quality-extension/master/resources/testdumps/SampleInput_EmptyAnnotationValue.ttl");
+      + "/diachron/quality-extension/master/resources/testdumps/SampleIsnput_EmptyAnnotationValue.ttl");
       Mockito.when(req.getParameter("metrics")).thenReturn("[\"LabelsUsingCapitals\", \"EmptyAnnotationValue\"]");
 
     ByteArrayOutputStream responseStream = new ByteArrayOutputStream();

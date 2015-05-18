@@ -30,8 +30,8 @@ public class IncompatibleDatatypeRangeTest {
 
     Model model = ModelFactory.createDefaultModel();
     // TODO temporal resource source.
-    model.read("https://github.com/diachron/quality-extension/blob/cleaning/"
-      + "resources/testdumps/chembl-rdf-void_2.ttl");
+    model.read("https://raw.githubusercontent.com/diachron/quality-extension/"
+      + "master/resources/testdumps/chembl-rdf-void_2.ttl");
     // model.createResource("http://example.org/#obj1")
     // // .addLiteral(FOAF.knows,
     // ResourceFactory.createTypedLiteral("2012-03-11", XSDDatatype.XSDdate))

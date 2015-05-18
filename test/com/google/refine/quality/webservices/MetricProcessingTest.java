@@ -40,8 +40,8 @@ public class MetricProcessingTest {
   @Test
   public void ttlDataReadTest() {
     // checks whether .ttl can be read from url.
-    String url = "https://raw.githubusercontent.com/diachron/quality/master/src/test/resources/"
-        + "testdumps/SampleInput_LabelsUsingCapitals.ttl";
+    String url = "https://raw.githubusercontent.com/diachron/quality-extension/"
+      + "master/resources/testdumps/SampleInput_LabelsUsingCapitals.ttl";
     try {
       CleaningUtils.identifyQualityProblems(new JSONArray(), url);
     } catch (Exception e) {
