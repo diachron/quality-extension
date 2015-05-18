@@ -34,8 +34,8 @@ public class DiachronWebServiceTest {
   public void cleanDatasetTest() throws ClassNotFoundException, InstantiationException, IllegalAccessException,
       IOException, JSONException {
     List<String> metrics = Arrays.asList("EmptyAnnotationValue");
-    Model model = JenaModelLoader.getModel("https://raw.githubusercontent.com"
-        + "/diachron/quality/master/src/test/resources/testdumps/SampleInput_EmptyAnnotationValue.ttl");
+    Model model = JenaModelLoader.getModel("https://raw.githubusercontent.com/diachron/quality-extension/"
+      + "master/resources/testdumps/SampleInput_EmptyAnnotationValue.ttl");
 
     List<QualityProblem> problems = CleaningUtils.identifyQualityProblems(model, metrics);
     Model delta = ModelFactory.createDefaultModel();
@@ -49,8 +49,8 @@ public class DiachronWebServiceTest {
     HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
     HttpServletResponse res = Mockito.mock(HttpServletResponse.class);
 
-    Mockito.when(req.getParameter("download")).thenReturn("https://raw.githubusercontent.com"
-      + "/diachron/quality/master/src/test/resources/testdumps/SampleInput_EmptyAnnotationValue.ttl");
+    Mockito.when(req.getParameter("download")).thenReturn("https://raw.githubusercontent.com/diachron"
+      + "/quality-extension/master/resources/testdumps/SampleInput_EmptyAnnotationValue.ttl");
     Mockito.when(req.getParameter("metrics")).thenReturn("[\"LabelsUsingCapitals\", \"EmptyAnnotationValue\"]");
     Mockito.when(req.getParameter("delta")).thenReturn("true");
 
@@ -82,8 +82,8 @@ public class DiachronWebServiceTest {
     HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
     HttpServletResponse res = Mockito.mock(HttpServletResponse.class);
 
-    Mockito.when(req.getParameter("download")).thenReturn("https://raw.githubusercontent.com"
-      + "/diachron/quality/master/src/test/resources/testdumps/SampleInput_EmptyAnnotationValue.ttl");
+    Mockito.when(req.getParameter("download")).thenReturn("https://raw.githubusercontent.com/diachron/"
+      + "quality-extension/master/resources/testdumps/SampleInput_EmptyAnnotationValue.ttl");
     Mockito.when(req.getParameter("metrics")).thenReturn("[\"LabelsUsingCapitals\", \"EmptyAnnotationValue\"]");
 
     ByteArrayOutputStream responseStream = new ByteArrayOutputStream();
@@ -112,8 +112,8 @@ public class DiachronWebServiceTest {
     HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
     HttpServletResponse res = Mockito.mock(HttpServletResponse.class);
 
-    Mockito.when(req.getParameter("download")).thenReturn("https://raw.githubusssssssssercontent.com"
-        + "/diachron/quality/master/src/test/resources/testdumps/SampleInput_EmptyAnnotationValue.ttl");
+    Mockito.when(req.getParameter("download")).thenReturn("https://raw.githubusercontent.com"
+      + "/diachron/quality-extension/master/resources/testdumps/SampleInput_EmptyAnnotationValue.ttl");
       Mockito.when(req.getParameter("metrics")).thenReturn("[\"LabelsUsingCapitals\", \"EmptyAnnotationValue\"]");
 
     ByteArrayOutputStream responseStream = new ByteArrayOutputStream();
@@ -136,8 +136,8 @@ public class DiachronWebServiceTest {
     HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
     HttpServletResponse res = Mockito.mock(HttpServletResponse.class);
 
-    Mockito.when(req.getParameter("download")).thenReturn("https://raw.githubusercontent.com"
-        + "/diachron/quality/master/src/test/resources/testdumps/SampleInput_EmptyAnnotationValue.ttl");
+    Mockito.when(req.getParameter("download")).thenReturn("https://raw.githubusercontent.com/diachron/"
+      + "quality-extension/master/resources/testdumps/SampleInput_EmptyAnnotationValue.ttl");
       Mockito.when(req.getParameter("metrics")).thenReturn("\"LabelsUsingCapitals\",EmptyAnnotationValue\"]");
 
     ByteArrayOutputStream responseStream = new ByteArrayOutputStream();
@@ -183,8 +183,8 @@ public class DiachronWebServiceTest {
     HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
     HttpServletResponse res = Mockito.mock(HttpServletResponse.class);
 
-    Mockito.when(req.getParameter("download")).thenReturn("https://raw.githubusercontent.com"
-        + "/diachron/quality/master/src/test/resources/testdumps/SampleInput_EmptyAnnotationValue.ttl");
+    Mockito.when(req.getParameter("download")).thenReturn("https://raw.githubusercontent.com/diachron/"
+      + "quality-extension/master/resources/testdumps/SampleInput_EmptyAnnotationValue.ttl");
     Mockito.when(req.getParameter("metrics")).thenReturn(null);
 
 
@@ -208,8 +208,8 @@ public class DiachronWebServiceTest {
     HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
     HttpServletResponse res = Mockito.mock(HttpServletResponse.class);
 
-    Mockito.when(req.getParameter("download")).thenReturn("https://raw.githubusercontent.com"
-      + "/diachron/quality/master/src/test/resources/testdumps/SampleInput_EmptyAnnotationValue.ttl");
+    Mockito.when(req.getParameter("download")).thenReturn("https://raw.githubusercontent.com/diachron/"
+      + "quality-extension/master/resources/testdumps/SampleInput_EmptyAnnotationValue.ttl");
     Mockito.when(req.getParameter("metrics")).thenReturn("[\"LabelsUsingCapitals\", \"EmptyAnnotationValue\"]");
 
     ByteArrayOutputStream responseStream = new ByteArrayOutputStream();

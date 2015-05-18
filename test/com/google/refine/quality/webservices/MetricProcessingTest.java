@@ -49,7 +49,7 @@ public class MetricProcessingTest {
     }
     // fails, wrong url.
     String url1 = "https://raw.githubusercontent.com/diachron/quality/master/src/test/resources/"
-        + "testdumps/SSampleInput_LabelsUsingCapitals.ttl";
+        + "testdumps/SampleInput_LabelsUsingCapitals.ttl";
     try {
       CleaningUtils.identifyQualityProblems(new JSONArray(), url1);
       fail();
@@ -60,16 +60,16 @@ public class MetricProcessingTest {
   @Test
   public void test() throws JSONException, MetricException, ClassNotFoundException,
       InstantiationException, IllegalAccessException {
-    String url1 = "https://raw.githubusercontent.com/diachron/quality/master/src/test/resources/"
-        + "testdumps/SampleInput_LabelsUsingCapitals.ttl";
+    String url1 = "https://raw.githubusercontent.com/diachron/quality-extension/"
+      + "master/resources/testdumps/SampleInput_LabelsUsingCapitals.ttl";
     JSONArray metrics1 = new JSONArray("[LabelsUsingCapitals]");
     List<QualityProblem> problems = CleaningUtils.identifyQualityProblems(metrics1, url1);
     Assert.assertFalse(problems.isEmpty());
     Assert.assertEquals(VocabularyLoader.getResourcePropertyValue(QPROB.LabelsUsingCapitalsProblem,
         RDFS.label, Constants.QPROB_VOCAB), problems.get(0).getProblemName());
 
-    String url2 = "https://raw.githubusercontent.com/diachron/quality/master/src/test/resources/"
-        + "testdumps/SampleInput_WhitespaceInAnnotation.ttl";
+    String url2 = "https://raw.githubusercontent.com/diachron/quality-extension/"
+      + "master/resources/testdumps/SampleInput_WhitespaceInAnnotation.ttl";
     JSONArray metrics2 = new JSONArray("[WhitespaceInAnnotation]");
     List<QualityProblem> problems2 = CleaningUtils.identifyQualityProblems(metrics2, url2);
     Assert.assertFalse(problems2.isEmpty());

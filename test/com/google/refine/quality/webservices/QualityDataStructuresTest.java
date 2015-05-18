@@ -26,8 +26,8 @@ public class QualityDataStructuresTest {
   public void testQualityReport() throws ClassNotFoundException, InstantiationException,
       IllegalAccessException {
     Model model = JenaModelLoader
-        .getModel("https://raw.githubusercontent.com"
-            + "/diachron/quality/master/src/test/resources/testdumps/SampleInput_EmptyAnnotationValue.ttl");
+      .getModel("https://github.com/diachron/quality-extension/blob/cleaning/"
+       + "resources/testdumps/SampleInput_EmptyAnnotationValue.ttl");
 
     List<String> metrics = Arrays.asList("EmptyAnnotationValue");
     List<String> problemsRes = Arrays.asList(QPROB.EmptyAnnotationValueProblem.toString());
